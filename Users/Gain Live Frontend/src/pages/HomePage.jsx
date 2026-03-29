@@ -5,17 +5,35 @@ import FeaturedGames from "../components/home/FeaturedGames";
 import LiveSports from "../components/home/LiveSports";
 import LiveMarkets from "../components/home/LiveMarkets";
 import HallOfGlory from "../components/home/HallOfGlory";
+import HomeFooter from "../components/home/HomeFooter";
 
 const HomePage = () => {
   return (
-    <main className="pt-16 pb-24 overflow-x-hidden">
+    <main className="pt-16 overflow-x-hidden">
       <HeroSection />
       <LiveMarquee />
-      <PromotionsStrip />
-      <FeaturedGames />
-      <LiveSports />
-      <LiveMarkets />
-      <HallOfGlory />
+
+      <section id="promotions">
+        <PromotionsStrip />
+      </section>
+
+      <section id="featured-games">
+        <FeaturedGames />
+      </section>
+
+      <section id="live-sports">
+        <LiveSports />
+      </section>
+
+      <section id="live-markets">
+        <LiveMarkets />
+      </section>
+
+      <section id="hall-of-glory">
+        <HallOfGlory />
+      </section>
+
+      <HomeFooter />
     </main>
   );
 };

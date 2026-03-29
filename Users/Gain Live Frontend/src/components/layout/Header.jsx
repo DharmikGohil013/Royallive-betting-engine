@@ -13,9 +13,11 @@ const Header = () => {
           >
             menu
           </span>
-          <span className="text-xl font-black text-[#00F5FF] tracking-tighter font-['Space_Grotesk'] uppercase tracking-[0.05em]">
-            GAIN LIVE
-          </span>
+          <img
+            src="/logos/gain-live-logo-banner-7.png"
+            alt="Gain Live"
+            className="h-8 w-auto object-contain"
+          />
         </div>
         <button className="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-sm font-['Space_Grotesk'] font-bold text-xs tracking-wider active:scale-95 transition-transform hover:bg-primary-container/90">
           DEPOSIT
