@@ -5,7 +5,7 @@ import { sidebarNav } from "../../data/dashboardData";
 const ADMIN_PROFILE_IMG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuBUbLR-LZQBWrDCd6JeKvCowKmTiu8OSvEhwpPM1JZbXtSv6x6KUR4RbLr8iqYsdNrQuMnAFYb6OFfQAhsJ8twJn1dvT0Lwz9GPMphoNyLH-wJyZf-T3J1dfDP-Dd-5_w7SNS2b50v1Hx3jlMhyMEFXwOD3mjwIUcYOw0tBcOSdCS90I80FFQEnYGuZqVc4ES_Xb7BPnyapZPHOPXv5jW2gI347Gqs9p7ffsHkOsX8iq1N-4UWtmTQeyW2ylyivSAIDmN5_ScZdGw";
 
-export default function Sidebar({ isOpen, onClose }) {
+export default function Sidebar({ isOpen, onClose, onLogout }) {
   const location = useLocation();
 
   // Close sidebar on route change (mobile)
@@ -115,7 +115,10 @@ export default function Sidebar({ isOpen, onClose }) {
           })}
 
           {/* Logout */}
-          <button className="text-slate-400 hover:text-red-400 hover:bg-red-500/5 transition-all duration-200 flex items-center gap-3 px-4 py-3 rounded-lg active:scale-95 mt-10 w-full">
+          <button
+            onClick={onLogout}
+            className="text-slate-400 hover:text-red-400 hover:bg-red-500/5 transition-all duration-200 flex items-center gap-3 px-4 py-3 rounded-lg active:scale-95 mt-10 w-full"
+          >
             <span className="material-symbols-outlined">logout</span>
             <span className="text-sm">Logout</span>
           </button>

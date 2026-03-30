@@ -1,10 +1,14 @@
 import { useState, useCallback } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./components/layout/Sidebar";
 import TopNav from "./components/layout/TopNav";
 import DashboardPage from "./pages/dashboard/DashboardPage";
+import LoginPage from "./pages/LoginPage";
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => sessionStorage.getItem("gain-live-admin-auth") === "true"
+  );
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = useCallback(() => {
@@ -15,10 +19,30 @@ export default function App() {
     setSidebarOpen(false);
   }, []);
 
+  const handleLoginSuccess = useCallback(() => {
+    sessionStorage.setItem("gain-live-admin-auth", "true");
+    setIsAuthenticated(true);
+  }, []);
+
+  const handleLogout = useCallback(() => {
+    sessionStorage.removeItem("gain-live-admin-auth");
+    setIsAuthenticated(false);
+    setSidebarOpen(false);
+  }, []);
+
+  if (!isAuthenticated) {
+    return (
+      <Routes>
+        <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-surface-dim">
       {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} onLogout={handleLogout} />
 
       {/* Top Navigation */}
       <TopNav onMenuToggle={toggleSidebar} />
@@ -26,6 +50,7 @@ export default function App() {
       {/* Main Content — responsive left margin */}
       <main className="lg:ml-72 pt-24 sm:pt-28 px-4 sm:px-6 lg:px-8 pb-12 min-h-screen bg-surface-dim">
         <Routes>
+          <Route path="/login" element={<Navigate to="/" replace />} />
           <Route path="/" element={<DashboardPage />} />
           {/* Placeholder routes for other pages */}
           <Route path="/users" element={<PlaceholderPage title="Users" icon="group" />} />
