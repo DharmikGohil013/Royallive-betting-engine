@@ -3,7 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 const path = require("path");
+const userAuthRoutes = require("./routes/userAuth");
 
 const app = express();
 
@@ -12,6 +14,7 @@ const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-change-me";
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/gainlive";
 
 if (!ADMIN_PASSWORD_HASH) {
   console.error(
@@ -24,6 +27,17 @@ if (!ADMIN_PASSWORD_HASH) {
 // --------------- Middleware ---------------
 app.use(cors());
 app.use(express.json());
+
+// --------------- Database ---------------
+async function connectToDatabase() {
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log("✅  MongoDB connected");
+  } catch (error) {
+    console.error("❌  MongoDB connection failed:", error.message);
+    process.exit(1);
+  }
+}
 
 // --------------- Auth Routes ---------------
 
@@ -81,21 +95,39 @@ app.get("/api/auth/verify", (req, res) => {
   }
 });
 
-// --------------- Serve Admin Frontend (production) ---------------
-const adminDistPath = path.join(__dirname, "admin-dist");
-app.use(express.static(adminDistPath));
+// --------------- User Auth Routes ---------------
+app.use("/api/user", userAuthRoutes);
 
-// SPA fallback — serve index.html for all non-API routes
+// --------------- Serve Frontends (production) ---------------
+const adminDistPath = path.join(__dirname, "admin-dist");
+const userDistPath = path.join(__dirname, "..", "Users", "Gain Live Frontend", "dist");
+
+app.use("/admin", express.static(adminDistPath));
+app.use(express.static(userDistPath));
+
+// SPA fallback — route admin and user app separately, keep /api protected
 app.get("*", (req, res) => {
   if (req.path.startsWith("/api/")) {
     return res.status(404).json({ error: "API route not found" });
   }
-  res.sendFile(path.join(adminDistPath, "index.html"));
+
+  if (req.path.startsWith("/admin")) {
+    return res.sendFile(path.join(adminDistPath, "index.html"));
+  }
+
+  return res.sendFile(path.join(userDistPath, "index.html"));
 });
 
 // --------------- Start ---------------
-app.listen(PORT, () => {
-  console.log(`\n✅  GAIN LIVE Admin Server running on port ${PORT}`);
-  console.log(`   Admin panel: http://localhost:${PORT}`);
-  console.log(`   Login API:   http://localhost:${PORT}/api/auth/login\n`);
-});
+async function startServer() {
+  await connectToDatabase();
+
+  app.listen(PORT, () => {
+    console.log(`\n✅  GAIN LIVE Server running on port ${PORT}`);
+    console.log(`   User app:    http://localhost:${PORT}`);
+    console.log(`   Admin panel: http://localhost:${PORT}/admin`);
+    console.log(`   Login API:   http://localhost:${PORT}/api/auth/login\n`);
+  });
+}
+
+startServer();
