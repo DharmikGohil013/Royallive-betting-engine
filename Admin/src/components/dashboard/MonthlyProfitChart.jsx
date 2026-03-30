@@ -22,14 +22,14 @@ export default function MonthlyProfitChart() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h4 className="text-lg font-bold text-slate-100 bengali-leading">
-            মাসিক লাভ-ক্ষতি বিশ্লেষণ
+            Monthly Profit/Loss Analysis
           </h4>
           <p className="text-slate-500 text-xs">
-            বছরের শুরু থেকে বর্তমান সময়ের রিপোর্ট
+            Report from the start of the year to the present
           </p>
         </div>
         <div className="px-4 py-2 bg-surface-container-low rounded-xl text-xs font-bold border border-outline-variant/10 text-slate-400">
-          ২০২৪ অর্থবছর
+          FY 2024
         </div>
       </div>
 

@@ -10,13 +10,13 @@ export default function TransactionsTable() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h4 className="text-lg font-bold text-slate-100 bengali-leading">
-          সাম্প্রতিক লেনদেন
+          Recent Transactions
         </h4>
         <button
           id="btn-view-all-transactions"
           className="text-amber-500 text-xs font-bold flex items-center gap-1 hover:underline"
         >
-          সব দেখুন
+          View All
           <span className="material-symbols-outlined text-xs">chevron_right</span>
         </button>
       </div>
@@ -26,11 +26,11 @@ export default function TransactionsTable() {
         <table className="w-full text-left">
           <thead>
             <tr className="text-slate-500 text-[10px] uppercase tracking-widest border-b border-slate-800/50">
-              <th className="pb-4 font-black">ব্যবহারকারী</th>
-              <th className="pb-4 font-black">পরিমাণ</th>
-              <th className="pb-4 font-black text-center">ধরন</th>
-              <th className="pb-4 font-black">সময়</th>
-              <th className="pb-4 font-black text-right">স্ট্যাটাস</th>
+              <th className="pb-4 font-black">User</th>
+              <th className="pb-4 font-black">Amount</th>
+              <th className="pb-4 font-black text-center">Type</th>
+              <th className="pb-4 font-black">Time</th>
+              <th className="pb-4 font-black text-right">Status</th>
             </tr>
           </thead>
           <tbody className="text-sm">

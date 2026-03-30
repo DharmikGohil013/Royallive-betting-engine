@@ -13,10 +13,10 @@ export default function DashboardPage() {
       <div className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
           <h2 className="text-3xl font-black text-slate-100 mb-2 bengali-leading">
-            ড্যাশবোর্ড
+            Dashboard
           </h2>
           <p className="text-slate-500 text-sm">
-            স্বাগতম, আপনার আজকের ক্রিকেট অপারেশনস রিপোর্ট এখানে দেখুন।
+            Welcome, view your cricket operations report for today.
           </p>
         </div>
         <div className="flex gap-3">
@@ -25,14 +25,14 @@ export default function DashboardPage() {
             className="flex items-center gap-2 px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-xl text-sm transition-all border border-outline-variant/10 text-slate-300"
           >
             <span className="material-symbols-outlined text-sm">calendar_today</span>
-            আজকের রিপোর্ট
+            Today's Report
           </button>
           <button
             id="btn-export"
             className="flex items-center gap-2 px-6 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold rounded-xl text-sm transition-all shadow-lg shadow-amber-500/10 active:scale-95 hover:shadow-amber-500/20"
           >
             <span className="material-symbols-outlined text-sm">download</span>
-            এক্সপোর্ট
+            Export
           </button>
         </div>
       </div>
@@ -64,7 +64,7 @@ export default function DashboardPage() {
 
       {/* Footer */}
       <footer className="mt-16 text-center text-slate-600 text-[10px] uppercase tracking-widest font-bold">
-        © ২০২৪ গেইন লাইভ ড্যাশবোর্ড প্রো • ডিজাইন ও ডেভেলপমেন্ট টিম
+        © 2024 Gain Live Dashboard Pro • Design & Development Team
       </footer>
     </>
   );

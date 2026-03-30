@@ -8,9 +8,9 @@ export default function RevenueChart() {
       style={{ animationDelay: "800ms", animationFillMode: "forwards" }}
     >
       <h4 className="text-lg font-bold text-slate-100 mb-2 bengali-leading">
-        গেম অনুযায়ী রাজস্ব
+        Revenue by Game
       </h4>
-      <p className="text-slate-500 text-xs mb-8">বিগত ৩০ দিনের উপাত্ত</p>
+      <p className="text-slate-500 text-xs mb-8">Data from the last 30 days</p>
 
       {/* Donut Chart SVG */}
       <div className="relative w-48 h-48 mx-auto mb-8">
@@ -66,10 +66,10 @@ export default function RevenueChart() {
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-2xl font-black text-slate-100 tracking-tighter font-body">
-            ৳ ১২.৫এল
+            BDT 12.5L
           </span>
           <span className="text-[9px] text-slate-500 uppercase font-bold">
-            সর্বমোট
+            Total
           </span>
         </div>
       </div>

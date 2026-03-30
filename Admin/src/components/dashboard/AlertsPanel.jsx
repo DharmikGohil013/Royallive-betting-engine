@@ -10,10 +10,10 @@ export default function AlertsPanel() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h4 className="text-lg font-bold text-slate-100 bengali-leading">
-          অ্যালার্ট ও নোটিফিকেশন
+          Alerts & Notifications
         </h4>
         <span className="px-2 py-1 bg-error/10 text-error text-[10px] font-black rounded-lg">
-          ৩ নতুন
+          3 New
         </span>
       </div>
 
@@ -43,7 +43,7 @@ export default function AlertsPanel() {
         id="btn-view-all-alerts"
         className="w-full mt-6 py-3 text-xs font-bold text-slate-400 hover:text-amber-500 border-t border-slate-800/30 transition-colors"
       >
-        সকল নোটিফিকেশন দেখুন
+        View All Notifications
       </button>
     </div>
   );
