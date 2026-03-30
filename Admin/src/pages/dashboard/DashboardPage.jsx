@@ -10,26 +10,26 @@ export default function DashboardPage() {
   return (
     <>
       {/* Header Section */}
-      <div className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+      <div className="mb-6 sm:mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
-          <h2 className="text-3xl font-black text-slate-100 mb-2 bengali-leading">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-100 mb-1 sm:mb-2">
             Dashboard
           </h2>
-          <p className="text-slate-500 text-sm">
+          <p className="text-slate-500 text-xs sm:text-sm">
             Welcome, view your cricket operations report for today.
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             id="btn-today-report"
-            className="flex items-center gap-2 px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-xl text-sm transition-all border border-outline-variant/10 text-slate-300"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg sm:rounded-xl text-xs sm:text-sm transition-all border border-outline-variant/10 text-slate-300"
           >
             <span className="material-symbols-outlined text-sm">calendar_today</span>
-            Today's Report
+            <span className="hidden xs:inline">Today's</span> Report
           </button>
           <button
             id="btn-export"
-            className="flex items-center gap-2 px-6 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold rounded-xl text-sm transition-all shadow-lg shadow-amber-500/10 active:scale-95 hover:shadow-amber-500/20"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 sm:px-6 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold rounded-lg sm:rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-amber-500/10 active:scale-95 hover:shadow-amber-500/20"
           >
             <span className="material-symbols-outlined text-sm">download</span>
             Export
@@ -37,15 +37,15 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      {/* Stats Grid — 2 cols on mobile, 4 on lg */}
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-10">
         {statsCards.map((card, i) => (
           <StatsCard key={card.id} {...card} delay={i * 100} />
         ))}
       </div>
 
-      {/* Bento Grid: Charts & Activity */}
-      <div className="grid grid-cols-12 gap-6">
+      {/* Bento Grid: Charts & Activity — all full-width on mobile */}
+      <div className="grid grid-cols-12 gap-3 sm:gap-4 lg:gap-6">
         {/* Weekly Deposits vs Withdrawals */}
         <WeeklyChart />
 
@@ -63,8 +63,8 @@ export default function DashboardPage() {
       </div>
 
       {/* Footer */}
-      <footer className="mt-16 text-center text-slate-600 text-[10px] uppercase tracking-widest font-bold">
-        © 2024 Gain Live Dashboard Pro • Design & Development Team
+      <footer className="mt-10 sm:mt-16 text-center text-slate-600 text-[10px] uppercase tracking-widest font-bold pb-4">
+        © 2026 Gain Live Dashboard Pro • Design & Development Team
       </footer>
     </>
   );
