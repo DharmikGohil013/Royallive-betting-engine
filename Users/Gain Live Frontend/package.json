@@ -2,15 +2,12 @@
   "name": "web-demo",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://DharmikGohil013.github.io/Royallive-betting-engine",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "preview": "vite preview"
   },
   "dependencies": {
     "autoprefixer": "^10.4.27",
