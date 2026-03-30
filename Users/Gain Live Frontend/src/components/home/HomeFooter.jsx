@@ -149,11 +149,11 @@ const HomeFooter = () => {
             <div className="flex items-center gap-2 px-2 py-1 border border-on-surface/20 rounded">
               <span className="text-xs font-bold font-headline">18+</span>
             </div>
-            {/* <img
+            <img
               src="/logos/gain-live-logo-w-b-2.png"
               alt="Gain Live Mono"
               className="h-20 md:h-20 w-auto object-contain"
-            /> */}
+            />
             <img
               src="/logos/gain-live-logo-blue-w-5.png"
               alt="Gain Live Blue"
