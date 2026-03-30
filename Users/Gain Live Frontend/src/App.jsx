@@ -36,7 +36,7 @@ function AppContent() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Royallive-betting-engine">
       <AppContent />
     </BrowserRouter>
   );
