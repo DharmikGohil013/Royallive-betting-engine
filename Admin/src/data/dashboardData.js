@@ -1,0 +1,193 @@
+// ===== Dashboard Static Data =====
+
+export const statsCards = [
+  {
+    id: "total-users",
+    icon: "group",
+    iconColor: "text-amber-500",
+    iconBg: "bg-amber-500/10",
+    trendIcon: "trending_up",
+    trendValue: "+১২%",
+    trendColor: "text-secondary",
+    label: "মোট ব্যবহারকারী",
+    value: "৮৫,৪২০",
+  },
+  {
+    id: "today-deposit",
+    icon: "account_balance",
+    iconColor: "text-secondary",
+    iconBg: "bg-secondary/10",
+    trendIcon: "arrow_upward",
+    trendValue: "৳ ৪২,০০০",
+    trendColor: "text-secondary",
+    label: "আজকের ডিপোজিট",
+    value: "৳ ৮,৪০,২০০",
+  },
+  {
+    id: "today-withdraw",
+    icon: "payments",
+    iconColor: "text-error",
+    iconBg: "bg-error/10",
+    trendIcon: "arrow_downward",
+    trendValue: "৳ ১২,৫০০",
+    trendColor: "text-error",
+    label: "আজকের উইথড্র",
+    value: "৳ ৩,২৫,০০০",
+  },
+  {
+    id: "total-profit",
+    icon: "insights",
+    iconColor: "text-primary",
+    iconBg: "bg-primary/10",
+    trendIcon: "add_circle",
+    trendValue: "+৮.৪%",
+    trendColor: "text-secondary",
+    label: "মোট লাভ",
+    value: "৳ ৫,১৫,২০০",
+  },
+];
+
+export const weeklyChartData = [
+  { day: "শনি", height: "h-[8rem]", tooltip: "৳৪০কে" },
+  { day: "রবি", height: "h-[12rem]", tooltip: "৳৬০কে" },
+  { day: "সোম", height: "h-[9rem]", tooltip: "৳৪৫কে" },
+  { day: "মঙ্গল", height: "h-[14rem]", tooltip: "৳৭০কে" },
+  { day: "বুধ", height: "h-[11rem]", tooltip: "৳৫৫কে" },
+  { day: "বৃহ", height: "h-[15rem]", tooltip: "৳৮০কে", highlight: true },
+  { day: "শুক্র", height: "h-[10rem]", tooltip: "৳৫০কে" },
+];
+
+export const alertsData = [
+  {
+    id: 1,
+    icon: "priority_high",
+    iconBg: "bg-error/20",
+    iconColor: "text-error",
+    title: "নতুন উইথড্র রিকোয়েস্ট",
+    desc: "ব্যবহারকারী: @rahul99 | পরিমাণ: ৳৫,০০০",
+    time: "২ মিনিট আগে",
+  },
+  {
+    id: 2,
+    icon: "person_add",
+    iconBg: "bg-secondary/20",
+    iconColor: "text-secondary",
+    title: "নতুন রেজিস্ট্রেশন",
+    desc: "নতুন ব্যবহারকারী আজ যুক্ত হয়েছে: ১৫ জন",
+    time: "১০ মিনিট আগে",
+  },
+  {
+    id: 3,
+    icon: "security",
+    iconBg: "bg-amber-500/20",
+    iconColor: "text-amber-500",
+    title: "সন্দেহজনক লগইন",
+    desc: "আইপি: 103.45.21.0 থেকে ৩ বার ভুল পাসওয়ার্ড",
+    time: "২৫ মিনিট আগে",
+  },
+];
+
+export const transactionsData = [
+  {
+    id: 1,
+    initials: "AK",
+    name: "আব্দুল করিম",
+    amount: "৳ ৫,০০০",
+    type: "ডিপোজিট",
+    typeBg: "bg-secondary/10",
+    typeColor: "text-secondary",
+    time: "৩ মিনিট আগে",
+    status: "সফল",
+    statusBg: "bg-secondary/20",
+    statusColor: "text-secondary",
+  },
+  {
+    id: 2,
+    initials: "MS",
+    name: "মো: সজিব",
+    amount: "৳ ২,৫০০",
+    type: "উইথড্র",
+    typeBg: "bg-amber-500/10",
+    typeColor: "text-amber-500",
+    time: "১৫ মিনিট আগে",
+    status: "পেন্ডিং",
+    statusBg: "bg-amber-500/20",
+    statusColor: "text-amber-500",
+  },
+  {
+    id: 3,
+    initials: "RH",
+    name: "রাকিব হোসেন",
+    amount: "৳ ১০,০০০",
+    type: "ডিপোজিট",
+    typeBg: "bg-secondary/10",
+    typeColor: "text-secondary",
+    time: "২৮ মিনিট আগে",
+    status: "সফল",
+    statusBg: "bg-secondary/20",
+    statusColor: "text-secondary",
+  },
+  {
+    id: 4,
+    initials: "JF",
+    name: "জান্নাতুল ফেরদৌস",
+    amount: "৳ ১,২০০",
+    type: "উইথড্র",
+    typeBg: "bg-amber-500/10",
+    typeColor: "text-amber-500",
+    time: "৪৫ মিনিট আগে",
+    status: "বাতিল",
+    statusBg: "bg-error/20",
+    statusColor: "text-error",
+  },
+  {
+    id: 5,
+    initials: "NH",
+    name: "নাজমুল হুদা",
+    amount: "৳ ৪,০০০",
+    type: "ডিপোজিট",
+    typeBg: "bg-secondary/10",
+    typeColor: "text-secondary",
+    time: "১ ঘণ্টা আগে",
+    status: "সফল",
+    statusBg: "bg-secondary/20",
+    statusColor: "text-secondary",
+  },
+];
+
+export const revenueByGame = [
+  { name: "বিপিএল স্পেশাল", amount: "৳ ৪,২০,০০০", color: "bg-primary" },
+  { name: "লাইভ ক্যাসিনো", amount: "৳ ৫,৮০,০০০", color: "bg-secondary" },
+  { name: "অন্যান্য", amount: "৳ ২,৫০,০০০", color: "bg-error" },
+];
+
+export const monthlyBars = [
+  { month: "জানু", height: "h-24", type: "default" },
+  { month: "ফেব্রু", height: "h-32", type: "default" },
+  { month: "মার্চ", height: "h-20", type: "default" },
+  { month: "এপ্রিল", height: "h-40", type: "highlight-soft" },
+  { month: "মে", height: "h-48", type: "highlight" },
+  { month: "জুন", height: "h-16", type: "default" },
+  { month: "জুলাই", height: "h-28", type: "default" },
+  { month: "আগস্ট", height: "h-36", type: "default" },
+  { month: "সেপ্টে", height: "h-[10.5rem]", type: "default" },
+];
+
+export const sidebarNav = [
+  // Main
+  { icon: "dashboard", label: "ড্যাশবোর্ড", path: "/", active: true },
+  { icon: "group", label: "ব্যবহারকারী", path: "/users" },
+  { icon: "payments", label: "পেমেন্ট", path: "/payments" },
+  { icon: "analytics", label: "বিশ্লেষণ", path: "/analytics" },
+  // Game Settings
+  { type: "section", label: "গেম সেটিংস" },
+  { icon: "sports_cricket", label: "ক্রিকেট আপডেট", path: "/cricket" },
+  { icon: "sports_esports", label: "গেম ব্যবস্থাপনা", path: "/games" },
+  { icon: "psychology", label: "গেম লজিক", path: "/game-logic" },
+  // System
+  { type: "section", label: "সিস্টেম" },
+  { icon: "newspaper", label: "নিউজ", path: "/news" },
+  { icon: "account_balance_wallet", label: "পেমেন্ট পদ্ধতি", path: "/payment-methods" },
+  { icon: "notifications", label: "নোটিফিকেশন", path: "/notifications" },
+  { icon: "settings", label: "সেটিংস", path: "/settings" },
+];
