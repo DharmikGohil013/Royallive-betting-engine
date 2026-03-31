@@ -6,6 +6,7 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     mobile: "",
+    email: "",
     username: "",
     password: "",
     referralCode: "",
@@ -52,12 +53,9 @@ const RegisterPage = () => {
   return (
     <div className="space-y-5">
       <section className="neon-glow-border rounded-3xl bg-[#0a1228]/70 p-5 backdrop-blur-2xl sm:p-6">
-        <div className="mb-5 flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/70">Access Node</p>
-            <h2 className="mt-2 text-2xl font-black tracking-tight text-white">Create Account</h2>
-          </div>
-          <div className="rounded-lg border border-cyan-300/20 bg-cyan-300/10 px-2 py-1 text-[10px] text-cyan-100">v1.0</div>
+        <div className="mb-5">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/70">Access Node</p>
+          <h2 className="mt-2 text-2xl font-black tracking-tight text-white">Create Account</h2>
         </div>
 
         <form className="space-y-4" onSubmit={onSubmit}>
@@ -73,6 +71,23 @@ const RegisterPage = () => {
               onChange={onChange}
               className="bracket-input"
               placeholder="e.g. 9876543210"
+              required
+            />
+          </div>
+
+          <label className="block text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100/70" htmlFor="email">
+            Email
+          </label>
+          <div className="input-bracket">
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={onChange}
+              className="bracket-input"
+              placeholder="e.g. you@example.com"
+              autoComplete="email"
               required
             />
           </div>
@@ -94,7 +109,7 @@ const RegisterPage = () => {
           </div>
 
           <label className="block text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100/70" htmlFor="password">
-            Encrypted Key
+            Password
           </label>
           <div className="input-bracket flex items-center gap-2">
             <input
@@ -109,10 +124,13 @@ const RegisterPage = () => {
             />
             <button
               type="button"
-              className="mr-2 shrink-0 text-xs font-semibold uppercase tracking-wider text-cyan-200/80 hover:text-cyan-100"
+              className="mr-2 shrink-0 text-cyan-200/80 transition-colors hover:text-cyan-100"
               onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? "Hide" : "Show"}
+              <span className="material-symbols-outlined text-[20px]">
+                {showPassword ? "visibility_off" : "visibility"}
+              </span>
             </button>
           </div>
 
@@ -144,12 +162,9 @@ const RegisterPage = () => {
           <span className="h-px flex-1 bg-cyan-200/20" />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           <button type="button" className="rounded-xl border border-cyan-300/25 bg-slate-950/50 px-4 py-2.5 text-sm font-semibold text-cyan-50 transition hover:border-cyan-200/50">
             Google
-          </button>
-          <button type="button" className="rounded-xl border border-pink-300/30 bg-slate-950/50 px-4 py-2.5 text-sm font-semibold text-pink-100 transition hover:border-pink-200/60">
-            Telegram
           </button>
         </div>
 
@@ -161,11 +176,6 @@ const RegisterPage = () => {
         </p>
       </section>
 
-      <section className="grid grid-cols-3 gap-3 text-[10px] uppercase tracking-[0.22em] text-cyan-100/70">
-        <div className="rounded-xl border border-cyan-300/20 bg-slate-950/50 px-3 py-2 text-center">Kolkata</div>
-        <div className="rounded-xl border border-cyan-300/20 bg-slate-950/50 px-3 py-2 text-center">Latency 12ms</div>
-        <div className="rounded-xl border border-cyan-300/20 bg-slate-950/50 px-3 py-2 text-center">Node 07</div>
-      </section>
     </div>
   );
 };

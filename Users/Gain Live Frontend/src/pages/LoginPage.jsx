@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 const LoginPage = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ accessId: "", password: "", rememberMe: false });
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -19,6 +20,38 @@ const LoginPage = () => {
     event.preventDefault();
     setError("");
 
+    const normalizedAccessId = form.accessId.trim();
+    const password = form.password;
+    const startsWithNumber = /^\d/.test(normalizedAccessId);
+    let loginPayload;
+
+    if (startsWithNumber) {
+      if (!/^\d{10,15}$/.test(normalizedAccessId)) {
+        setError("Enter a valid mobile number");
+        return;
+      }
+
+      loginPayload = {
+        accessId: normalizedAccessId,
+        mobile: normalizedAccessId,
+        accessType: "mobile",
+        password,
+      };
+    } else {
+      const normalizedEmail = normalizedAccessId.toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+        setError("Enter a valid email address");
+        return;
+      }
+
+      loginPayload = {
+        accessId: normalizedEmail,
+        email: normalizedEmail,
+        accessType: "email",
+        password,
+      };
+    }
+
     try {
       setSubmitting(true);
       const response = await fetch("/api/user/login", {
@@ -26,10 +59,7 @@ const LoginPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          accessId: form.accessId,
-          password: form.password,
-        }),
+        body: JSON.stringify(loginPayload),
       });
 
       const data = await response.json();
@@ -81,19 +111,22 @@ const LoginPage = () => {
                 required
               />
             </div>
+            <p className="text-[10px] text-on-surface-variant/80">
+              Start with number for mobile, or start with text for email.
+            </p>
           </div>
 
           <div className="space-y-2">
             <label className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-primary-container" htmlFor="password">
-              Security Key
+              Password
             </label>
-            <div className="relative bg-surface-container-lowest/60 px-3 py-2.5">
+            <div className="relative flex items-center gap-2 bg-surface-container-lowest/60 px-3 py-2.5">
               <span className="pointer-events-none absolute left-0 top-0 h-2 w-2 border-l-2 border-t-2 border-primary-container" />
               <span className="pointer-events-none absolute bottom-0 right-0 h-2 w-2 border-b-2 border-r-2 border-primary-container" />
               <input
                 id="password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={form.password}
                 onChange={onChange}
                 className="w-full border-0 bg-transparent px-1 py-1 font-headline text-sm tracking-wider text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-0"
@@ -101,6 +134,16 @@ const LoginPage = () => {
                 autoComplete="current-password"
                 required
               />
+              <button
+                type="button"
+                className="mr-1 shrink-0 text-on-surface-variant/80 transition-colors hover:text-on-surface"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                <span className="material-symbols-outlined text-[20px]">
+                  {showPassword ? "visibility_off" : "visibility"}
+                </span>
+              </button>
             </div>
           </div>
 
