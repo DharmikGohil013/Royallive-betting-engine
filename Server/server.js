@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const path = require("path");
+const fs = require("fs");
 const userAuthRoutes = require("./routes/userAuth");
 
 const app = express();
@@ -34,6 +35,7 @@ async function connectToDatabase() {
     await mongoose.connect(MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useCreateIndex: true,
     });
     console.log("✅  MongoDB connected");
   } catch (error) {
@@ -101,6 +103,25 @@ app.get("/api/auth/verify", (req, res) => {
 // --------------- User Auth Routes ---------------
 app.use("/api/user", userAuthRoutes);
 
+// --------------- Health/Test Routes ---------------
+app.get("/api/health", (req, res) => {
+  return res.json({
+    success: true,
+    status: "ok",
+    service: "gain-live-server",
+    uptimeSeconds: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get("/api/test", (req, res) => {
+  return res.json({
+    success: true,
+    message: "Test API is working",
+    method: req.method,
+  });
+});
+
 // --------------- Serve Frontends (production) ---------------
 const adminDistPath = path.join(__dirname, "admin-dist");
 const userDistPath = path.join(__dirname, "..", "Users", "Gain Live Frontend", "dist");
@@ -115,7 +136,23 @@ app.get("*", (req, res) => {
   }
 
   if (req.path.startsWith("/admin")) {
+    const adminIndexPath = path.join(adminDistPath, "index.html");
+    if (!fs.existsSync(adminIndexPath)) {
+      return res.status(503).json({
+        error: "Admin frontend build not found",
+        hint: "Build Admin and deploy admin-dist/index.html",
+      });
+    }
+
     return res.sendFile(path.join(adminDistPath, "index.html"));
+  }
+
+  const userIndexPath = path.join(userDistPath, "index.html");
+  if (!fs.existsSync(userIndexPath)) {
+    return res.status(503).json({
+      error: "User frontend build not found",
+      hint: "Build user frontend and deploy Users/Gain Live Frontend/dist/index.html",
+    });
   }
 
   return res.sendFile(path.join(userDistPath, "index.html"));
