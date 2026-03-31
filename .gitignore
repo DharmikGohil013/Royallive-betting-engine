@@ -1,7 +1,12 @@
-# Dependency directories
+# Dependencies
 node_modules/
-**/node_modules/
+Server/node_modules/
+
+# Environment files
+.env
+Server/.env
 
 # Build outputs
 dist/
 **/dist/
+
