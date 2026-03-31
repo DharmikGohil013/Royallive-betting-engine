@@ -81,17 +81,17 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative space-y-8 overflow-hidden pb-4">
-      <div className="pointer-events-none absolute -right-10 -top-14 h-60 w-60 rounded-full bg-primary-container/10 blur-[90px]" />
-      <div className="pointer-events-none absolute -bottom-16 -left-16 h-72 w-72 rounded-full bg-secondary-container/15 blur-[110px]" />
+    <div className="relative space-y-6 overflow-hidden pb-3">
+      <div className="pointer-events-none absolute -right-8 -top-12 h-52 w-52 rounded-full bg-primary-container/10 blur-[80px]" />
+      <div className="pointer-events-none absolute -bottom-14 -left-12 h-64 w-64 rounded-full bg-secondary-container/15 blur-[100px]" />
 
-      <section className="relative z-10 rounded-xl border border-primary-container/15 bg-surface-container/60 p-6 shadow-[0_24px_40px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:p-8">
-        <div className="mb-8">
-          <h2 className="font-headline text-3xl font-black uppercase tracking-tight text-on-surface">Initialize</h2>
-          <p className="mt-2 text-sm font-medium text-on-surface-variant">Enter your credentials to access the grid.</p>
+      <section className="relative z-10 rounded-lg border border-primary-container/15 bg-surface-container/60 p-5 shadow-[0_20px_34px_rgba(0,0,0,0.32)] backdrop-blur-2xl sm:p-6">
+        <div className="mb-6">
+          <h2 className="font-headline text-2xl font-black uppercase tracking-tight text-on-surface sm:text-3xl">Initialize</h2>
+          <p className="mt-1.5 text-xs font-medium text-on-surface-variant sm:text-sm">Enter your credentials to access the grid.</p>
         </div>
 
-        <form className="space-y-6" onSubmit={onSubmit}>
+        <form className="space-y-5" onSubmit={onSubmit}>
           <div className="space-y-2">
             <label className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-primary-container" htmlFor="accessId">
               Access ID
@@ -111,7 +111,7 @@ const LoginPage = () => {
                 required
               />
             </div>
-            <p className="text-[10px] text-on-surface-variant/80">
+            <p className="text-[9px] text-on-surface-variant/80 sm:text-[10px]">
               Start with number for mobile, or start with text for email.
             </p>
           </div>
@@ -147,7 +147,7 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest">
+          <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wide sm:text-xs sm:tracking-widest">
             <label className="group flex cursor-pointer items-center gap-2">
               <span className="flex h-4 w-4 items-center justify-center border border-primary-container/30 bg-surface-container-low transition-transform group-active:scale-90">
                 {form.rememberMe && <span className="h-2 w-2 bg-primary-container" />}
@@ -171,15 +171,15 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            className="w-full rounded-sm bg-[linear-gradient(90deg,#00F5FF_0%,#FF2D78_100%)] py-4 font-headline text-sm font-black uppercase tracking-[0.2em] text-on-primary shadow-[0_0_20px_rgba(0,245,255,0.3)] transition-all active:scale-[0.98]"
+            className="w-full rounded-sm bg-[linear-gradient(90deg,#00F5FF_0%,#FF2D78_100%)] py-3.5 font-headline text-xs font-black uppercase tracking-[0.18em] text-on-primary shadow-[0_0_20px_rgba(0,245,255,0.3)] transition-all active:scale-[0.98] sm:text-sm sm:tracking-[0.2em]"
             disabled={submitting}
           >
             {submitting ? "LOGGING IN..." : "LOGIN"}
           </button>
         </form>
 
-        <div className="mt-8 border-t border-outline-variant/30 pt-6 text-center">
-          <p className="text-xs font-medium text-on-surface-variant/70">
+        <div className="mt-6 border-t border-outline-variant/30 pt-5 text-center">
+          <p className="text-[11px] font-medium text-on-surface-variant/70 sm:text-xs">
             New pilot?{" "}
             <Link to="/register" className="font-bold text-primary-container">
               REQUEST ACCESS
@@ -190,16 +190,16 @@ const LoginPage = () => {
 
       <section className="group relative z-10 overflow-hidden rounded-lg border border-primary-container/15 bg-surface-container transition-all duration-300 hover:border-primary-container/40">
         <div className="flex items-center">
-          <div className="h-24 w-1/3 overflow-hidden">
+          <div className="h-20 w-1/3 overflow-hidden sm:h-24">
             <img
               src="/images/bg.jpg"
               alt="Promotional"
               className="h-full w-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
             />
           </div>
-          <div className="w-2/3 p-4">
+          <div className="w-2/3 p-3 sm:p-4">
             <p className="mb-1 font-headline text-[10px] font-black uppercase tracking-widest text-secondary-fixed-dim">Top Bonus Offer</p>
-            <h3 className="font-headline text-lg font-bold uppercase leading-tight text-on-surface">200% Kinetic Boost</h3>
+            <h3 className="font-headline text-base font-bold uppercase leading-tight text-on-surface sm:text-lg">200% Kinetic Boost</h3>
             <p className="mt-1 flex items-center text-[10px] font-bold tracking-tight text-primary-container">
               REDEEM ON FIRST DEPOSIT
               <span className="material-symbols-outlined ml-1 text-xs">bolt</span>
@@ -209,13 +209,13 @@ const LoginPage = () => {
         <div className="pointer-events-none absolute inset-0 h-1/2 w-full -translate-y-full bg-gradient-to-b from-transparent via-primary-container/5 to-transparent transition-transform duration-1000 group-hover:translate-y-full" />
       </section>
 
-      <footer className="z-10 space-y-4 p-2 text-center">
-        <div className="flex justify-center gap-6 opacity-35">
-          <span className="material-symbols-outlined text-xl">shield</span>
-          <span className="material-symbols-outlined text-xl">verified_user</span>
-          <span className="material-symbols-outlined text-xl">lock</span>
+      <footer className="z-10 space-y-3 p-1.5 text-center sm:space-y-4 sm:p-2">
+        <div className="flex justify-center gap-5 opacity-35 sm:gap-6">
+          <span className="material-symbols-outlined text-lg sm:text-xl">shield</span>
+          <span className="material-symbols-outlined text-lg sm:text-xl">verified_user</span>
+          <span className="material-symbols-outlined text-lg sm:text-xl">lock</span>
         </div>
-        <p className="font-headline text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/40">Secure Encryption Active</p>
+        <p className="font-headline text-[9px] uppercase tracking-[0.24em] text-on-surface-variant/40 sm:text-[10px] sm:tracking-[0.3em]">Secure Encryption Active</p>
       </footer>
     </div>
   );

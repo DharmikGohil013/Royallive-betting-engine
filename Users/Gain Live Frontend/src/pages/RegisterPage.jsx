@@ -51,14 +51,14 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="space-y-5">
-      <section className="neon-glow-border rounded-3xl bg-[#0a1228]/70 p-5 backdrop-blur-2xl sm:p-6">
-        <div className="mb-5">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/70">Access Node</p>
-          <h2 className="mt-2 text-2xl font-black tracking-tight text-white">Create Account</h2>
+    <div className="space-y-4">
+      <section className="neon-glow-border rounded-2xl bg-[#0a1228]/70 p-4 backdrop-blur-2xl sm:p-5">
+        <div className="mb-4">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-200/70 sm:text-[11px] sm:tracking-[0.22em]">Access Node</p>
+          <h2 className="mt-1.5 text-xl font-black tracking-tight text-white sm:mt-2 sm:text-2xl">Create Account</h2>
         </div>
 
-        <form className="space-y-4" onSubmit={onSubmit}>
+        <form className="space-y-3.5 sm:space-y-4" onSubmit={onSubmit}>
           <label className="block text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100/70" htmlFor="mobile">
             Mobile Number
           </label>
@@ -151,24 +151,24 @@ const RegisterPage = () => {
 
           {error && <p className="rounded-md border border-red-400/40 bg-red-500/10 px-3 py-2 text-xs text-red-200">{error}</p>}
 
-          <button type="submit" className="neon-gradient-btn w-full" disabled={submitting}>
+          <button type="submit" className="neon-gradient-btn w-full py-3 text-[11px]" disabled={submitting}>
             {submitting ? "CREATING NODE..." : "ACTIVATE NODE"}
           </button>
         </form>
 
-        <div className="my-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.22em] text-cyan-100/55">
+        <div className="my-4 flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-cyan-100/55 sm:text-[11px] sm:tracking-[0.22em]">
           <span className="h-px flex-1 bg-cyan-200/20" />
           quick signup
           <span className="h-px flex-1 bg-cyan-200/20" />
         </div>
 
         <div className="grid grid-cols-1 gap-3">
-          <button type="button" className="rounded-xl border border-cyan-300/25 bg-slate-950/50 px-4 py-2.5 text-sm font-semibold text-cyan-50 transition hover:border-cyan-200/50">
+          <button type="button" className="rounded-lg border border-cyan-300/25 bg-slate-950/50 px-3.5 py-2 text-xs font-semibold text-cyan-50 transition hover:border-cyan-200/50 sm:text-sm">
             Google
           </button>
         </div>
 
-        <p className="mt-5 text-center text-sm text-slate-300/80">
+        <p className="mt-4 text-center text-xs text-slate-300/80 sm:text-sm">
           Existing account?{" "}
           <Link to="/login" className="font-semibold text-cyan-200 hover:text-cyan-100">
             Login now

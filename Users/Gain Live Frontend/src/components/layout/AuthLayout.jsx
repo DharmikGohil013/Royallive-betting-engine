@@ -9,10 +9,10 @@ const AuthLayout = ({ title, children }) => {
       </div>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(0,245,255,0.18),transparent_40%),radial-gradient(circle_at_88%_10%,rgba(255,45,120,0.12),transparent_38%)]" />
 
-      <header className="relative z-20 flex h-16 items-center justify-between border-b border-primary-container/10 bg-[#0A0A0F]/80 px-4 backdrop-blur-xl shadow-[0_4px_20px_-5px_rgba(0,245,255,0.2)]">
+      <header className="relative z-20 flex h-14 items-center justify-between border-b border-primary-container/10 bg-[#0A0A0F]/80 px-3 backdrop-blur-xl shadow-[0_4px_20px_-5px_rgba(0,245,255,0.2)] sm:h-16 sm:px-4">
         <Link
           to="/"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-primary-container transition hover:bg-primary-container/10"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary-container transition hover:bg-primary-container/10 sm:h-9 sm:w-9"
           aria-label="Back to home"
         >
           <span className="material-symbols-outlined text-[20px]">arrow_back</span>
@@ -21,20 +21,22 @@ const AuthLayout = ({ title, children }) => {
         <img
           src="/logos/gain-live-logo-banner-7.png"
           alt="Gain Live"
-          className="h-7 w-auto object-contain"
+          className="h-6 w-auto object-contain sm:h-7"
         />
 
-        <span className="rounded-sm bg-primary-container px-3 py-1.5 text-[11px] font-bold tracking-[0.15em] text-on-primary-container">
+        <span className="rounded-sm bg-primary-container px-2.5 py-1 text-[10px] font-bold tracking-[0.14em] text-on-primary-container sm:px-3 sm:py-1.5 sm:text-[11px]">
           SECURE
         </span>
       </header>
 
-      <main className="relative z-20 mx-auto w-full max-w-[460px] px-4 pb-10 pt-8 sm:px-6">
-        <div className="mb-5">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-primary-container/80">Gain Live Protocol</p>
-          <h1 className="mt-2 font-headline text-2xl font-bold text-on-surface sm:text-3xl">{title}</h1>
+      <main className="relative z-20 mx-auto w-full max-w-[430px] px-3 pb-8 pt-6 sm:px-5 sm:pt-7">
+        <div className="md:origin-top md:scale-[0.95]">
+          <div className="mb-4">
+            <p className="text-[10px] uppercase tracking-[0.24em] text-primary-container/80 sm:text-[11px] sm:tracking-[0.28em]">Gain Live Protocol</p>
+            <h1 className="mt-1.5 font-headline text-xl font-bold text-on-surface sm:mt-2 sm:text-2xl">{title}</h1>
+          </div>
+          {children}
         </div>
-        {children}
       </main>
     </div>
   );
