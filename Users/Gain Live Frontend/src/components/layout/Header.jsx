@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -19,9 +20,12 @@ const Header = () => {
             className="h-8 w-auto object-contain"
           />
         </div>
-        <button className="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-sm font-['Space_Grotesk'] font-bold text-xs tracking-wider active:scale-95 transition-transform hover:bg-primary-container/90">
-          DEPOSIT
-        </button>
+        <Link
+          to="/login"
+          className="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-sm font-['Space_Grotesk'] font-bold text-xs tracking-wider active:scale-95 transition-transform hover:bg-primary-container/90"
+        >
+          LOGIN
+        </Link>
       </div>
     </header>
   );

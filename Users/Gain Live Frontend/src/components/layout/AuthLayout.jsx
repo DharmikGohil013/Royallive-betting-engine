@@ -2,13 +2,17 @@ import { Link } from "react-router-dom";
 
 const AuthLayout = ({ title, children }) => {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_12%_22%,rgba(0,245,255,0.2),transparent_42%),radial-gradient(circle_at_88%_10%,rgba(255,45,120,0.18),transparent_45%),linear-gradient(180deg,#060b1e_0%,#040615_55%,#070817_100%)] px-4 py-6 sm:px-6">
-      <div className="pointer-events-none absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:22px_22px]" />
+    <div className="relative min-h-screen overflow-hidden bg-[#060b1f] text-on-surface">
+      <div className="pointer-events-none absolute inset-0">
+        <img src="/images/bg.jpg" alt="" className="h-full w-full object-cover opacity-35" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#060b1f]/75 via-[#040812]/82 to-[#060b1f]" />
+      </div>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(0,245,255,0.18),transparent_40%),radial-gradient(circle_at_88%_10%,rgba(255,45,120,0.12),transparent_38%)]" />
 
-      <header className="relative z-10 mx-auto flex w-full max-w-[460px] items-center justify-between rounded-2xl border border-cyan-300/20 bg-slate-950/55 px-4 py-3 backdrop-blur-xl">
+      <header className="relative z-20 flex h-16 items-center justify-between border-b border-primary-container/10 bg-[#0A0A0F]/80 px-4 backdrop-blur-xl shadow-[0_4px_20px_-5px_rgba(0,245,255,0.2)]">
         <Link
           to="/"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cyan-300/30 text-cyan-200 transition hover:border-cyan-300/60 hover:text-cyan-100"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-primary-container transition hover:bg-primary-container/10"
           aria-label="Back to home"
         >
           <span className="material-symbols-outlined text-[20px]">arrow_back</span>
@@ -17,18 +21,18 @@ const AuthLayout = ({ title, children }) => {
         <img
           src="/logos/gain-live-logo-banner-7.png"
           alt="Gain Live"
-          className="h-7 w-auto object-contain sm:h-8"
+          className="h-7 w-auto object-contain"
         />
 
-        <span className="rounded-full border border-cyan-300/20 bg-cyan-400/10 px-2.5 py-1 text-[10px] font-semibold tracking-[0.22em] text-cyan-100/90">
+        <span className="rounded-sm bg-primary-container px-3 py-1.5 text-[11px] font-bold tracking-[0.15em] text-on-primary-container">
           SECURE
         </span>
       </header>
 
-      <main className="relative z-10 mx-auto mt-8 w-full max-w-[460px]">
+      <main className="relative z-20 mx-auto w-full max-w-[460px] px-4 pb-10 pt-8 sm:px-6">
         <div className="mb-5">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-200/80">Gain Live Protocol</p>
-          <h1 className="mt-2 font-headline text-2xl font-bold text-slate-100 sm:text-3xl">{title}</h1>
+          <p className="text-[11px] uppercase tracking-[0.28em] text-primary-container/80">Gain Live Protocol</p>
+          <h1 className="mt-2 font-headline text-2xl font-bold text-on-surface sm:text-3xl">{title}</h1>
         </div>
         {children}
       </main>
