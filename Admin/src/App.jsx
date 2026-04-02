@@ -8,6 +8,10 @@ import UserManagementPage from "./pages/users/UserManagementPage";
 import AnalyticsPage from "./pages/analytics/AnalyticsPage";
 import CricketUpdatesPage from "./pages/cricket/CricketUpdatesPage";
 import GameManagementPage from "./pages/games/GameManagementPage";
+import GameLogicPage from "./pages/game-logic/GameLogicPage";
+import AboutManagementPage from "./pages/about/AboutManagementPage";
+import SettingsPage from "./pages/settings/SettingsPage";
+import DataManagementPage from "./pages/data/DataManagementPage";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -62,11 +66,14 @@ export default function App() {
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/cricket" element={<CricketUpdatesPage />} />
           <Route path="/games" element={<GameManagementPage />} />
-          <Route path="/game-logic" element={<PlaceholderPage title="Game Logic" icon="psychology" />} />
+          <Route path="/game-logic" element={<GameLogicPage />} />
           <Route path="/news" element={<PlaceholderPage title="News" icon="newspaper" />} />
+          <Route path="/about" element={<AboutManagementPage />} />
+          <Route path="/policy" element={<PlaceholderPage title="Policy" icon="policy" />} />
           <Route path="/payment-methods" element={<PlaceholderPage title="Payment Methods" icon="account_balance_wallet" />} />
           <Route path="/notifications" element={<PlaceholderPage title="Notifications" icon="notifications" />} />
-          <Route path="/settings" element={<PlaceholderPage title="Settings" icon="settings" />} />
+          <Route path="/data" element={<DataManagementPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
     </div>

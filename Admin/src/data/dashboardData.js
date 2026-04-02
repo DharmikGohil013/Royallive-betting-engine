@@ -187,7 +187,10 @@ export const sidebarNav = [
   // System
   { type: "section", label: "System" },
   { icon: "newspaper", label: "News", path: "/news" },
+  { icon: "info", label: "About", path: "/about" },
+  { icon: "policy", label: "Policy", path: "/policy" },
   { icon: "account_balance_wallet", label: "Payment Methods", path: "/payment-methods" },
   { icon: "notifications", label: "Notifications", path: "/notifications" },
+  { icon: "database", label: "Data", path: "/data" },
   { icon: "settings", label: "Settings", path: "/settings" },
 ];
