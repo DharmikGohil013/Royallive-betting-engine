@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const path = require("path");
 const fs = require("fs");
-const userAuthRoutes = require("./routes/userAuth");
+const { router: userAuthRoutes, signupHandler } = require("./routes/userAuth");
 
 const app = express();
 
@@ -102,6 +102,8 @@ app.get("/api/auth/verify", (req, res) => {
 
 // --------------- User Auth Routes ---------------
 app.use("/api/user", userAuthRoutes);
+app.post("/api/auth/signup", signupHandler);
+app.post("/api/auth/register", signupHandler);
 
 // --------------- Health/Test Routes ---------------
 app.get("/api/health", (req, res) => {
