@@ -4,6 +4,10 @@ import Sidebar from "./components/layout/Sidebar";
 import TopNav from "./components/layout/TopNav";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import LoginPage from "./pages/LoginPage";
+import UserManagementPage from "./pages/users/UserManagementPage";
+import AnalyticsPage from "./pages/analytics/AnalyticsPage";
+import CricketUpdatesPage from "./pages/cricket/CricketUpdatesPage";
+import GameManagementPage from "./pages/games/GameManagementPage";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -52,12 +56,12 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Navigate to="/" replace />} />
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/users" element={<UserManagementPage />} />
           {/* Placeholder routes for other pages */}
-          <Route path="/users" element={<PlaceholderPage title="Users" icon="group" />} />
           <Route path="/payments" element={<PlaceholderPage title="Payments" icon="payments" />} />
-          <Route path="/analytics" element={<PlaceholderPage title="Analytics" icon="analytics" />} />
-          <Route path="/cricket" element={<PlaceholderPage title="Cricket Updates" icon="sports_cricket" />} />
-          <Route path="/games" element={<PlaceholderPage title="Game Management" icon="sports_esports" />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/cricket" element={<CricketUpdatesPage />} />
+          <Route path="/games" element={<GameManagementPage />} />
           <Route path="/game-logic" element={<PlaceholderPage title="Game Logic" icon="psychology" />} />
           <Route path="/news" element={<PlaceholderPage title="News" icon="newspaper" />} />
           <Route path="/payment-methods" element={<PlaceholderPage title="Payment Methods" icon="account_balance_wallet" />} />
