@@ -80,7 +80,11 @@ export default function Sidebar({ isOpen, onClose, onLogout }) {
           </div>
           <div>
             <p className="text-slate-100 font-bold text-sm">Admin</p>
-            <p className="text-slate-500 text-xs">Cricket Operations</p>
+            <img
+              src="/logos/gain-live-logo-banner-7.png"
+              alt="Gain Live Logo"
+              className="h-4 w-auto object-contain mt-1 opacity-90"
+            />
           </div>
         </div>
 

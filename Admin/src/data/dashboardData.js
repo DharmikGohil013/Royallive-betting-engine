@@ -180,7 +180,7 @@ export const sidebarNav = [
   { icon: "payments", label: "Payments", path: "/payments" },
   { icon: "analytics", label: "Analytics", path: "/analytics" },
   // Game Settings
-  { type: "section", label: "Game Settings" },
+  { type: "section", label: "Management" },
   { icon: "sports_cricket", label: "Cricket Updates", path: "/cricket" },
   { icon: "sports_esports", label: "Game Management", path: "/games" },
   { icon: "psychology", label: "Game Logic", path: "/game-logic" },
