@@ -12,6 +12,7 @@ import GameLogicPage from "./pages/game-logic/GameLogicPage";
 import AboutManagementPage from "./pages/about/AboutManagementPage";
 import SettingsPage from "./pages/settings/SettingsPage";
 import DataManagementPage from "./pages/data/DataManagementPage";
+import NotificationsPage from "./pages/notifications/NotificationsPage";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -71,7 +72,7 @@ export default function App() {
           <Route path="/about" element={<AboutManagementPage />} />
           <Route path="/policy" element={<PlaceholderPage title="Policy" icon="policy" />} />
           <Route path="/payment-methods" element={<PlaceholderPage title="Payment Methods" icon="account_balance_wallet" />} />
-          <Route path="/notifications" element={<PlaceholderPage title="Notifications" icon="notifications" />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/data" element={<DataManagementPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
