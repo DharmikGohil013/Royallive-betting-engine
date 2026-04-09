@@ -179,6 +179,7 @@ export const sidebarNav = [
   { icon: "group", label: "Users", path: "/users" },
   { icon: "payments", label: "Payments", path: "/payments" },
   { icon: "analytics", label: "Analytics", path: "/analytics" },
+  { icon: "equalizer", label: "Statistics", path: "/statistics" },
   // Game Settings
   { type: "section", label: "Management" },
   { icon: "sports_cricket", label: "Cricket Updates", path: "/cricket" },

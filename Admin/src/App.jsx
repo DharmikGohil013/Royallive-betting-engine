@@ -13,6 +13,9 @@ import AboutManagementPage from "./pages/about/AboutManagementPage";
 import SettingsPage from "./pages/settings/SettingsPage";
 import DataManagementPage from "./pages/data/DataManagementPage";
 import NotificationsPage from "./pages/notifications/NotificationsPage";
+import GameStatisticsPage from "./pages/game-stats/GameStatisticsPage";
+import PaymentMethodsPage from "./pages/payment-methods/PaymentMethodsPage";
+import PolicyPage from "./pages/policy/PolicyPage";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -70,9 +73,10 @@ export default function App() {
           <Route path="/game-logic" element={<GameLogicPage />} />
           <Route path="/news" element={<PlaceholderPage title="News" icon="newspaper" />} />
           <Route path="/about" element={<AboutManagementPage />} />
-          <Route path="/policy" element={<PlaceholderPage title="Policy" icon="policy" />} />
-          <Route path="/payment-methods" element={<PlaceholderPage title="Payment Methods" icon="account_balance_wallet" />} />
+          <Route path="/policy" element={<PolicyPage />} />
+          <Route path="/payment-methods" element={<PaymentMethodsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="statistics" element={<GameStatisticsPage />} />
           <Route path="/data" element={<DataManagementPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
