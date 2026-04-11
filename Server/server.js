@@ -28,10 +28,31 @@ if (!ADMIN_PASSWORD_HASH) {
 
 // --------------- Security Middleware ---------------
 app.use(...securityMiddleware());
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map((value) => value.trim()).filter(Boolean)
+  : ["http://localhost:5173", "http://localhost:5174", "http://localhost:4000"];
+
 app.use(cors({
-  origin: process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(",").map(s => s.trim())
-    : ["http://localhost:5173", "http://localhost:5174", "http://localhost:4000"],
+  origin(origin, callback) {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    try {
+      const { hostname, protocol } = new URL(origin);
+      if (protocol === "https:" && hostname.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+    } catch (_error) {
+      return callback(new Error("Not allowed by CORS"));
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
   credentials: true,
 }));
 app.use(express.json({ limit: "2mb" }));
