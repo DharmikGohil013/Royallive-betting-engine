@@ -1,6 +1,31 @@
-import { revenueByGame } from "../../data/dashboardData";
+import { useState, useEffect } from "react";
+import { getRevenueByGame } from "../../services/api";
+
+const defaultRevenue = [
+  { name: "BPL Special", amount: "BDT 0", color: "bg-primary" },
+  { name: "Live Casino", amount: "BDT 0", color: "bg-secondary" },
+  { name: "Others", amount: "BDT 0", color: "bg-error" },
+];
 
 export default function RevenueChart() {
+  const [revenueData, setRevenueData] = useState(defaultRevenue);
+  const [totalRevenue, setTotalRevenue] = useState("BDT 0");
+
+  useEffect(() => {
+    getRevenueByGame().then(data => {
+      const games = data.games || data || [];
+      if (games.length) {
+        const colors = ["bg-primary", "bg-secondary", "bg-error", "bg-amber-500", "bg-blue-500"];
+        const total = games.reduce((s, g) => s + (g.revenue || 0), 0);
+        setTotalRevenue(`BDT ${(total / 100000).toFixed(1)}L`);
+        setRevenueData(games.slice(0, 5).map((g, i) => ({
+          name: g.name || g._id || `Game ${i + 1}`,
+          amount: `BDT ${(g.revenue || 0).toLocaleString()}`,
+          color: colors[i % colors.length],
+        })));
+      }
+    }).catch(() => {});
+  }, []);
   return (
     <div
       id="revenue-chart"
@@ -67,7 +92,7 @@ export default function RevenueChart() {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-lg sm:text-2xl font-black text-slate-100 tracking-tighter font-body">
-              BDT 12.5L
+              {totalRevenue}
             </span>
             <span className="text-[8px] sm:text-[9px] text-slate-500 uppercase font-bold">
               Total
@@ -77,7 +102,7 @@ export default function RevenueChart() {
 
         {/* Legend */}
         <div className="space-y-3 sm:space-y-4 flex-1 w-full">
-          {revenueByGame.map((game) => (
+          {revenueData.map((game) => (
             <div key={game.name} className="flex justify-between items-center">
               <div className="flex items-center gap-2 sm:gap-3">
                 <span className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${game.color}`}></span>

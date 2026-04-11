@@ -1,6 +1,27 @@
-import { transactionsData } from "../../data/dashboardData";
+import { useState, useEffect } from "react";
+import { getTransactions } from "../../services/api";
 
 export default function TransactionsTable() {
+  const [txList, setTxList] = useState([]);
+
+  useEffect(() => {
+    getTransactions({ limit: 5 }).then(data => {
+      const items = data.transactions || data || [];
+      setTxList(items.map(tx => ({
+        id: tx._id,
+        initials: (tx.userId?.username || "U").slice(0, 2).toUpperCase(),
+        name: tx.userId?.username || "User",
+        amount: `BDT ${(tx.amount || 0).toLocaleString()}`,
+        type: tx.type === "deposit" ? "Deposit" : "Withdraw",
+        typeBg: tx.type === "deposit" ? "bg-secondary/10" : "bg-amber-500/10",
+        typeColor: tx.type === "deposit" ? "text-secondary" : "text-amber-500",
+        time: tx.createdAt ? new Date(tx.createdAt).toLocaleString() : "",
+        status: tx.status === "completed" ? "Success" : tx.status === "pending" ? "Pending" : "Cancelled",
+        statusBg: tx.status === "completed" ? "bg-secondary/20" : tx.status === "pending" ? "bg-amber-500/20" : "bg-error/20",
+        statusColor: tx.status === "completed" ? "text-secondary" : tx.status === "pending" ? "text-amber-500" : "text-error",
+      })));
+    }).catch(() => {});
+  }, []);
   return (
     <div
       id="transactions-table"
@@ -34,7 +55,7 @@ export default function TransactionsTable() {
             </tr>
           </thead>
           <tbody className="text-sm">
-            {transactionsData.map((tx) => (
+            {txList.map((tx) => (
               <tr
                 key={tx.id}
                 className="group hover:bg-white/5 transition-all"
@@ -71,7 +92,7 @@ export default function TransactionsTable() {
 
       {/* Card Layout — Mobile */}
       <div className="sm:hidden space-y-3">
-        {transactionsData.map((tx) => (
+        {txList.map((tx) => (
           <div
             key={tx.id}
             className="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low"

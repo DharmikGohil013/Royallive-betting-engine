@@ -16,6 +16,7 @@ import NotificationsPage from "./pages/notifications/NotificationsPage";
 import GameStatisticsPage from "./pages/game-stats/GameStatisticsPage";
 import PaymentMethodsPage from "./pages/payment-methods/PaymentMethodsPage";
 import PolicyPage from "./pages/policy/PolicyPage";
+import { adminLogout } from "./services/api";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -37,7 +38,7 @@ export default function App() {
   }, []);
 
   const handleLogout = useCallback(() => {
-    sessionStorage.removeItem("gain-live-admin-auth");
+    adminLogout();
     setIsAuthenticated(false);
     setSidebarOpen(false);
   }, []);

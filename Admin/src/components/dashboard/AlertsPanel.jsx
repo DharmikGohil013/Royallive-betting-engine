@@ -1,6 +1,23 @@
-import { alertsData } from "../../data/dashboardData";
+import { useState, useEffect } from "react";
+import { getAlerts } from "../../services/api";
 
 export default function AlertsPanel() {
+  const [alerts, setAlerts] = useState([]);
+
+  useEffect(() => {
+    getAlerts().then(data => {
+      const items = data.alerts || data || [];
+      setAlerts(items.slice(0, 5).map((a, i) => ({
+        id: a._id || i,
+        icon: a.type === "error" ? "priority_high" : a.type === "registration" ? "person_add" : "security",
+        iconBg: a.type === "error" ? "bg-error/20" : a.type === "registration" ? "bg-secondary/20" : "bg-amber-500/20",
+        iconColor: a.type === "error" ? "text-error" : a.type === "registration" ? "text-secondary" : "text-amber-500",
+        title: a.title || a.message || "Alert",
+        desc: a.description || a.details || "",
+        time: a.createdAt ? new Date(a.createdAt).toLocaleString() : "Just now",
+      })));
+    }).catch(() => {});
+  }, []);
   return (
     <div
       id="alerts-panel"
@@ -13,13 +30,13 @@ export default function AlertsPanel() {
           Alerts & Notifications
         </h4>
         <span className="px-2 py-1 bg-error/10 text-error text-[10px] font-black rounded-lg">
-          3 New
+          {alerts.length} New
         </span>
       </div>
 
       {/* Alert Items */}
       <div className="space-y-3 sm:space-y-4 flex-1">
-        {alertsData.map((alert) => (
+        {alerts.map((alert) => (
           <div
             key={alert.id}
             className="flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-container-low hover:bg-surface-container-high transition-all cursor-pointer group"
