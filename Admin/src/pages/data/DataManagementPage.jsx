@@ -1,3 +1,6 @@
+import { useState, useEffect } from "react";
+import { getActivityLogs, getPlatformSummary } from "../../services/api";
+
 const exportCards = [
   {
     title: "Full Payment Report",
@@ -25,54 +28,51 @@ const exportCards = [
   },
 ];
 
-const logs = [
-  {
-    id: "#LOG-82941",
-    timestamp: "13 October, 2024 | 12:45 PM",
-    type: "DB_BACKUP",
-    typeClass: "text-secondary bg-secondary/10",
-    desc: "System database auto-backup completed.",
-    user: "System Automation",
-    status: "Success",
-    statusClass: "text-secondary",
-    dotClass: "bg-secondary",
-  },
-  {
-    id: "#LOG-82939",
-    timestamp: "13 October, 2024 | 11:20 AM",
-    type: "AUTH_LOGIN",
-    typeClass: "text-primary bg-primary/10",
-    desc: "New admin dashboard sign-in detected.",
-    user: "admin_main",
-    status: "Success",
-    statusClass: "text-secondary",
-    dotClass: "bg-secondary",
-  },
-  {
-    id: "#LOG-82935",
-    timestamp: "13 October, 2024 | 09:15 AM",
-    type: "PAYMENT_ERR",
-    typeClass: "text-error bg-error/10",
-    desc: "Gateway timeout: user ID #U-902.",
-    user: "Bkash_API",
-    status: "Error",
-    statusClass: "text-error",
-    dotClass: "bg-error",
-  },
-  {
-    id: "#LOG-82932",
-    timestamp: "12 October, 2024 | 08:30 PM",
-    type: "SYS_CONFIG",
-    typeClass: "text-amber-400 bg-amber-400/10",
-    desc: "Game limit parameter updated.",
-    user: "admin_02",
-    status: "Warning",
-    statusClass: "text-amber-400",
-    dotClass: "bg-amber-400",
-  },
-];
+function getLogTypeClass(action) {
+  if (action?.includes("LOGIN") || action?.includes("AUTH")) return "text-primary bg-primary/10";
+  if (action?.includes("ERROR") || action?.includes("PAYMENT")) return "text-error bg-error/10";
+  if (action?.includes("CONFIG") || action?.includes("UPDATE")) return "text-amber-400 bg-amber-400/10";
+  return "text-secondary bg-secondary/10";
+}
+
+function getLogStatusInfo(action) {
+  if (action?.includes("ERROR") || action?.includes("FAIL")) return { status: "Error", statusClass: "text-error", dotClass: "bg-error" };
+  if (action?.includes("CONFIG") || action?.includes("WARNING")) return { status: "Warning", statusClass: "text-amber-400", dotClass: "bg-amber-400" };
+  return { status: "Success", statusClass: "text-secondary", dotClass: "bg-secondary" };
+}
 
 export default function DataManagementPage() {
+  const [logs, setLogs] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalLogs, setTotalLogs] = useState(0);
+  const [filterType, setFilterType] = useState("All Events");
+  const [storage, setStorage] = useState({ used: 0, total: 40, db: 0, media: 0 });
+
+  useEffect(() => {
+    loadLogs();
+    loadStorage();
+  }, [page]);
+
+  async function loadLogs() {
+    try {
+      const data = await getActivityLogs({ page, limit: 10 });
+      setLogs(data.logs || []);
+      setTotalLogs(data.total || 0);
+    } catch (e) { console.error(e); }
+  }
+
+  async function loadStorage() {
+    try {
+      const data = await getPlatformSummary();
+      if (data.summary) {
+        const totalUsers = data.summary.totalUsers || 0;
+        const dbEst = Math.round(totalUsers * 0.002 * 10) / 10;
+        setStorage({ used: dbEst + 15.6, total: 40, db: dbEst, media: 15.6 });
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  const totalPages = Math.ceil(totalLogs / 10) || 1;
   return (
     <div className="font-body">
       <div className="max-w-6xl mx-auto">
@@ -118,11 +118,11 @@ export default function DataManagementPage() {
                     strokeWidth="6"
                   />
                 </svg>
-                <div className="absolute inset-0 flex items-center justify-center text-sm font-black text-primary">70%</div>
+                <div className="absolute inset-0 flex items-center justify-center text-sm font-black text-primary">{Math.round(storage.used / storage.total * 100)}%</div>
               </div>
               <div>
-                <p className="text-3xl font-black text-on-surface tracking-tighter">28.4 GB</p>
-                <p className="text-slate-400 text-xs">Used out of 40 GB</p>
+                <p className="text-3xl font-black text-on-surface tracking-tighter">{storage.used.toFixed(1)} GB</p>
+                <p className="text-slate-400 text-xs">Used out of {storage.total} GB</p>
               </div>
             </div>
 
@@ -130,20 +130,20 @@ export default function DataManagementPage() {
               <div>
                 <div className="flex justify-between items-center text-sm mb-2">
                   <span className="text-slate-400">Database Size</span>
-                  <span className="font-bold text-on-surface">12.8 GB</span>
+                  <span className="font-bold text-on-surface">{storage.db.toFixed(1)} GB</span>
                 </div>
                 <div className="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
-                  <div className="w-[45%] h-full bg-primary" />
+                  <div style={{ width: `${Math.round(storage.db / storage.total * 100)}%` }} className="h-full bg-primary" />
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between items-center text-sm mb-2">
                   <span className="text-slate-400">Media Files</span>
-                  <span className="font-bold text-on-surface">15.6 GB</span>
+                  <span className="font-bold text-on-surface">{storage.media.toFixed(1)} GB</span>
                 </div>
                 <div className="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
-                  <div className="w-[55%] h-full bg-secondary" />
+                  <div style={{ width: `${Math.round(storage.media / storage.total * 100)}%` }} className="h-full bg-secondary" />
                 </div>
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function DataManagementPage() {
               <p className="text-slate-500 text-xs mt-1">Real-time system events and error tracking</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <select className="bg-surface-container-low border-none text-xs font-bold text-slate-400 rounded-lg px-4 py-2 ring-1 ring-white/5 focus:ring-primary/50">
+              <select className="bg-surface-container-low border-none text-xs font-bold text-slate-400 rounded-lg px-4 py-2 ring-1 ring-white/5 focus:ring-primary/50" value={filterType} onChange={e => setFilterType(e.target.value)}>
                 <option>All Events</option>
                 <option>Success</option>
                 <option>Warning</option>
@@ -191,7 +191,7 @@ export default function DataManagementPage() {
               <button className="bg-surface-container-low p-2 rounded-lg text-slate-400 hover:text-on-surface ring-1 ring-white/5">
                 <span className="material-symbols-outlined text-sm">filter_alt</span>
               </button>
-              <button className="bg-primary/10 text-primary px-4 py-2 rounded-lg text-xs font-bold hover:bg-primary hover:text-on-primary transition-all">
+              <button onClick={loadLogs} className="bg-primary/10 text-primary px-4 py-2 rounded-lg text-xs font-bold hover:bg-primary hover:text-on-primary transition-all">
                 Refresh
               </button>
             </div>
@@ -210,37 +210,41 @@ export default function DataManagementPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.03]">
-                {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-white/5 transition-colors group">
-                    <td className="px-8 py-5 text-xs font-mono text-slate-500">{log.id}</td>
-                    <td className="px-8 py-5 text-sm text-on-surface">{log.timestamp}</td>
+                {logs.map((log) => {
+                  const typeClass = getLogTypeClass(log.action);
+                  const { status, statusClass, dotClass } = getLogStatusInfo(log.action);
+                  return (
+                  <tr key={log._id} className="hover:bg-white/5 transition-colors group">
+                    <td className="px-8 py-5 text-xs font-mono text-slate-500">#{log._id?.slice(-6).toUpperCase()}</td>
+                    <td className="px-8 py-5 text-sm text-on-surface">{new Date(log.createdAt).toLocaleString()}</td>
                     <td className="px-8 py-5">
-                      <span className={`text-xs font-bold px-2 py-1 rounded ${log.typeClass}`}>{log.type}</span>
+                      <span className={`text-xs font-bold px-2 py-1 rounded ${typeClass}`}>{log.action || "SYSTEM"}</span>
                     </td>
-                    <td className="px-8 py-5 text-sm text-slate-400">{log.desc}</td>
-                    <td className="px-8 py-5 text-sm text-on-surface">{log.user}</td>
+                    <td className="px-8 py-5 text-sm text-slate-400">{log.details || log.action}</td>
+                    <td className="px-8 py-5 text-sm text-on-surface">{log.adminId || "System"}</td>
                     <td className="px-8 py-5">
-                      <div className={`flex items-center gap-2 ${log.statusClass}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${log.dotClass} ${log.status === "Success" ? "animate-pulse" : ""}`} />
-                        <span className="text-xs font-bold uppercase">{log.status}</span>
+                      <div className={`flex items-center gap-2 ${statusClass}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${dotClass} ${status === "Success" ? "animate-pulse" : ""}`} />
+                        <span className="text-xs font-bold uppercase">{status}</span>
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
           <div className="p-6 bg-surface-container-low/30 border-t border-white/5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-slate-500 text-xs">Showing 10 of 5,420 records</p>
+            <p className="text-slate-500 text-xs">Showing {logs.length} of {totalLogs} records</p>
             <div className="flex gap-2">
-              <button className="w-8 h-8 flex items-center justify-center rounded bg-surface-container-high text-slate-400 hover:text-on-surface transition-all">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="w-8 h-8 flex items-center justify-center rounded bg-surface-container-high text-slate-400 hover:text-on-surface transition-all disabled:opacity-30">
                 <span className="material-symbols-outlined text-sm">chevron_left</span>
               </button>
-              <button className="w-8 h-8 flex items-center justify-center rounded bg-primary text-on-primary font-bold text-xs">1</button>
-              <button className="w-8 h-8 flex items-center justify-center rounded bg-surface-container-high text-slate-400 hover:text-on-surface font-bold text-xs">2</button>
-              <button className="w-8 h-8 flex items-center justify-center rounded bg-surface-container-high text-slate-400 hover:text-on-surface font-bold text-xs">3</button>
-              <button className="w-8 h-8 flex items-center justify-center rounded bg-surface-container-high text-slate-400 hover:text-on-surface transition-all">
+              {Array.from({ length: Math.min(3, totalPages) }, (_, i) => i + 1).map(p => (
+                <button key={p} onClick={() => setPage(p)} className={`w-8 h-8 flex items-center justify-center rounded font-bold text-xs ${page === p ? "bg-primary text-on-primary" : "bg-surface-container-high text-slate-400 hover:text-on-surface"}`}>{p}</button>
+              ))}
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="w-8 h-8 flex items-center justify-center rounded bg-surface-container-high text-slate-400 hover:text-on-surface transition-all disabled:opacity-30">
                 <span className="material-symbols-outlined text-sm">chevron_right</span>
               </button>
             </div>

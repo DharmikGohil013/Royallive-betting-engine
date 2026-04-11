@@ -1,114 +1,41 @@
+import { useState, useEffect } from "react";
+import { getAnalyticsOverview, getWeeklyTransactions, getTopUsers } from "../../services/api";
+
 const timeframeOptions = ["Today", "This Week", "This Month", "Yearly"];
 
-const summaryCards = [
-  {
-    id: "total-deposit",
-    icon: "account_balance_wallet",
-    iconClass: "bg-secondary/10 text-secondary",
-    trend: "+12.5%",
-    trendClass: "text-secondary",
-    title: "Total Deposit",
-    value: "BDT 842,500",
-  },
-  {
-    id: "total-withdraw",
-    icon: "payments",
-    iconClass: "bg-error/10 text-error",
-    trend: "+8.2%",
-    trendClass: "text-error",
-    title: "Total Withdraw",
-    value: "BDT 512,200",
-  },
-  {
-    id: "net-profit",
-    icon: "insights",
-    iconClass: "bg-amber-500/10 text-amber-500",
-    trend: "+21.0%",
-    trendClass: "text-secondary",
-    title: "Net Profit",
-    value: "BDT 330,300",
-    valueClass: "text-amber-500",
-    cardClass: "bg-gradient-to-br from-surface-container to-surface-container-high",
-  },
-  {
-    id: "expected-profit",
-    icon: "analytics",
-    iconClass: "bg-surface-container-highest text-on-surface-variant",
-    title: "Expected Profit",
-    value: "BDT 450,000",
-    cardClass: "border-l-4 border-amber-500",
-  },
-];
-
-const dailyTrend = [
-  { day: "Sat", height: "h-[45%]" },
-  { day: "Sun", height: "h-[60%]" },
-  { day: "Mon", height: "h-[52%]" },
-  { day: "Tue", height: "h-[85%]" },
-  { day: "Wed", height: "h-[68%]" },
-  { day: "Thu", height: "h-[92%]" },
-  { day: "Fri", height: "h-[75%]" },
-];
-
-const topDepositors = [
-  {
-    initial: "A",
-    initialClass: "bg-amber-500/20 text-amber-500",
-    name: "Ariful Islam",
-    tier: "Premium Member",
-    id: "#CRI-89210",
-    totalDeposit: "BDT 145,000",
-    totalBet: "842",
-    status: "Active",
-    statusClass: "bg-secondary/10 text-secondary",
-  },
-  {
-    initial: "R",
-    initialClass: "bg-slate-700 text-slate-300",
-    name: "Rakibul Hasan",
-    tier: "VIP",
-    id: "#CRI-77341",
-    totalDeposit: "BDT 112,500",
-    totalBet: "520",
-    status: "Active",
-    statusClass: "bg-secondary/10 text-secondary",
-  },
-  {
-    initial: "S",
-    initialClass: "bg-slate-700 text-slate-300",
-    name: "Sakib Ahmed",
-    tier: "Standard",
-    id: "#CRI-66129",
-    totalDeposit: "BDT 98,000",
-    totalBet: "315",
-    status: "Inactive",
-    statusClass: "bg-surface-container-highest text-slate-400",
-  },
-  {
-    initial: "T",
-    initialClass: "bg-slate-700 text-slate-300",
-    name: "Tamim Iqbal",
-    tier: "New Member",
-    id: "#CRI-55104",
-    totalDeposit: "BDT 82,400",
-    totalBet: "150",
-    status: "Active",
-    statusClass: "bg-secondary/10 text-secondary",
-  },
-  {
-    initial: "M",
-    initialClass: "bg-slate-700 text-slate-300",
-    name: "Mahmudullah Riyad",
-    tier: "VIP",
-    id: "#CRI-44912",
-    totalDeposit: "BDT 76,900",
-    totalBet: "210",
-    status: "Active",
-    statusClass: "bg-secondary/10 text-secondary",
-  },
-];
+function fmtBDT(n) { return n != null ? `BDT ${Number(n).toLocaleString()}` : "BDT 0"; }
 
 export default function AnalyticsPage() {
+  const [overview, setOverview] = useState(null);
+  const [weeklyData, setWeeklyData] = useState([]);
+  const [topDepositors, setTopDepositors] = useState([]);
+  const [timeframe, setTimeframe] = useState("This Week");
+
+  useEffect(() => {
+    getAnalyticsOverview().then((d) => setOverview(d)).catch(() => {});
+    getWeeklyTransactions().then((d) => setWeeklyData(d.days || [])).catch(() => {});
+    getTopUsers("totalDeposits", 5).then((d) => setTopDepositors(d.users || [])).catch(() => {});
+  }, []);
+
+  const summaryCards = overview ? [
+    { id: "total-deposit", icon: "account_balance_wallet", iconClass: "bg-secondary/10 text-secondary", trend: overview.depositTrend ? `+${overview.depositTrend}%` : null, trendClass: "text-secondary", title: "Total Deposit", value: fmtBDT(overview.totalDeposits) },
+    { id: "total-withdraw", icon: "payments", iconClass: "bg-error/10 text-error", trend: overview.withdrawTrend ? `+${overview.withdrawTrend}%` : null, trendClass: "text-error", title: "Total Withdraw", value: fmtBDT(overview.totalWithdrawals) },
+    { id: "net-profit", icon: "insights", iconClass: "bg-amber-500/10 text-amber-500", trend: overview.profitTrend ? `+${overview.profitTrend}%` : null, trendClass: "text-secondary", title: "Net Profit", value: fmtBDT(overview.netProfit), valueClass: "text-amber-500", cardClass: "bg-gradient-to-br from-surface-container to-surface-container-high" },
+    { id: "expected-profit", icon: "analytics", iconClass: "bg-surface-container-highest text-on-surface-variant", title: "Active Bets", value: String(overview.activeBets || 0), cardClass: "border-l-4 border-amber-500" },
+  ] : [
+    { id: "total-deposit", icon: "account_balance_wallet", iconClass: "bg-secondary/10 text-secondary", title: "Total Deposit", value: "BDT 0" },
+    { id: "total-withdraw", icon: "payments", iconClass: "bg-error/10 text-error", title: "Total Withdraw", value: "BDT 0" },
+    { id: "net-profit", icon: "insights", iconClass: "bg-amber-500/10 text-amber-500", title: "Net Profit", value: "BDT 0", valueClass: "text-amber-500" },
+    { id: "expected-profit", icon: "analytics", iconClass: "bg-surface-container-highest text-on-surface-variant", title: "Active Bets", value: "0" },
+  ];
+
+  const dailyTrend = weeklyData.length > 0 ? weeklyData.map((d) => ({
+    day: d._id || d.day || "?",
+    height: `h-[${Math.max(5, Math.min(95, Math.round((d.deposits || 0) / Math.max(1, ...weeklyData.map((w) => w.deposits || 1)) * 95)))}%]`,
+  })) : [
+    { day: "Sat", height: "h-[45%]" }, { day: "Sun", height: "h-[60%]" }, { day: "Mon", height: "h-[52%]" },
+    { day: "Tue", height: "h-[85%]" }, { day: "Wed", height: "h-[68%]" }, { day: "Thu", height: "h-[92%]" }, { day: "Fri", height: "h-[75%]" },
+  ];
   return (
     <div className="font-body">
       <div className="mb-8 sm:mb-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -299,28 +226,24 @@ export default function AnalyticsPage() {
 
             <tbody className="divide-y divide-white/5">
               {topDepositors.map((user) => (
-                <tr key={user.id} className="hover:bg-white/5 transition-colors cursor-pointer group">
+                <tr key={user._id || idx} className="hover:bg-white/5 transition-colors cursor-pointer group">
                   <td className="px-8 py-4">
                     <div className="flex items-center gap-3">
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-                          user.initialClass
-                        }`}
-                      >
-                        {user.initial}
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-amber-500/20 text-amber-500">
+                        {(user.username || user.mobile || "?")[0].toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-slate-100">{user.name}</p>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-tighter">{user.tier}</p>
+                        <p className="text-sm font-bold text-slate-100">{user.username || user.mobile}</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-tighter">{user.role || "Member"}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-8 py-4 font-mono text-xs text-slate-400">{user.id}</td>
-                  <td className="px-8 py-4 font-bold text-slate-100">{user.totalDeposit}</td>
-                  <td className="px-8 py-4 text-slate-400 text-sm">{user.totalBet}</td>
+                  <td className="px-8 py-4 font-mono text-xs text-slate-400">#{String(user._id).slice(-6)}</td>
+                  <td className="px-8 py-4 font-bold text-slate-100">{fmtBDT(user.totalDeposits)}</td>
+                  <td className="px-8 py-4 text-slate-400 text-sm">{user.totalBets || 0}</td>
                   <td className="px-8 py-4">
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${user.statusClass}`}>
-                      {user.status}
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${user.status === "active" ? "bg-secondary/10 text-secondary" : "bg-surface-container-highest text-slate-400"}`}>
+                      {user.status || "active"}
                     </span>
                   </td>
                   <td className="px-8 py-4">

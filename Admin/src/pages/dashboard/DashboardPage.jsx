@@ -1,4 +1,6 @@
-import { statsCards } from "../../data/dashboardData";
+import { useState, useEffect } from "react";
+import { statsCards as fallbackStats } from "../../data/dashboardData";
+import { getDashboardStats } from "../../services/api";
 import StatsCard from "../../components/dashboard/StatsCard";
 import WeeklyChart from "../../components/dashboard/WeeklyChart";
 import AlertsPanel from "../../components/dashboard/AlertsPanel";
@@ -6,7 +8,31 @@ import TransactionsTable from "../../components/dashboard/TransactionsTable";
 import RevenueChart from "../../components/dashboard/RevenueChart";
 import MonthlyProfitChart from "../../components/dashboard/MonthlyProfitChart";
 
+function formatBDT(n) {
+  if (n >= 100000) return `BDT ${(n / 100000).toFixed(1)}L`;
+  if (n >= 1000) return `BDT ${(n / 1000).toFixed(0)}K`;
+  return `BDT ${n}`;
+}
+
 export default function DashboardPage() {
+  const [stats, setStats] = useState(null);
+  const [statsCards, setStatsCards] = useState(fallbackStats);
+
+  useEffect(() => {
+    getDashboardStats()
+      .then((data) => {
+        if (data.stats) {
+          setStats(data.stats);
+          setStatsCards([
+            { id: "total-users", icon: "group", iconColor: "text-amber-500", iconBg: "bg-amber-500/10", trendIcon: "trending_up", trendValue: `+${data.stats.todayNewUsers} today`, trendColor: "text-secondary", label: "Total Users", value: data.stats.totalUsers.toLocaleString() },
+            { id: "today-deposit", icon: "account_balance", iconColor: "text-secondary", iconBg: "bg-secondary/10", trendIcon: "arrow_upward", trendValue: formatBDT(data.stats.todayDeposits), trendColor: "text-secondary", label: "Today's Deposit", value: formatBDT(data.stats.todayDeposits) },
+            { id: "today-withdraw", icon: "payments", iconColor: "text-error", iconBg: "bg-error/10", trendIcon: "arrow_downward", trendValue: `${data.stats.pendingWithdrawals} pending`, trendColor: "text-error", label: "Today's Withdraw", value: formatBDT(data.stats.todayWithdrawals) },
+            { id: "total-profit", icon: "insights", iconColor: "text-primary", iconBg: "bg-primary/10", trendIcon: "add_circle", trendValue: `${data.stats.activeBets} bets`, trendColor: "text-secondary", label: "Total Profit", value: formatBDT(data.stats.totalProfit) },
+          ]);
+        }
+      })
+      .catch(() => {});
+  }, []);
   return (
     <>
       {/* Header Section */}

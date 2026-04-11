@@ -1,46 +1,57 @@
-const upcomingMatches = [
-  {
-    id: "ipl-mi-csk",
-    league: "IPL 2024",
-    time: "Tomorrow • 19:30",
-    teamA: "Mumbai Indians",
-    teamB: "Chennai Super Kings",
-    shortA: "MI",
-    shortB: "CSK",
-  },
-  {
-    id: "t20-aus-eng",
-    league: "T20 Series",
-    time: "27 May • 15:00",
-    teamA: "Australia",
-    teamB: "England",
-    shortA: "AUS",
-    shortB: "ENG",
-  },
-];
-
-const statItems = [
-  {
-    icon: "trending_up",
-    iconClass: "bg-secondary/10 text-secondary",
-    label: "Total Live Bets",
-    value: "12,450",
-  },
-  {
-    icon: "payments",
-    iconClass: "bg-amber-500/10 text-amber-500",
-    label: "Transaction Volume",
-    value: "BDT 5.8 Lac",
-  },
-  {
-    icon: "warning",
-    iconClass: "bg-error/10 text-error",
-    label: "Reported Games",
-    value: "02",
-  },
-];
+import { useState, useEffect } from "react";
+import { getCricketMatches, createCricketMatch, updateCricketMatch, deleteCricketMatch } from "../../services/api";
 
 export default function CricketUpdatesPage() {
+  const [matches, setMatches] = useState([]);
+  const [liveMatch, setLiveMatch] = useState(null);
+  const [upcomingMatches, setUpcomingMatches] = useState([]);
+  const [statItems, setStatItems] = useState([
+    { icon: "trending_up", iconClass: "bg-secondary/10 text-secondary", label: "Total Live Bets", value: "0" },
+    { icon: "payments", iconClass: "bg-amber-500/10 text-amber-500", label: "Transaction Volume", value: "BDT 0" },
+    { icon: "warning", iconClass: "bg-error/10 text-error", label: "Reported Games", value: "0" },
+  ]);
+  const [form, setForm] = useState({ teamA: "", teamB: "", league: "", matchType: "ODI", venue: "", startTime: "", scoreA: "", scoreB: "", status: "upcoming" });
+
+  const mapFromApi = (m) => ({ ...m, teamA: m.team1 || m.teamA, teamB: m.team2 || m.teamB, scoreA: m.score1 || m.scoreA || "", scoreB: m.score2 || m.scoreB || "", startTime: m.matchDate || m.startTime });
+  const mapToApi = (f) => ({ title: `${f.teamA} vs ${f.teamB}`, team1: f.teamA, team2: f.teamB, league: f.league, matchType: f.matchType, venue: f.venue, matchDate: f.startTime, score1: f.scoreA, score2: f.scoreB, status: f.status });
+
+  const loadMatches = async () => {
+    try {
+      const res = await getCricketMatches();
+      const list = (res.matches || []).map(mapFromApi);
+      setMatches(list);
+      const live = list.find(m => m.status === "live");
+      setLiveMatch(live || null);
+      setUpcomingMatches(list.filter(m => m.status === "upcoming").slice(0, 5));
+      setStatItems([
+        { icon: "trending_up", iconClass: "bg-secondary/10 text-secondary", label: "Total Matches", value: String(list.length) },
+        { icon: "payments", iconClass: "bg-amber-500/10 text-amber-500", label: "Live Matches", value: String(list.filter(m => m.status === "live").length) },
+        { icon: "warning", iconClass: "bg-error/10 text-error", label: "Upcoming", value: String(list.filter(m => m.status === "upcoming").length) },
+      ]);
+    } catch {}
+  };
+
+  useEffect(() => { loadMatches(); }, []);
+
+  const handleSaveMatch = async () => {
+    if (!form.teamA || !form.teamB) return alert("Enter both team names");
+    try {
+      if (form._id) { await updateCricketMatch(form._id, form); }
+      else { await createCricketMatch(form); }
+      setForm({ teamA: "", teamB: "", league: "", matchType: "ODI", venue: "", startTime: "", scoreA: "", scoreB: "", status: "upcoming" });
+      loadMatches();
+    } catch (err) { alert(err.message || "Failed to save match"); }
+  };
+
+  const handleDeleteMatch = async (id) => {
+    if (!confirm("Delete this match?")) return;
+    try { await deleteCricketMatch(id); loadMatches(); } catch {}
+  };
+
+  const handleEditMatch = (match) => {
+    setForm({ ...match, startTime: match.startTime ? new Date(match.startTime).toISOString().slice(0, 16) : "" });
+  };
+
   return (
     <div className="font-body">
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8 sm:mb-10">
@@ -58,69 +69,55 @@ export default function CricketUpdatesPage() {
       </div>
 
       <section className="grid grid-cols-12 gap-6 mb-10">
+        {liveMatch ? (
         <article className="col-span-12 lg:col-span-8 bg-surface-container rounded-2xl overflow-hidden shadow-xl border border-white/5">
           <div className="p-6 bg-surface-container-high flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between sm:items-center border-b border-white/5">
             <div className="flex items-center gap-3">
               <div className="w-2.5 h-2.5 bg-secondary rounded-full live-pulse" />
               <span className="text-secondary font-bold text-sm tracking-widest uppercase">Live Match</span>
             </div>
-            <span className="text-xs text-slate-400 font-medium tracking-tight">ICC World Cup • ODI</span>
+            <span className="text-xs text-slate-400 font-medium tracking-tight">{liveMatch.league || "Match"} • {liveMatch.matchType || "ODI"}</span>
           </div>
 
           <div className="p-6 sm:p-8">
             <div className="flex items-center justify-between gap-4 sm:gap-8 flex-col sm:flex-row">
               <div className="flex flex-col items-center text-center flex-1">
                 <div className="w-20 h-20 bg-surface-container-low rounded-full flex items-center justify-center mb-4 border-2 border-amber-500/20">
-                  <span className="text-sm font-black text-amber-500">BAN</span>
+                  <span className="text-sm font-black text-amber-500">{(liveMatch.teamA || "").slice(0, 3).toUpperCase()}</span>
                 </div>
-                <h3 className="text-xl font-bold text-slate-100 mb-1">Bangladesh</h3>
+                <h3 className="text-xl font-bold text-slate-100 mb-1">{liveMatch.teamA}</h3>
                 <p className="text-3xl font-black text-amber-500 tracking-tighter">
-                  285/7 <span className="text-sm font-medium text-slate-400 ml-1">(45.2 ov)</span>
+                  {liveMatch.scoreA || "—"}
                 </p>
               </div>
-
               <div className="flex flex-col items-center">
                 <div className="text-slate-600 font-black italic text-4xl mb-2">VS</div>
                 <div className="bg-surface-container-highest px-3 py-1 rounded-full">
-                  <span className="text-[10px] text-amber-500 font-bold uppercase tracking-widest">Sher-E-Bangla Stadium</span>
+                  <span className="text-[10px] text-amber-500 font-bold uppercase tracking-widest">{liveMatch.venue || "TBD"}</span>
                 </div>
               </div>
-
               <div className="flex flex-col items-center text-center flex-1">
                 <div className="w-20 h-20 bg-surface-container-low rounded-full flex items-center justify-center mb-4 border-2 border-white/5">
-                  <span className="text-sm font-black text-slate-300">IND</span>
+                  <span className="text-sm font-black text-slate-300">{(liveMatch.teamB || "").slice(0, 3).toUpperCase()}</span>
                 </div>
-                <h3 className="text-xl font-bold text-slate-100 mb-1">India</h3>
-                <p className="text-3xl font-black text-slate-500 tracking-tighter">Yet to Bat</p>
-              </div>
-            </div>
-
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-surface-container-low p-4 rounded-xl flex flex-col items-center hover:bg-surface-container-high transition-colors cursor-pointer">
-                <span className="text-xs text-slate-500 mb-1">Bangladesh Win</span>
-                <span className="text-2xl font-black text-amber-500">1.85</span>
-              </div>
-              <div className="bg-surface-container-low p-4 rounded-xl flex flex-col items-center hover:bg-surface-container-high transition-colors cursor-pointer">
-                <span className="text-xs text-slate-500 mb-1">Draw (Tie)</span>
-                <span className="text-2xl font-black text-slate-300">12.00</span>
-              </div>
-              <div className="bg-surface-container-low p-4 rounded-xl flex flex-col items-center hover:bg-surface-container-high transition-colors cursor-pointer">
-                <span className="text-xs text-slate-500 mb-1">India Win</span>
-                <span className="text-2xl font-black text-amber-500">2.10</span>
+                <h3 className="text-xl font-bold text-slate-100 mb-1">{liveMatch.teamB}</h3>
+                <p className="text-3xl font-black text-slate-500 tracking-tighter">{liveMatch.scoreB || "Yet to Bat"}</p>
               </div>
             </div>
 
             <div className="mt-8 flex gap-4">
-              <button className="flex-1 bg-surface-container-highest hover:bg-surface-bright text-slate-100 font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all">
+              <button onClick={() => handleEditMatch(liveMatch)} className="flex-1 bg-surface-container-highest hover:bg-surface-bright text-slate-100 font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all">
                 <span className="material-symbols-outlined text-xl">edit</span>
                 Update Score
-              </button>
-              <button className="bg-surface-container-highest hover:bg-surface-bright text-slate-100 p-3 rounded-lg transition-all">
-                <span className="material-symbols-outlined">settings_suggest</span>
               </button>
             </div>
           </div>
         </article>
+        ) : (
+        <article className="col-span-12 lg:col-span-8 bg-surface-container rounded-2xl p-8 flex items-center justify-center border border-white/5">
+          <p className="text-slate-500 text-lg">No live match currently</p>
+        </article>
+        )}
 
         <aside className="col-span-12 lg:col-span-4 space-y-6">
           <div className="bg-surface-container p-6 rounded-2xl border border-white/5">
@@ -170,18 +167,18 @@ export default function CricketUpdatesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {upcomingMatches.map((match) => (
-            <article key={match.id} className="bg-surface-container p-6 rounded-2xl border border-white/5 hover:border-amber-500/30 transition-all group">
+            <article key={match._id} className="bg-surface-container p-6 rounded-2xl border border-white/5 hover:border-amber-500/30 transition-all group">
               <div className="flex justify-between items-start mb-6 gap-3">
                 <span className="bg-surface-container-highest px-3 py-1 rounded text-[10px] font-bold text-amber-500 uppercase tracking-widest">
-                  {match.league}
+                  {match.league || match.matchType}
                 </span>
-                <span className="text-xs text-slate-500">{match.time}</span>
+                <span className="text-xs text-slate-500">{match.startTime ? new Date(match.startTime).toLocaleDateString() : "TBD"}</span>
               </div>
 
               <div className="flex justify-between items-center mb-8">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-surface-container-low rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                    <span className="text-[11px] font-black text-slate-300">{match.shortA}</span>
+                    <span className="text-[11px] font-black text-slate-300">{(match.teamA || "").slice(0, 3).toUpperCase()}</span>
                   </div>
                   <p className="text-sm font-bold text-slate-300">{match.teamA}</p>
                 </div>
@@ -190,17 +187,17 @@ export default function CricketUpdatesPage() {
 
                 <div className="text-center">
                   <div className="w-12 h-12 bg-surface-container-low rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                    <span className="text-[11px] font-black text-slate-300">{match.shortB}</span>
+                    <span className="text-[11px] font-black text-slate-300">{(match.teamB || "").slice(0, 3).toUpperCase()}</span>
                   </div>
                   <p className="text-sm font-bold text-slate-300">{match.teamB}</p>
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <button className="flex-1 py-2 bg-surface-container-high hover:bg-amber-500/10 hover:text-amber-500 rounded-lg text-xs font-bold transition-all">
+                <button onClick={() => handleEditMatch(match)} className="flex-1 py-2 bg-surface-container-high hover:bg-amber-500/10 hover:text-amber-500 rounded-lg text-xs font-bold transition-all">
                   Manage Match
                 </button>
-                <button className="px-3 py-2 bg-surface-container-high hover:bg-error/10 hover:text-error rounded-lg transition-all">
+                <button onClick={() => handleDeleteMatch(match._id)} className="px-3 py-2 bg-surface-container-high hover:bg-error/10 hover:text-error rounded-lg transition-all">
                   <span className="material-symbols-outlined text-lg">delete</span>
                 </button>
               </div>
@@ -235,27 +232,27 @@ export default function CricketUpdatesPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Team 1</label>
-                  <input className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" type="text" defaultValue="Bangladesh" />
+                  <input className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" type="text" value={form.teamA} onChange={e => setForm({...form, teamA: e.target.value})} />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Team 2</label>
-                  <input className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" type="text" defaultValue="Australia" />
+                  <input className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" type="text" value={form.teamB} onChange={e => setForm({...form, teamB: e.target.value})} />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Venue</label>
-                <input className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" placeholder="Enter venue name" type="text" />
+                <input className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" placeholder="Enter venue name" type="text" value={form.venue} onChange={e => setForm({...form, venue: e.target.value})} />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Date</label>
-                  <input className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" type="date" />
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Date & Time</label>
+                  <input className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" type="datetime-local" value={form.startTime} onChange={e => setForm({...form, startTime: e.target.value})} />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Time</label>
-                  <input className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" type="time" />
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">League</label>
+                  <input className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" type="text" value={form.league} onChange={e => setForm({...form, league: e.target.value})} placeholder="IPL / ICC / T20 Series" />
                 </div>
               </div>
             </div>
@@ -263,7 +260,7 @@ export default function CricketUpdatesPage() {
             <div className="space-y-6">
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Match Type</label>
-                <select className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500 appearance-none">
+                <select className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500 appearance-none" value={form.matchType} onChange={e => setForm({...form, matchType: e.target.value})}>
                   <option>ODI</option>
                   <option>T20</option>
                   <option>Test</option>
@@ -275,27 +272,27 @@ export default function CricketUpdatesPage() {
                 <h4 className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-4">Live Score Control</h4>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="text-center">
-                    <p className="text-[10px] text-slate-500 mb-2 uppercase">Runs</p>
-                    <div className="flex items-center justify-center gap-3">
-                      <button className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center">-</button>
-                      <span className="text-2xl font-black">285</span>
-                      <button className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center">+</button>
-                    </div>
+                    <p className="text-[10px] text-slate-500 mb-2 uppercase">Score A</p>
+                    <input className="w-full bg-surface-container border-none rounded-lg py-2 px-3 text-center text-xl font-black text-slate-100 focus:ring-1 focus:ring-amber-500" type="text" value={form.scoreA} onChange={e => setForm({...form, scoreA: e.target.value})} placeholder="285/7 (45.2)" />
                   </div>
-
                   <div className="text-center">
-                    <p className="text-[10px] text-slate-500 mb-2 uppercase">Wickets</p>
-                    <div className="flex items-center justify-center gap-3">
-                      <button className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center">-</button>
-                      <span className="text-2xl font-black">07</span>
-                      <button className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center">+</button>
-                    </div>
+                    <p className="text-[10px] text-slate-500 mb-2 uppercase">Score B</p>
+                    <input className="w-full bg-surface-container border-none rounded-lg py-2 px-3 text-center text-xl font-black text-slate-100 focus:ring-1 focus:ring-amber-500" type="text" value={form.scoreB} onChange={e => setForm({...form, scoreB: e.target.value})} placeholder="Yet to Bat" />
                   </div>
                 </div>
               </div>
 
-              <button className="w-full bg-amber-500 hover:bg-amber-600 text-on-primary font-black py-4 rounded-xl shadow-lg transition-all active:scale-[0.98]">
-                Save Match Update
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Status</label>
+                <select className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-amber-500" value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+                  <option value="upcoming">Upcoming</option>
+                  <option value="live">Live</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+
+              <button onClick={handleSaveMatch} className="w-full bg-amber-500 hover:bg-amber-600 text-on-primary font-black py-4 rounded-xl shadow-lg transition-all active:scale-[0.98]">
+                {form._id ? "Update Match" : "Save Match"}
               </button>
             </div>
           </div>

@@ -1,25 +1,49 @@
-const auditLogs = [
-  {
-    operatorInitials: "SK",
-    operator: "Sakib Khan",
-    game: "Cricket Predictor",
-    change: "House Edge: 4.0% -> 4.5%",
-    timestamp: "October 25, 2024 | 10:30 AM",
-    status: "Applied",
-    statusClass: "bg-secondary/10 text-secondary",
-  },
-  {
-    operatorInitials: "AH",
-    operator: "Arif Hossain",
-    game: "Slot Machine",
-    change: "Auto-Pay: Disabled",
-    timestamp: "October 24, 2024 | 04:15 PM",
-    status: "Applied",
-    statusClass: "bg-secondary/10 text-secondary",
-  },
-];
+import { useState, useEffect } from "react";
+import { getGames, updateGame, getActivityLogs } from "../../services/api";
 
 export default function GameLogicPage() {
+  const [games, setGames] = useState([]);
+  const [mainGame, setMainGame] = useState(null);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ houseEdge: 4.5, winProbability: 48, minBet: 100, maxBet: 50000, autoPayout: true });
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    try {
+      const [gamesData, logsData] = await Promise.all([
+        getGames(),
+        getActivityLogs({ limit: 5 }),
+      ]);
+      const gamesList = gamesData.games || gamesData || [];
+      setGames(gamesList);
+      const active = gamesList.find(g => g.isActive) || gamesList[0];
+      if (active) {
+        setMainGame(active);
+        setForm({
+          houseEdge: active.houseEdge || 4.5,
+          winProbability: active.winProbability || 48,
+          minBet: active.minBet || 100,
+          maxBet: active.maxBet || 50000,
+          autoPayout: active.autoPayout !== false,
+        });
+      }
+      setAuditLogs(logsData.logs || []);
+    } catch (e) { console.error(e); }
+  }
+
+  async function handleSave() {
+    if (!mainGame) return;
+    setSaving(true);
+    try {
+      await updateGame(mainGame._id, { houseEdge: form.houseEdge, winProbability: form.winProbability, minBet: form.minBet, maxBet: form.maxBet, autoPayout: form.autoPayout });
+      await loadData();
+    } catch (e) { console.error(e); }
+    setSaving(false);
+  }
   return (
     <div className="font-body pb-20">
       <section className="mb-10 space-y-6">
@@ -32,11 +56,11 @@ export default function GameLogicPage() {
             </p>
           </div>
 
-          <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold px-8 py-3 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-all flex items-center gap-2 w-fit">
+          <button onClick={handleSave} disabled={saving} className="bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold px-8 py-3 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-all flex items-center gap-2 w-fit disabled:opacity-50">
             <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>
               save
             </span>
-            Save Changes
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
 
@@ -62,7 +86,7 @@ export default function GameLogicPage() {
                 </span>
               </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-100">Cricket Predictor (Live)</h3>
+                <h3 className="text-xl font-bold text-slate-100">{mainGame?.name || "Cricket Predictor"} (Live)</h3>
                 <span className="text-xs bg-secondary/10 text-secondary px-2 py-0.5 rounded-full flex items-center gap-1 mt-1 w-fit font-medium">
                   <span className="w-1.5 h-1.5 bg-secondary rounded-full live-pulse" /> Active Game
                 </span>
@@ -85,7 +109,9 @@ export default function GameLogicPage() {
                   <input
                     className="w-full bg-surface-container-low border-none rounded-xl py-4 px-5 text-2xl font-bold text-primary focus:ring-1 focus:ring-primary/50"
                     type="number"
-                    defaultValue="4.5"
+                    step="0.1"
+                    value={form.houseEdge}
+                    onChange={e => setForm({...form, houseEdge: parseFloat(e.target.value) || 0})}
                   />
                   <span className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">%</span>
                 </div>
@@ -99,11 +125,12 @@ export default function GameLogicPage() {
                   type="range"
                   min="0"
                   max="100"
-                  defaultValue="48"
+                  value={form.winProbability}
+                  onChange={e => setForm({...form, winProbability: parseInt(e.target.value) || 0})}
                 />
                 <div className="flex justify-between mt-2 text-sm font-bold">
                   <span className="text-error">0%</span>
-                  <span className="text-primary">48%</span>
+                  <span className="text-primary">{form.winProbability}%</span>
                   <span className="text-secondary">100%</span>
                 </div>
               </div>
@@ -115,16 +142,18 @@ export default function GameLogicPage() {
                   <label className="block text-sm font-semibold text-slate-400 mb-3">Minimum Bet</label>
                   <input
                     className="w-full bg-surface-container-low border-none rounded-xl py-4 px-4 text-lg font-bold text-on-surface focus:ring-1 focus:ring-primary/50"
-                    type="text"
-                    defaultValue="BDT 100"
+                    type="number"
+                    value={form.minBet}
+                    onChange={e => setForm({...form, minBet: parseInt(e.target.value) || 0})}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-400 mb-3">Maximum Bet</label>
                   <input
                     className="w-full bg-surface-container-low border-none rounded-xl py-4 px-4 text-lg font-bold text-on-surface focus:ring-1 focus:ring-primary/50"
-                    type="text"
-                    defaultValue="BDT 50,000"
+                    type="number"
+                    value={form.maxBet}
+                    onChange={e => setForm({...form, maxBet: parseInt(e.target.value) || 0})}
                   />
                 </div>
               </div>
@@ -134,8 +163,8 @@ export default function GameLogicPage() {
                   <span className="material-symbols-outlined text-secondary">flash_on</span>
                   <span className="font-bold text-slate-200">Auto-Payout</span>
                 </div>
-                <button className="w-12 h-6 bg-secondary rounded-full relative flex items-center px-1 transition-all">
-                  <span className="w-4 h-4 bg-on-secondary rounded-full absolute right-1" />
+                <button onClick={() => setForm({...form, autoPayout: !form.autoPayout})} className={`w-12 h-6 ${form.autoPayout ? 'bg-secondary' : 'bg-slate-600'} rounded-full relative flex items-center px-1 transition-all`}>
+                  <span className={`w-4 h-4 bg-on-secondary rounded-full absolute ${form.autoPayout ? 'right-1' : 'left-1'}`} />
                 </button>
               </div>
             </div>
@@ -151,18 +180,18 @@ export default function GameLogicPage() {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Expected Monthly Margin</span>
-                <span className="text-secondary font-bold text-lg">+BDT 12.5L</span>
+                <span className="text-secondary font-bold text-lg">+BDT {(form.houseEdge * 2.78).toFixed(1)}L</span>
               </div>
               <div className="h-1 bg-surface-container-low rounded-full">
-                <div className="h-full bg-secondary w-[72%] rounded-full shadow-[0_0_10px_rgba(78,222,163,0.3)]" />
+                <div style={{ width: `${Math.min(form.houseEdge * 10, 100)}%` }} className="h-full bg-secondary rounded-full shadow-[0_0_10px_rgba(78,222,163,0.3)]" />
               </div>
 
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Player Retention (RTP)</span>
-                <span className="text-primary font-bold text-lg">95.5%</span>
+                <span className="text-primary font-bold text-lg">{(100 - form.houseEdge).toFixed(1)}%</span>
               </div>
               <div className="h-1 bg-surface-container-low rounded-full">
-                <div className="h-full bg-primary w-[95%] rounded-full shadow-[0_0_10px_rgba(255,193,116,0.3)]" />
+                <div style={{ width: `${100 - form.houseEdge}%` }} className="h-full bg-primary rounded-full shadow-[0_0_10px_rgba(255,193,116,0.3)]" />
               </div>
             </div>
           </article>
@@ -249,21 +278,21 @@ export default function GameLogicPage() {
 
             <tbody>
               {auditLogs.map((item) => (
-                <tr key={`${item.operator}-${item.timestamp}`} className="group hover:bg-surface-container-high transition-all">
+                <tr key={item._id} className="group hover:bg-surface-container-high transition-all">
                   <td className="py-5">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
-                        {item.operatorInitials}
+                        {(item.adminId || "SY").slice(0, 2).toUpperCase()}
                       </div>
-                      <span className="font-medium text-slate-200">{item.operator}</span>
+                      <span className="font-medium text-slate-200">{item.adminId || "System"}</span>
                     </div>
                   </td>
-                  <td className="py-5 text-slate-400">{item.game}</td>
-                  <td className="py-5 font-mono text-xs text-primary">{item.change}</td>
-                  <td className="py-5 text-slate-500 text-xs">{item.timestamp}</td>
+                  <td className="py-5 text-slate-400">{item.targetType || "Game"}</td>
+                  <td className="py-5 font-mono text-xs text-primary">{item.details || item.action}</td>
+                  <td className="py-5 text-slate-500 text-xs">{new Date(item.createdAt).toLocaleString()}</td>
                   <td className="py-5 text-right">
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded ${item.statusClass}`}>
-                      {item.status}
+                    <span className="text-[10px] font-bold px-2 py-1 rounded bg-secondary/10 text-secondary">
+                      Applied
                     </span>
                   </td>
                 </tr>

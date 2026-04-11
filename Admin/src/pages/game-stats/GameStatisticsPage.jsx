@@ -1,78 +1,51 @@
-const statCards = [
-  {
-    label: "Total Plays",
-    value: "12,850",
-    change: "+12%",
-    changeClass: "text-secondary bg-secondary/10",
-    icon: "sports_esports",
-  },
-  {
-    label: "Total Revenue",
-    value: "৳8,42,000",
-    change: "+8%",
-    changeClass: "text-secondary bg-secondary/10",
-    icon: "payments",
-  },
-  {
-    label: "Avg Bet",
-    value: "৳540",
-    change: "-3%",
-    changeClass: "text-error bg-error/10",
-    icon: "equalizer",
-  },
-  {
-    label: "Active Players",
-    value: "4,920",
-    change: "+15%",
-    changeClass: "text-secondary bg-secondary/10",
-    icon: "person_play",
-  },
-];
-
-const leaderboard = [
-  {
-    rank: "#1",
-    name: "Rakib Ahmed",
-    id: "482910",
-    games: "145",
-    rate: "82%",
-    total: "৳1,42,000",
-    avatarBg: "bg-amber-500/20 text-amber-500",
-    bar: "w-[82%]",
-  },
-  {
-    rank: "#2",
-    name: "Sakib Hossain",
-    id: "395812",
-    games: "102",
-    rate: "75%",
-    total: "৳98,500",
-    avatarBg: "bg-slate-800 text-slate-400",
-    bar: "w-[75%]",
-  },
-  {
-    rank: "#3",
-    name: "Mehedi Hasan",
-    id: "923041",
-    games: "89",
-    rate: "68%",
-    total: "৳65,200",
-    avatarBg: "bg-slate-800 text-slate-400",
-    bar: "w-[68%]",
-  },
-  {
-    rank: "#4",
-    name: "Tanvir Ahmed",
-    id: "102948",
-    games: "210",
-    rate: "45%",
-    total: "৳54,800",
-    avatarBg: "bg-slate-800 text-slate-400",
-    bar: "w-[45%]",
-  },
-];
+import { useState, useEffect } from "react";
+import { getGameStats, getTopUsers, getBetAnalysis } from "../../services/api";
 
 export default function GameStatisticsPage() {
+  const [statCards, setStatCards] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [betDist, setBetDist] = useState({ matchWinner: 70, playerFantasy: 20, others: 10, totalValue: "0" });
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    try {
+      const [stats, topUsers, bets] = await Promise.all([
+        getGameStats(),
+        getTopUsers("totalBets", 4),
+        getBetAnalysis(),
+      ]);
+
+      if (stats) {
+        setStatCards([
+          { label: "Total Plays", value: (stats.totalPlays || 0).toLocaleString(), change: `+${stats.playsGrowth || 0}%`, changeClass: "text-secondary bg-secondary/10", icon: "sports_esports" },
+          { label: "Total Revenue", value: `৳${(stats.totalRevenue || 0).toLocaleString()}`, change: `+${stats.revenueGrowth || 0}%`, changeClass: "text-secondary bg-secondary/10", icon: "payments" },
+          { label: "Avg Bet", value: `৳${(stats.avgBet || 0).toLocaleString()}`, change: `${stats.avgBetChange || 0}%`, changeClass: (stats.avgBetChange || 0) >= 0 ? "text-secondary bg-secondary/10" : "text-error bg-error/10", icon: "equalizer" },
+          { label: "Active Players", value: (stats.activePlayers || 0).toLocaleString(), change: `+${stats.playerGrowth || 0}%`, changeClass: "text-secondary bg-secondary/10", icon: "person_play" },
+        ]);
+      }
+
+      if (topUsers?.users) {
+        setLeaderboard(topUsers.users.map((u, i) => ({
+          rank: `#${i + 1}`,
+          name: u.username,
+          id: u._id?.slice(-6),
+          games: String(u.totalBets || 0),
+          rate: `${Math.round((u.wonBets || 0) / Math.max(u.totalBets || 1, 1) * 100)}%`,
+          total: `৳${(u.totalWinnings || u.totalDeposits || 0).toLocaleString()}`,
+          avatarBg: i === 0 ? "bg-amber-500/20 text-amber-500" : "bg-slate-800 text-slate-400",
+          bar: `w-[${Math.round((u.wonBets || 0) / Math.max(u.totalBets || 1, 1) * 100)}%]`,
+        })));
+      }
+
+      if (bets) {
+        const total = (bets.totalAmount || 1);
+        setBetDist({ matchWinner: bets.matchWinnerPct || 70, playerFantasy: bets.fantasyPct || 20, others: bets.othersPct || 10, totalValue: `৳${(total / 100000).toFixed(1)}L` });
+      }
+    } catch (e) { console.error(e); }
+  }
   return (
     <div className="font-body">
       <div className="max-w-[1400px] mx-auto">
@@ -204,7 +177,7 @@ export default function GameStatisticsPage() {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-black text-slate-100">৳8.4L</span>
+                <span className="text-3xl font-black text-slate-100">{betDist.totalValue}</span>
                 <span className="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Total Value</span>
               </div>
             </div>
@@ -215,21 +188,21 @@ export default function GameStatisticsPage() {
                   <div className="w-3 h-3 rounded-full bg-amber-500 mr-3" />
                   <span className="text-sm text-slate-400">Match Winner</span>
                 </div>
-                <span className="text-sm font-bold text-slate-200">70%</span>
+                <span className="text-sm font-bold text-slate-200">{betDist.matchWinner}%</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-secondary mr-3" />
                   <span className="text-sm text-slate-400">Player Fantasy</span>
                 </div>
-                <span className="text-sm font-bold text-slate-200">20%</span>
+                <span className="text-sm font-bold text-slate-200">{betDist.playerFantasy}%</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-slate-700 mr-3" />
                   <span className="text-sm text-slate-400">Others</span>
                 </div>
-                <span className="text-sm font-bold text-slate-200">10%</span>
+                <span className="text-sm font-bold text-slate-200">{betDist.others}%</span>
               </div>
             </div>
           </article>
