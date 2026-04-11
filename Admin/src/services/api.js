@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://45.77.168.91:4000";
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://45.77.168.91:4000");
 
 function getToken() {
   return sessionStorage.getItem("gain-live-admin-token") || "";
