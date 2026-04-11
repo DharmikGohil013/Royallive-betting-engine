@@ -1,4 +1,53 @@
+import { useState, useEffect } from "react";
+import { getSettings, updateSetting } from "../../services/api";
+
 export default function SettingsPage() {
+  const [settings, setSettings] = useState({
+    platformName: "Gain Live Operations Dashboard",
+    defaultLanguage: "Bangla",
+    siteDescription: "The number one gaming management and operational dashboard in Bangladesh.",
+    emailNotifications: true,
+    systemNotifications: true,
+    smsAlerts: false,
+  });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getSettings("site");
+        const siteSettings = res.settings || [];
+        const map = {};
+        siteSettings.forEach(s => { map[s.key] = s.value; });
+        setSettings(prev => ({
+          ...prev,
+          platformName: map.platformName || prev.platformName,
+          defaultLanguage: map.defaultLanguage || prev.defaultLanguage,
+          siteDescription: map.siteDescription || prev.siteDescription,
+          emailNotifications: map.emailNotifications !== undefined ? map.emailNotifications : prev.emailNotifications,
+          systemNotifications: map.systemNotifications !== undefined ? map.systemNotifications : prev.systemNotifications,
+          smsAlerts: map.smsAlerts !== undefined ? map.smsAlerts : prev.smsAlerts,
+        }));
+      } catch {}
+    })();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await Promise.all([
+        updateSetting("platformName", settings.platformName, "site", "Platform display name"),
+        updateSetting("defaultLanguage", settings.defaultLanguage, "site", "Default language"),
+        updateSetting("siteDescription", settings.siteDescription, "site", "Site description"),
+        updateSetting("emailNotifications", settings.emailNotifications, "notifications", "Email notifications toggle"),
+        updateSetting("systemNotifications", settings.systemNotifications, "notifications", "System notifications toggle"),
+        updateSetting("smsAlerts", settings.smsAlerts, "notifications", "SMS alerts toggle"),
+      ]);
+      alert("Settings saved successfully!");
+    } catch (err) { alert(err.message || "Failed to save"); }
+    setSaving(false);
+  };
+
   return (
     <div className="font-body">
       <div className="max-w-6xl mx-auto pb-16">
@@ -12,9 +61,9 @@ export default function SettingsPage() {
             </p>
           </div>
 
-          <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold px-8 py-3 rounded-xl shadow-lg shadow-primary/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 w-fit">
+          <button onClick={handleSave} disabled={saving} className="bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold px-8 py-3 rounded-xl shadow-lg shadow-primary/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 w-fit disabled:opacity-50">
             <span className="material-symbols-outlined text-xl">save</span>
-            Save Changes
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </section>
 
@@ -89,13 +138,14 @@ export default function SettingsPage() {
                   <input
                     className="w-full bg-surface-dim border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-primary/50 transition-all font-body"
                     type="text"
-                    defaultValue="Gain Live Operations Dashboard"
+                    value={settings.platformName}
+                    onChange={e => setSettings({...settings, platformName: e.target.value})}
                   />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-300 ml-1">Default Language</label>
-                  <select className="w-full bg-surface-dim border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-primary/50 transition-all font-body">
+                  <select className="w-full bg-surface-dim border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-primary/50 transition-all font-body" value={settings.defaultLanguage} onChange={e => setSettings({...settings, defaultLanguage: e.target.value})}>
                     <option>Bangla</option>
                     <option>English</option>
                     <option>Hindi</option>
@@ -107,7 +157,8 @@ export default function SettingsPage() {
                   <textarea
                     className="w-full bg-surface-dim border-none rounded-xl py-3 px-4 text-slate-100 focus:ring-1 focus:ring-primary/50 transition-all font-body"
                     rows="3"
-                    defaultValue="The number one gaming management and operational dashboard in Bangladesh."
+                    value={settings.siteDescription}
+                    onChange={e => setSettings({...settings, siteDescription: e.target.value})}
                   />
                 </div>
               </div>
@@ -174,7 +225,7 @@ export default function SettingsPage() {
                     <p className="text-xs text-slate-500">Daily reports and security alerts</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input checked readOnly className="sr-only peer" type="checkbox" />
+                    <input checked={settings.emailNotifications} onChange={() => setSettings({...settings, emailNotifications: !settings.emailNotifications})} className="sr-only peer" type="checkbox" />
                     <div className="w-10 h-5 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary" />
                   </label>
                 </div>
@@ -185,7 +236,7 @@ export default function SettingsPage() {
                     <p className="text-xs text-slate-500">Real-time operational updates</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input checked readOnly className="sr-only peer" type="checkbox" />
+                    <input checked={settings.systemNotifications} onChange={() => setSettings({...settings, systemNotifications: !settings.systemNotifications})} className="sr-only peer" type="checkbox" />
                     <div className="w-10 h-5 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary" />
                   </label>
                 </div>
@@ -196,7 +247,7 @@ export default function SettingsPage() {
                     <p className="text-xs text-slate-500">Only urgent payment and withdrawal updates</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input className="sr-only peer" type="checkbox" />
+                    <input checked={settings.smsAlerts} onChange={() => setSettings({...settings, smsAlerts: !settings.smsAlerts})} className="sr-only peer" type="checkbox" />
                     <div className="w-10 h-5 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary" />
                   </label>
                 </div>

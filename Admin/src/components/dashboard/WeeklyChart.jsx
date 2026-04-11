@@ -1,6 +1,41 @@
-import { weeklyChartData } from "../../data/dashboardData";
+import { useState, useEffect } from "react";
+import { getWeeklyTransactions } from "../../services/api";
+
+const defaultBars = [
+  { day: "Sat", height: "h-[8rem]", tooltip: "BDT 0" },
+  { day: "Sun", height: "h-[8rem]", tooltip: "BDT 0" },
+  { day: "Mon", height: "h-[8rem]", tooltip: "BDT 0" },
+  { day: "Tue", height: "h-[8rem]", tooltip: "BDT 0" },
+  { day: "Wed", height: "h-[8rem]", tooltip: "BDT 0" },
+  { day: "Thu", height: "h-[8rem]", tooltip: "BDT 0" },
+  { day: "Fri", height: "h-[8rem]", tooltip: "BDT 0" },
+];
+
+const heightMap = [
+  "h-[4rem]", "h-[6rem]", "h-[8rem]", "h-[10rem]", "h-[12rem]", "h-[14rem]", "h-[16rem]"
+];
 
 export default function WeeklyChart() {
+  const [chartData, setChartData] = useState(defaultBars);
+
+  useEffect(() => {
+    getWeeklyTransactions().then(data => {
+      const days = data.days || data || [];
+      if (days.length) {
+        const maxVal = Math.max(...days.map(d => d.deposits || d.total || 0), 1);
+        setChartData(days.map((d, i) => {
+          const val = d.deposits || d.total || 0;
+          const idx = Math.min(Math.round((val / maxVal) * 6), 6);
+          return {
+            day: d.day || ["Sat","Sun","Mon","Tue","Wed","Thu","Fri"][i] || `D${i}`,
+            height: heightMap[idx] || "h-[8rem]",
+            tooltip: `BDT ${(val / 1000).toFixed(0)}K`,
+            highlight: idx >= 5,
+          };
+        }));
+      }
+    }).catch(() => {});
+  }, []);
   return (
     <div
       id="weekly-chart"
@@ -30,7 +65,7 @@ export default function WeeklyChart() {
       {/* Chart Bars */}
       <div className="h-40 sm:h-52 lg:h-64 flex items-end justify-between gap-1.5 sm:gap-3 lg:gap-4 px-1 sm:px-2">
         <div className="relative w-full h-full flex items-end gap-1">
-          {weeklyChartData.map((bar, i) => (
+          {chartData.map((bar, i) => (
             <div
               key={bar.day}
               className={`flex-1 ${bar.height} max-h-full ${
@@ -52,7 +87,7 @@ export default function WeeklyChart() {
 
       {/* Day Labels */}
       <div className="flex justify-between mt-3 sm:mt-4 px-1 sm:px-2 text-[8px] sm:text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-        {weeklyChartData.map((bar) => (
+        {chartData.map((bar) => (
           <span key={bar.day}>{bar.day}</span>
         ))}
       </div>

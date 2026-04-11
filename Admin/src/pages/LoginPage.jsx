@@ -1,21 +1,26 @@
 import { useState } from "react";
+import { adminLogin } from "../services/api";
 
 export default function LoginPage({ onLoginSuccess }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setError("");
+    setLoading(true);
 
-    if (username === "admin" && password === "admin123") {
-      setError("");
+    try {
+      await adminLogin(username, password);
       onLoginSuccess();
-      return;
+    } catch (err) {
+      setError(err.message || "Invalid username or password");
+    } finally {
+      setLoading(false);
     }
-
-    setError("Invalid username or password. Use admin / admin123.");
   };
 
   return (
