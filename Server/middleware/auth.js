@@ -3,17 +3,23 @@ const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const ActivityLog = require("../models/ActivityLog");
+const ApiLog = require("../models/ApiLog");
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-change-me";
 
 // --- JWT Authentication ---
 function authToken(req, res, next) {
+  let token = null;
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  } else if (req.query.token) {
+    token = req.query.token;
+  }
+  if (!token) {
     return res.status(401).json({ error: "Authorization token required" });
   }
   try {
-    const token = authHeader.split(" ")[1];
     req.user = jwt.verify(token, JWT_SECRET);
     return next();
   } catch {
@@ -89,6 +95,40 @@ function securityMiddleware() {
   ];
 }
 
+// --- API Request Logger Middleware ---
+function apiLogger(req, res, next) {
+  const start = Date.now();
+  const originalEnd = res.end;
+
+  res.end = function (chunk, encoding) {
+    res.end = originalEnd;
+    res.end(chunk, encoding);
+
+    const responseTime = Date.now() - start;
+    const sanitizedBody = req.body ? { ...req.body } : null;
+    if (sanitizedBody) {
+      delete sanitizedBody.password;
+      delete sanitizedBody.token;
+      delete sanitizedBody.secret;
+    }
+
+    ApiLog.create({
+      method: req.method,
+      path: req.originalUrl || req.url,
+      statusCode: res.statusCode,
+      responseTime,
+      ip: req.ip || "",
+      userAgent: (req.headers["user-agent"] || "").substring(0, 300),
+      user: req.user?.username || req.user?.sub || "",
+      body: sanitizedBody,
+      query: Object.keys(req.query || {}).length ? req.query : null,
+      error: res.statusCode >= 400 ? (res.statusMessage || "") : "",
+    }).catch(() => {});
+  };
+
+  next();
+}
+
 module.exports = {
   authToken,
   adminOnly,
@@ -97,4 +137,5 @@ module.exports = {
   apiLimiter,
   logActivity,
   securityMiddleware,
+  apiLogger,
 };

@@ -16,6 +16,7 @@ import NotificationsPage from "./pages/notifications/NotificationsPage";
 import GameStatisticsPage from "./pages/game-stats/GameStatisticsPage";
 import PaymentMethodsPage from "./pages/payment-methods/PaymentMethodsPage";
 import PolicyPage from "./pages/policy/PolicyPage";
+import ApiLogsPage from "./pages/api-logs/ApiLogsPage";
 import { adminLogout } from "./services/api";
 
 export default function App() {
@@ -77,6 +78,7 @@ export default function App() {
           <Route path="/policy" element={<PolicyPage />} />
           <Route path="/payment-methods" element={<PaymentMethodsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/api-logs" element={<ApiLogsPage />} />
               <Route path="statistics" element={<GameStatisticsPage />} />
           <Route path="/data" element={<DataManagementPage />} />
           <Route path="/settings" element={<SettingsPage />} />

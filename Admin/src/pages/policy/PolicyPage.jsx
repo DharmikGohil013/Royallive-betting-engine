@@ -18,22 +18,22 @@ export default function PolicyPage() {
           </button>
         </section>
 
-        <section className="flex flex-wrap items-center gap-2 bg-surface-container-low p-1 rounded-xl mb-10 w-fit">
-          <button className="px-6 py-2.5 rounded-lg text-sm font-semibold bg-surface-container-highest text-primary shadow-lg transition-all">
+        <section className="flex items-center gap-2 bg-surface-container-low p-1 rounded-xl mb-10 overflow-x-auto max-w-full">
+          <button className="px-4 sm:px-6 py-2.5 rounded-lg text-sm font-semibold bg-surface-container-highest text-primary shadow-lg transition-all whitespace-nowrap">
             গোপনীয়তা নীতি
           </button>
-          <button className="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all">
+          <button className="px-4 sm:px-6 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all whitespace-nowrap">
             ব্যবহারের শর্তাবলী
           </button>
-          <button className="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all">
+          <button className="px-4 sm:px-6 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all whitespace-nowrap">
             দায়িত্বশীল গেমিং
           </button>
-          <button className="px-6 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all">
+          <button className="px-4 sm:px-6 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all whitespace-nowrap">
             রিফান্ড নীতি
           </button>
         </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
           <div className="lg:col-span-8 space-y-6">
             <article className="bg-surface-container rounded-xl overflow-hidden editorial-shadow">
               <div className="bg-surface-container-high px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/5">
@@ -51,8 +51,8 @@ export default function PolicyPage() {
                 <span className="text-[10px] text-slate-500 font-mono">শেষ আপডেট: ১২ই জুলাই, ২০২৪</span>
               </div>
 
-              <div className="p-6 sm:p-8 min-h-[500px] bg-[#1c2026]">
-                <h2 className="text-3xl font-bold text-slate-100 mb-8 leading-tight">গোপনীয়তা নীতি (Privacy Policy)</h2>
+              <div className="p-4 sm:p-6 lg:p-8 min-h-[300px] sm:min-h-[500px] bg-[#1c2026]">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-100 mb-6 sm:mb-8 leading-tight">গোপনীয়তা নীতি (Privacy Policy)</h2>
                 <div className="space-y-6 text-slate-400 bengali-font leading-[1.8] text-base">
                   <p>
                     আমাদের প্ল্যাটফর্ম ব্যবহার করার জন্য আপনাকে ধন্যবাদ। আপনার ব্যক্তিগত তথ্যের সুরক্ষা নিশ্চিত করা

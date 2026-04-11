@@ -58,8 +58,8 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8 sm:mb-10">
-        <div className="flex flex-wrap bg-surface-container-low p-1.5 rounded-xl shadow-inner gap-1">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 sm:mb-10">
+        <div className="flex flex-wrap bg-surface-container-low p-1.5 rounded-xl shadow-inner gap-1 overflow-x-auto max-w-full">
           {timeframeOptions.map((option) => (
             <button
               key={option}
@@ -89,7 +89,7 @@ export default function AnalyticsPage() {
         {summaryCards.map((card) => (
           <article
             key={card.id}
-            className={`surface-container p-6 rounded-xl border-none shadow-lg group hover:-translate-y-1 transition-all duration-300 ${
+            className={`bg-surface-container p-6 rounded-xl border-none shadow-lg group hover:-translate-y-1 transition-all duration-300 ${
               card.cardClass || ""
             }`}
           >
@@ -117,7 +117,7 @@ export default function AnalyticsPage() {
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 sm:mb-10">
-        <article className="lg:col-span-2 surface-container rounded-xl p-6 sm:p-8 relative overflow-hidden">
+        <article className="lg:col-span-2 bg-surface-container rounded-xl p-4 sm:p-6 lg:p-8 relative overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
               <h3 className="text-lg font-bold text-slate-100 mb-1 leading-tight">Daily Deposit Trend</h3>
@@ -154,7 +154,7 @@ export default function AnalyticsPage() {
           </div>
         </article>
 
-        <article className="surface-container rounded-xl p-6 sm:p-8">
+        <article className="bg-surface-container rounded-xl p-4 sm:p-6 lg:p-8">
           <h3 className="text-lg font-bold text-slate-100 mb-6 leading-tight">Weekly Comparison</h3>
           <div className="space-y-6">
             <div>
@@ -193,7 +193,7 @@ export default function AnalyticsPage() {
         </article>
       </section>
 
-      <section className="surface-container rounded-xl overflow-hidden">
+      <section className="bg-surface-container rounded-xl overflow-hidden">
         <div className="px-6 sm:px-8 py-6 border-b border-white/5 flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between sm:items-center">
           <h3 className="text-lg font-bold text-slate-100">Top 10 Depositor Users</h3>
           <button className="text-amber-500 text-sm font-semibold hover:underline text-left sm:text-right">
@@ -205,20 +205,20 @@ export default function AnalyticsPage() {
           <table className="w-full min-w-[920px] text-left border-collapse">
             <thead>
               <tr className="bg-surface-container-low">
-                <th className="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-4 sm:px-6 lg:px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                   User
                 </th>
-                <th className="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">ID</th>
-                <th className="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-4 sm:px-6 lg:px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">ID</th>
+                <th className="px-4 sm:px-6 lg:px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                   Total Deposit
                 </th>
-                <th className="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-4 sm:px-6 lg:px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                   Total Bets
                 </th>
-                <th className="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-4 sm:px-6 lg:px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                   Status
                 </th>
-                <th className="px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                <th className="px-4 sm:px-6 lg:px-8 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                   Action
                 </th>
               </tr>
@@ -227,7 +227,7 @@ export default function AnalyticsPage() {
             <tbody className="divide-y divide-white/5">
               {topDepositors.map((user) => (
                 <tr key={user._id || idx} className="hover:bg-white/5 transition-colors cursor-pointer group">
-                  <td className="px-8 py-4">
+                  <td className="px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-amber-500/20 text-amber-500">
                         {(user.username || user.mobile || "?")[0].toUpperCase()}
@@ -238,15 +238,15 @@ export default function AnalyticsPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-8 py-4 font-mono text-xs text-slate-400">#{String(user._id).slice(-6)}</td>
-                  <td className="px-8 py-4 font-bold text-slate-100">{fmtBDT(user.totalDeposits)}</td>
-                  <td className="px-8 py-4 text-slate-400 text-sm">{user.totalBets || 0}</td>
-                  <td className="px-8 py-4">
+                  <td className="px-4 sm:px-6 lg:px-8 py-4 font-mono text-xs text-slate-400">#{String(user._id).slice(-6)}</td>
+                  <td className="px-4 sm:px-6 lg:px-8 py-4 font-bold text-slate-100">{fmtBDT(user.totalDeposits)}</td>
+                  <td className="px-4 sm:px-6 lg:px-8 py-4 text-slate-400 text-sm">{user.totalBets || 0}</td>
+                  <td className="px-4 sm:px-6 lg:px-8 py-4">
                     <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${user.status === "active" ? "bg-secondary/10 text-secondary" : "bg-surface-container-highest text-slate-400"}`}>
                       {user.status || "active"}
                     </span>
                   </td>
-                  <td className="px-8 py-4">
+                  <td className="px-4 sm:px-6 lg:px-8 py-4">
                     <button className="material-symbols-outlined text-slate-500 hover:text-amber-500 transition-colors">
                       visibility
                     </button>

@@ -90,7 +90,7 @@ export default function NotificationsPage() {
           </div>
         </section>
 
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((item) => (
             <article key={item.label} className="bg-surface-container rounded-xl p-6 flex items-center gap-4 hover:bg-surface-container-high transition-all">
               <div className={`w-12 h-12 rounded-full flex items-center justify-center ${item.iconClass}`}>
@@ -105,8 +105,8 @@ export default function NotificationsPage() {
         </section>
 
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <article className="lg:col-span-7 bg-surface-container-low rounded-xl p-8 shadow-sm">
-            <div className="flex items-center gap-3 mb-8">
+          <article className="lg:col-span-7 bg-surface-container-low rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm">
+            <div className="flex items-center gap-3 mb-4 sm:mb-8">
               <span className="material-symbols-outlined text-primary">campaign</span>
               <h2 className="text-lg font-bold text-slate-100">New Push Notification</h2>
             </div>
@@ -168,7 +168,7 @@ export default function NotificationsPage() {
             </form>
           </article>
 
-          <article className="lg:col-span-5 space-y-8">
+          <article className="lg:col-span-5 space-y-8 hidden lg:block">
             <div className="relative mx-auto w-72 h-[500px] border-[8px] border-slate-800 rounded-[3rem] shadow-2xl overflow-hidden bg-slate-900">
               <div className="absolute top-0 w-full h-6 bg-black flex justify-center items-end pb-1">
                 <div className="w-20 h-4 bg-slate-900 rounded-b-xl" />
@@ -249,7 +249,7 @@ export default function NotificationsPage() {
         </section>
 
         <section className="bg-surface-container-low rounded-xl overflow-hidden">
-          <div className="px-8 py-6 border-b border-outline-variant/10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-b border-outline-variant/10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-lg font-bold text-slate-100">Recent Notification History</h2>
             <div className="flex gap-2">
               <button className="px-3 py-1.5 rounded-lg bg-surface-container-high text-xs font-bold text-slate-300 hover:text-white transition-all">Filter</button>
@@ -261,31 +261,31 @@ export default function NotificationsPage() {
             <table className="w-full min-w-[900px] text-left">
               <thead>
                 <tr className="text-slate-500 text-[10px] uppercase tracking-widest border-b border-outline-variant/5">
-                  <th className="px-8 py-5 font-semibold">Date & Time</th>
-                  <th className="px-8 py-5 font-semibold">Notification Title</th>
-                  <th className="px-8 py-5 font-semibold">Audience</th>
-                  <th className="px-8 py-5 font-semibold">Status</th>
-                  <th className="px-8 py-5 font-semibold text-right">Success Rate</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-5 font-semibold">Date & Time</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-5 font-semibold">Notification Title</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-5 font-semibold">Audience</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-5 font-semibold">Status</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-5 font-semibold text-right">Success Rate</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/5">
                 {historyRows.map((row) => (
                   <tr key={row._id || `${row.date}-${row.time}-${row.title}`} className="hover:bg-white/5 transition-all group">
-                    <td className="px-8 py-4">
+                    <td className="px-4 sm:px-6 lg:px-8 py-4">
                       <p className="text-xs font-bold text-slate-200">{row.date}</p>
                       <p className="text-[10px] text-slate-500">{row.time}</p>
                     </td>
-                    <td className="px-8 py-4">
+                    <td className="px-4 sm:px-6 lg:px-8 py-4">
                       <p className="text-xs font-medium text-slate-200">{row.title}</p>
                       <p className="text-[10px] text-slate-500">Message: {row.message}</p>
                     </td>
-                    <td className="px-8 py-4 text-xs text-slate-400">{row.audience}</td>
-                    <td className="px-8 py-4">
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 text-xs text-slate-400">{row.audience}</td>
+                    <td className="px-4 sm:px-6 lg:px-8 py-4">
                       <span className={`px-2 py-1 rounded text-[10px] font-bold border uppercase ${row.failed ? "bg-error/10 text-error border-error/20" : "bg-secondary/10 text-secondary border-secondary/20"}`}>
                         {row.status}
                       </span>
                     </td>
-                    <td className="px-8 py-4 text-right">
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 text-right">
                       {row.failed ? (
                         <span className="text-xs text-error font-bold">Server Error</span>
                       ) : (

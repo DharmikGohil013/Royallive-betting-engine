@@ -95,7 +95,7 @@ export default function DataManagementPage() {
         </section>
 
         <section className="grid grid-cols-12 gap-6 mb-6">
-          <article className="col-span-12 xl:col-span-4 bg-surface-container rounded-3xl p-8 relative overflow-hidden group">
+          <article className="col-span-12 xl:col-span-4 bg-surface-container rounded-3xl p-4 sm:p-6 lg:p-8 relative overflow-hidden group">
             <div className="absolute -right-8 -top-8 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-500" />
             <h2 className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -149,11 +149,11 @@ export default function DataManagementPage() {
             </div>
           </article>
 
-          <article className="col-span-12 xl:col-span-8 bg-surface-container rounded-3xl p-8">
-            <h2 className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-6">Data Export Tools</h2>
+          <article className="col-span-12 xl:col-span-8 bg-surface-container rounded-3xl p-4 sm:p-6 lg:p-8">
+            <h2 className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-4 sm:mb-6">Data Export Tools</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {exportCards.map((card) => (
-                <div key={card.title} className="bg-surface-container-low p-6 rounded-2xl hover:bg-surface-container-high transition-colors cursor-pointer group">
+                <div key={card.title} className="bg-surface-container-low p-4 sm:p-6 rounded-2xl hover:bg-surface-container-high transition-colors cursor-pointer group">
                   <div className="flex items-start justify-between mb-4 gap-3">
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-105 transition-all duration-300 ${card.iconClass}`}>
                       <span className="material-symbols-outlined group-hover:text-on-primary">{card.icon}</span>
@@ -176,7 +176,7 @@ export default function DataManagementPage() {
         </section>
 
         <section className="bg-surface-container rounded-3xl overflow-hidden mt-6">
-          <div className="p-8 border-b border-white/5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-surface-container-high/30">
+          <div className="p-4 sm:p-6 lg:p-8 border-b border-white/5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-surface-container-high/30">
             <div>
               <h2 className="text-on-surface font-bold text-lg">System Log Viewer</h2>
               <p className="text-slate-500 text-xs mt-1">Real-time system events and error tracking</p>
@@ -201,12 +201,12 @@ export default function DataManagementPage() {
             <table className="w-full min-w-[980px] text-left">
               <thead className="text-slate-500 text-[10px] uppercase tracking-widest bg-surface-container-low/50">
                 <tr>
-                  <th className="px-8 py-4 font-bold">ID</th>
-                  <th className="px-8 py-4 font-bold">Timestamp</th>
-                  <th className="px-8 py-4 font-bold">Event Type</th>
-                  <th className="px-8 py-4 font-bold">Description</th>
-                  <th className="px-8 py-4 font-bold">User</th>
-                  <th className="px-8 py-4 font-bold">Status</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4 font-bold">ID</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4 font-bold">Timestamp</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4 font-bold">Event Type</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4 font-bold">Description</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4 font-bold">User</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4 font-bold">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.03]">
@@ -215,14 +215,14 @@ export default function DataManagementPage() {
                   const { status, statusClass, dotClass } = getLogStatusInfo(log.action);
                   return (
                   <tr key={log._id} className="hover:bg-white/5 transition-colors group">
-                    <td className="px-8 py-5 text-xs font-mono text-slate-500">#{log._id?.slice(-6).toUpperCase()}</td>
-                    <td className="px-8 py-5 text-sm text-on-surface">{new Date(log.createdAt).toLocaleString()}</td>
-                    <td className="px-8 py-5">
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-xs font-mono text-slate-500">#{log._id?.slice(-6).toUpperCase()}</td>
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-sm text-on-surface">{new Date(log.createdAt).toLocaleString()}</td>
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
                       <span className={`text-xs font-bold px-2 py-1 rounded ${typeClass}`}>{log.action || "SYSTEM"}</span>
                     </td>
-                    <td className="px-8 py-5 text-sm text-slate-400">{log.details || log.action}</td>
-                    <td className="px-8 py-5 text-sm text-on-surface">{log.adminId || "System"}</td>
-                    <td className="px-8 py-5">
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-sm text-slate-400">{log.details || log.action}</td>
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-sm text-on-surface">{log.adminId || "System"}</td>
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
                       <div className={`flex items-center gap-2 ${statusClass}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${dotClass} ${status === "Success" ? "animate-pulse" : ""}`} />
                         <span className="text-xs font-bold uppercase">{status}</span>

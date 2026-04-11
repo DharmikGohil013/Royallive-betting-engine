@@ -26,9 +26,9 @@ export default function AboutManagementPage() {
           </div>
         </section>
 
-        <section className="grid grid-cols-12 gap-8">
-          <div className="col-span-12 lg:col-span-8 space-y-8">
-            <article className="bg-surface-container rounded-2xl p-8 shadow-sm">
+        <section className="grid grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
+          <div className="col-span-12 lg:col-span-8 space-y-6 sm:space-y-8">
+            <article className="bg-surface-container rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm">
               <div className="flex items-center justify-between mb-6 gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
@@ -54,7 +54,7 @@ export default function AboutManagementPage() {
 
               <div className="relative">
                 <textarea
-                  className="w-full h-96 bg-surface-container-low border-none rounded-xl p-6 text-slate-300 leading-[1.8] focus:ring-2 focus:ring-primary/30 transition-all resize-none font-body text-base"
+                  className="w-full h-64 sm:h-96 bg-surface-container-low border-none rounded-xl p-4 sm:p-6 text-slate-300 leading-[1.8] focus:ring-2 focus:ring-primary/30 transition-all resize-none font-body text-base"
                   placeholder="Write your about page content here..."
                   defaultValue={`We are a premium cricket platform delivering real-time updates and an elevated gaming experience. Our mission is to combine a passion for cricket with modern technology to create a trusted community. For over 10 years, we have been serving thousands of users with reliable services.\n\nOur commitments:\n1. Transparent gaming policy\n2. Fast payment processing\n3. 24/7 customer support`}
                 />
@@ -64,8 +64,8 @@ export default function AboutManagementPage() {
               </div>
             </article>
 
-            <article className="bg-surface-container rounded-2xl p-8 shadow-sm">
-              <h3 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-3">
+            <article className="bg-surface-container rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-100 mb-6 flex items-center gap-3">
                 <span className="material-symbols-outlined text-primary">image</span>
                 Brand Logo and Banner
               </h3>
@@ -94,9 +94,9 @@ export default function AboutManagementPage() {
             </article>
           </div>
 
-          <aside className="col-span-12 lg:col-span-4 space-y-8">
-            <article className="bg-surface-container rounded-2xl p-8 shadow-sm">
-              <h3 className="text-xl font-bold text-slate-100 mb-6">General Information</h3>
+          <aside className="col-span-12 lg:col-span-4 space-y-6 sm:space-y-8">
+            <article className="bg-surface-container rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-100 mb-6">General Information</h3>
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-slate-400 mb-2">Website Name</label>
@@ -132,8 +132,8 @@ export default function AboutManagementPage() {
               </div>
             </article>
 
-            <article className="bg-surface-container rounded-2xl p-8 shadow-sm">
-              <h3 className="text-xl font-bold text-slate-100 mb-6">Social Media Links</h3>
+            <article className="bg-surface-container rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-100 mb-6">Social Media Links</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low">
                   <span className="material-symbols-outlined text-slate-400">public</span>

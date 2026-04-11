@@ -85,11 +85,11 @@ export default function PaymentMethodsPage() {
           ))}
         </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {methods.map((method) => {
             const color = colorMap[method.type] || colorMap[method.name?.toLowerCase()?.split(" ")[0]] || "#ffc174";
             return (
-            <article key={method._id} className="surface-container rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 group">
+            <article key={method._id} className="bg-surface-container rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 group">
               <div className="h-2" style={{ background: `linear-gradient(to right, ${color}, ${color}cc)` }} />
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6 gap-4">
@@ -149,7 +149,7 @@ export default function PaymentMethodsPage() {
             সাম্প্রতিক পেমেন্ট আপডেট
           </h2>
 
-          <div className="surface-container rounded-xl overflow-hidden">
+          <div className="bg-surface-container rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[900px] text-left border-collapse">
                 <thead className="bg-surface-container-high text-slate-400 font-bold text-xs uppercase tracking-widest">
@@ -188,13 +188,13 @@ export default function PaymentMethodsPage() {
       {showModal && (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-6">
         <div className="surface-container w-full max-w-xl rounded-2xl overflow-hidden shadow-2xl">
-          <div className="px-8 py-6 bg-surface-container-high flex justify-between items-center">
-            <h3 className="text-xl font-bold text-on-surface">Add New Payment Method</h3>
+          <div className="px-4 sm:px-6 lg:px-8 py-6 bg-surface-container-high flex justify-between items-center">
+            <h3 className="text-lg sm:text-xl font-bold text-on-surface">Add New Payment Method</h3>
             <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-on-surface">
               <span className="material-symbols-outlined">close</span>
             </button>
           </div>
-          <div className="p-8 space-y-6">
+          <div className="p-4 sm:p-6 lg:p-8 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-400">Payment Type</label>

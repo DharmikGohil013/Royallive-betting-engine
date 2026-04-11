@@ -12,6 +12,8 @@ const CricketMatch = require("../models/CricketMatch");
 const ActivityLog = require("../models/ActivityLog");
 const { authToken, adminOnly, logActivity } = require("../middleware/auth");
 
+const ApiLog = require("../models/ApiLog");
+
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-change-me";
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
@@ -582,6 +584,78 @@ router.patch("/bets/:id/settle", authToken, adminOnly, logActivity("settle_bet",
     return res.json({ success: true, bet });
   } catch (err) {
     console.error("Settle bet error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== API LOGS ====================
+
+router.get("/api-logs", authToken, adminOnly, async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 50));
+    const method = req.query.method || "";
+    const status = req.query.status || "";
+    const search = (req.query.search || "").trim();
+
+    const filter = {};
+    if (method) filter.method = method;
+    if (status === "success") filter.statusCode = { $lt: 400 };
+    if (status === "error") filter.statusCode = { $gte: 400 };
+    if (search) filter.path = { $regex: search, $options: "i" };
+
+    const [logs, total] = await Promise.all([
+      ApiLog.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+      ApiLog.countDocuments(filter),
+    ]);
+
+    return res.json({ success: true, logs, total, page, totalPages: Math.ceil(total / limit) });
+  } catch (err) {
+    console.error("Get API logs error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/api-logs/export", authToken, adminOnly, async (req, res) => {
+  try {
+    const method = req.query.method || "";
+    const status = req.query.status || "";
+    const search = (req.query.search || "").trim();
+    const days = Math.min(90, Math.max(1, parseInt(req.query.days) || 7));
+
+    const filter = { createdAt: { $gte: new Date(Date.now() - days * 86400000) } };
+    if (method) filter.method = method;
+    if (status === "success") filter.statusCode = { $lt: 400 };
+    if (status === "error") filter.statusCode = { $gte: 400 };
+    if (search) filter.path = { $regex: search, $options: "i" };
+
+    const logs = await ApiLog.find(filter).sort({ createdAt: -1 }).limit(5000).lean();
+
+    // Build CSV (Excel-compatible)
+    const header = "Timestamp,Method,Path,Status Code,Response Time (ms),IP,User,Error\n";
+    const rows = logs.map(l => {
+      const ts = new Date(l.createdAt).toISOString();
+      const escapedPath = `"${(l.path || "").replace(/"/g, '""')}"`;
+      const escapedError = `"${(l.error || "").replace(/"/g, '""')}"`;
+      const escapedUser = `"${(l.user || "").replace(/"/g, '""')}"`;
+      return `${ts},${l.method},${escapedPath},${l.statusCode},${l.responseTime},${l.ip || ""},${escapedUser},${escapedError}`;
+    }).join("\n");
+
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment; filename="api-logs-${new Date().toISOString().slice(0,10)}.csv"`);
+    return res.send("\uFEFF" + header + rows);
+  } catch (err) {
+    console.error("Export API logs error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/api-logs", authToken, adminOnly, logActivity("clear_api_logs", "admin"), async (req, res) => {
+  try {
+    const days = Math.max(1, parseInt(req.query.olderThanDays) || 30);
+    const result = await ApiLog.deleteMany({ createdAt: { $lt: new Date(Date.now() - days * 86400000) } });
+    return res.json({ success: true, deleted: result.deletedCount });
+  } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }
 });

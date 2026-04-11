@@ -41,7 +41,7 @@ export default function LoginPage({ onLoginSuccess }) {
           />
         </div>
 
-        <div className="bg-surface-container/70 backdrop-blur-xl rounded-xl p-8 shadow-2xl shadow-black/60 border border-outline-variant/5">
+        <div className="bg-surface-container/70 backdrop-blur-xl rounded-xl p-6 sm:p-8 shadow-2xl shadow-black/60 border border-outline-variant/5">
           <div className="mb-8">
             <h2 className="text-xl font-bold text-on-surface mb-2">Admin Login</h2>
             <p className="text-on-surface-variant text-sm leading-relaxed">

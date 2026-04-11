@@ -69,10 +69,10 @@ export default function CricketUpdatesPage() {
         </button>
       </div>
 
-      <section className="grid grid-cols-12 gap-6 mb-10">
+      <section className="grid grid-cols-12 gap-4 sm:gap-6 mb-6 sm:mb-10">
         {liveMatch ? (
         <article className="col-span-12 lg:col-span-8 bg-surface-container rounded-2xl overflow-hidden shadow-xl border border-white/5">
-          <div className="p-6 bg-surface-container-high flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between sm:items-center border-b border-white/5">
+          <div className="p-4 sm:p-6 bg-surface-container-high flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between sm:items-center border-b border-white/5">
             <div className="flex items-center gap-3">
               <div className="w-2.5 h-2.5 bg-secondary rounded-full live-pulse" />
               <span className="text-secondary font-bold text-sm tracking-widest uppercase">Live Match</span>
@@ -80,14 +80,14 @@ export default function CricketUpdatesPage() {
             <span className="text-xs text-slate-400 font-medium tracking-tight">{liveMatch.league || "Match"} • {liveMatch.matchType || "ODI"}</span>
           </div>
 
-          <div className="p-6 sm:p-8">
-            <div className="flex items-center justify-between gap-4 sm:gap-8 flex-col sm:flex-row">
+          <div className="p-4 sm:p-6 lg:p-8">
+              <div className="flex items-center justify-between gap-4 sm:gap-8 flex-col sm:flex-row">
               <div className="flex flex-col items-center text-center flex-1">
-                <div className="w-20 h-20 bg-surface-container-low rounded-full flex items-center justify-center mb-4 border-2 border-amber-500/20">
-                  <span className="text-sm font-black text-amber-500">{(liveMatch.teamA || "").slice(0, 3).toUpperCase()}</span>
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-surface-container-low rounded-full flex items-center justify-center mb-3 sm:mb-4 border-2 border-amber-500/20">
+                  <span className="text-xs sm:text-sm font-black text-amber-500">{(liveMatch.teamA || "").slice(0, 3).toUpperCase()}</span>
                 </div>
-                <h3 className="text-xl font-bold text-slate-100 mb-1">{liveMatch.teamA}</h3>
-                <p className="text-3xl font-black text-amber-500 tracking-tighter">
+                <h3 className="text-lg sm:text-xl font-bold text-slate-100 mb-1">{liveMatch.teamA}</h3>
+                <p className="text-2xl sm:text-3xl font-black text-amber-500 tracking-tighter">
                   {liveMatch.scoreA || "—"}
                 </p>
               </div>
@@ -98,11 +98,11 @@ export default function CricketUpdatesPage() {
                 </div>
               </div>
               <div className="flex flex-col items-center text-center flex-1">
-                <div className="w-20 h-20 bg-surface-container-low rounded-full flex items-center justify-center mb-4 border-2 border-white/5">
-                  <span className="text-sm font-black text-slate-300">{(liveMatch.teamB || "").slice(0, 3).toUpperCase()}</span>
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-surface-container-low rounded-full flex items-center justify-center mb-3 sm:mb-4 border-2 border-white/5">
+                  <span className="text-xs sm:text-sm font-black text-slate-300">{(liveMatch.teamB || "").slice(0, 3).toUpperCase()}</span>
                 </div>
-                <h3 className="text-xl font-bold text-slate-100 mb-1">{liveMatch.teamB}</h3>
-                <p className="text-3xl font-black text-slate-500 tracking-tighter">{liveMatch.scoreB || "Yet to Bat"}</p>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-100 mb-1">{liveMatch.teamB}</h3>
+                <p className="text-2xl sm:text-3xl font-black text-slate-500 tracking-tighter">{liveMatch.scoreB || "Yet to Bat"}</p>
               </div>
             </div>
 
@@ -121,7 +121,7 @@ export default function CricketUpdatesPage() {
         )}
 
         <aside className="col-span-12 lg:col-span-4 space-y-6">
-          <div className="bg-surface-container p-6 rounded-2xl border border-white/5">
+          <div className="bg-surface-container p-4 sm:p-6 rounded-2xl border border-white/5">
             <h4 className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-6">Today's Stats</h4>
             <div className="space-y-6">
               {statItems.map((item) => (
@@ -154,8 +154,8 @@ export default function CricketUpdatesPage() {
       </section>
 
       <section className="mb-10">
-        <div className="flex justify-between items-center mb-6 gap-3">
-          <h2 className="text-2xl font-bold text-slate-100">Upcoming Matches</h2>
+        <div className="flex justify-between items-center mb-4 sm:mb-6 gap-3">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-100">Upcoming Matches</h2>
           <div className="flex gap-2">
             <button className="bg-surface-container-high p-2 rounded-lg text-slate-400 hover:text-white transition-all">
               <span className="material-symbols-outlined">grid_view</span>
@@ -168,7 +168,7 @@ export default function CricketUpdatesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {upcomingMatches.map((match) => (
-            <article key={match._id} className="bg-surface-container p-6 rounded-2xl border border-white/5 hover:border-amber-500/30 transition-all group">
+            <article key={match._id} className="bg-surface-container p-4 sm:p-6 rounded-2xl border border-white/5 hover:border-amber-500/30 transition-all group">
               <div className="flex justify-between items-start mb-6 gap-3">
                 <span className="bg-surface-container-highest px-3 py-1 rounded text-[10px] font-bold text-amber-500 uppercase tracking-widest">
                   {match.league || match.matchType}
@@ -176,7 +176,7 @@ export default function CricketUpdatesPage() {
                 <span className="text-xs text-slate-500">{match.startTime ? new Date(match.startTime).toLocaleDateString() : "TBD"}</span>
               </div>
 
-              <div className="flex justify-between items-center mb-8">
+              <div className="flex justify-between items-center mb-4 sm:mb-8">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-surface-container-low rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
                     <span className="text-[11px] font-black text-slate-300">{(match.teamA || "").slice(0, 3).toUpperCase()}</span>
@@ -218,7 +218,7 @@ export default function CricketUpdatesPage() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[100px] rounded-full -mr-20 -mt-20" />
 
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-8 sm:mb-10">
+          <div className="flex items-center justify-between mb-6 sm:mb-8 sm:mb-10">
             <div>
               <h3 className="text-2xl font-black text-slate-100 mb-2">Match Details Preview</h3>
               <p className="text-slate-400 text-sm">Use the fields below to add or edit a match.</p>

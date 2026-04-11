@@ -49,7 +49,7 @@ export default function GameLogicPage() {
       <section className="mb-10 space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-black text-on-surface tracking-tight mb-2">Game Logic Management</h2>
+            <h2 className="text-2xl sm:text-3xl font-black text-on-surface tracking-tight mb-2">Game Logic Management</h2>
             <p className="text-slate-400 max-w-3xl text-sm leading-relaxed">
               Manage platform algorithms, win probability, and house margin with precision. Every
               change here can directly affect your real-time gaming ecosystem.
@@ -172,8 +172,8 @@ export default function GameLogicPage() {
         </article>
 
         <aside className="col-span-12 lg:col-span-4 space-y-6">
-          <article className="bg-surface-container rounded-2xl p-8 shadow-xl shadow-black/20 border-none">
-            <h3 className="text-lg font-bold text-slate-100 mb-6 flex items-center gap-2">
+          <article className="bg-surface-container rounded-2xl p-6 sm:p-8 shadow-xl shadow-black/20 border-none">
+            <h3 className="text-base sm:text-lg font-bold text-slate-100 mb-4 sm:mb-6 flex items-center gap-2">
               <span className="material-symbols-outlined text-amber-500">analytics</span>
               Impact Analysis
             </h3>
@@ -196,7 +196,7 @@ export default function GameLogicPage() {
             </div>
           </article>
 
-          <article className="bg-gradient-to-br from-[#1c2026] to-[#10141a] rounded-2xl p-8 border border-outline-variant/10">
+          <article className="bg-gradient-to-br from-[#1c2026] to-[#10141a] rounded-2xl p-6 sm:p-8 border border-outline-variant/10">
             <h4 className="font-bold text-slate-200 mb-4">Logic Backup</h4>
             <p className="text-xs text-slate-500 mb-6 leading-relaxed">
               Save a snapshot of the current logic configuration to quickly roll back to a previous
@@ -258,8 +258,8 @@ export default function GameLogicPage() {
         </article>
       </section>
 
-      <section className="mt-12 bg-surface-container rounded-2xl p-8">
-        <h3 className="text-xl font-bold text-slate-100 mb-8 flex items-center gap-2 uppercase tracking-wide">
+      <section className="mt-8 sm:mt-12 bg-surface-container rounded-2xl p-4 sm:p-6 lg:p-8">
+        <h3 className="text-lg sm:text-xl font-bold text-slate-100 mb-4 sm:mb-8 flex items-center gap-2 uppercase tracking-wide">
           <span className="material-symbols-outlined text-amber-500">receipt_long</span>
           Logic Change Audit Trail
         </h3>
@@ -302,7 +302,7 @@ export default function GameLogicPage() {
         </div>
       </section>
 
-      <div className="fixed bottom-8 right-8 z-40">
+      <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-40">
         <button className="w-16 h-16 bg-gradient-to-br from-primary to-primary-container rounded-2xl shadow-2xl shadow-primary/40 text-on-primary flex items-center justify-center group active:scale-90 transition-all">
           <span className="material-symbols-outlined text-3xl transition-transform group-hover:rotate-12" style={{ fontVariationSettings: "'FILL' 1" }}>
             bolt

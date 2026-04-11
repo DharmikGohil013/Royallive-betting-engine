@@ -179,6 +179,22 @@ export async function getActivityLogs(params = {}) {
   return api("/admin/activity-logs", { params });
 }
 
+// ==================== API LOGS ====================
+export async function getApiLogs(params = {}) {
+  return api("/admin/api-logs", { params });
+}
+
+export function getApiLogsExportUrl(params = {}) {
+  const token = getToken();
+  const qs = new URLSearchParams(params).toString();
+  const base = `${API_BASE}/api/admin/api-logs/export`;
+  return `${base}?${qs}&token=${encodeURIComponent(token)}`;
+}
+
+export async function deleteApiLogs(olderThanDays = 30) {
+  return api("/admin/api-logs", { method: "DELETE", params: { olderThanDays } });
+}
+
 // ==================== ANALYTICS ====================
 export async function getAnalyticsOverview() {
   return api("/analytics/overview");

@@ -99,8 +99,8 @@ export default function GameStatisticsPage() {
         </section>
 
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
-          <article className="lg:col-span-2 bg-surface-container rounded-xl p-8">
-            <div className="flex items-center justify-between mb-8 gap-4">
+          <article className="lg:col-span-2 bg-surface-container rounded-xl p-4 sm:p-6 lg:p-8">
+            <div className="flex items-center justify-between mb-4 sm:mb-8 gap-4">
               <div>
                 <h2 className="text-xl font-bold text-slate-100 mb-1">Revenue Trend</h2>
                 <p className="text-slate-500 text-xs">Daily revenue summary for the last 30 days</p>
@@ -148,8 +148,8 @@ export default function GameStatisticsPage() {
             </div>
           </article>
 
-          <article className="bg-surface-container rounded-xl p-8 flex flex-col">
-            <h2 className="text-xl font-bold text-slate-100 mb-6">Betting Distribution</h2>
+          <article className="bg-surface-container rounded-xl p-4 sm:p-6 lg:p-8 flex flex-col">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-100 mb-4 sm:mb-6">Betting Distribution</h2>
             <div className="flex-1 flex flex-col items-center justify-center relative py-6">
               <svg className="w-48 h-48 -rotate-90" viewBox="0 0 192 192">
                 <circle cx="96" cy="96" r="80" fill="none" stroke="#181c22" strokeWidth="24" />
@@ -209,7 +209,7 @@ export default function GameStatisticsPage() {
         </section>
 
         <section className="bg-surface-container rounded-xl overflow-hidden mb-10">
-          <div className="p-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-white/5">
+          <div className="p-4 sm:p-6 lg:p-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-white/5">
             <div>
               <h2 className="text-xl font-bold text-slate-100 mb-1">Top Winners Leaderboard</h2>
               <p className="text-slate-500 text-xs">List of the highest winning players this month</p>
@@ -221,22 +221,22 @@ export default function GameStatisticsPage() {
             <table className="w-full min-w-[900px] text-left">
               <thead>
                 <tr className="text-slate-500 text-xs font-bold uppercase tracking-wider bg-surface-container-low">
-                  <th className="px-8 py-4">Rank</th>
-                  <th className="px-8 py-4">Player</th>
-                  <th className="px-8 py-4">Total Games</th>
-                  <th className="px-8 py-4">Winning Rate</th>
-                  <th className="px-8 py-4 text-right">Total Wins</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4">Rank</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4">Player</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4">Total Games</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4">Winning Rate</th>
+                  <th className="px-4 sm:px-6 lg:px-8 py-4 text-right">Total Wins</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {leaderboard.map((player) => (
                   <tr key={player.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-8 py-5">
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${player.avatarBg}`}>
                         {player.rank}
                       </div>
                     </td>
-                    <td className="px-8 py-5">
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
                       <div className="flex items-center">
                         <div className="w-8 h-8 rounded-lg mr-3 bg-surface-container-high flex items-center justify-center text-slate-500 text-xs font-bold">
                           {player.name.slice(0, 1)}
@@ -247,14 +247,14 @@ export default function GameStatisticsPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-5 text-sm text-slate-300">{player.games}</td>
-                    <td className="px-8 py-5">
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-sm text-slate-300">{player.games}</td>
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
                       <div className="w-24 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
                         <div className={`bg-secondary h-full ${player.bar}`} />
                       </div>
                       <span className="text-[10px] font-bold text-secondary mt-1 inline-block">{player.rate}</span>
                     </td>
-                    <td className="px-8 py-5 text-right font-black text-slate-100">{player.total}</td>
+                    <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-right font-black text-slate-100">{player.total}</td>
                   </tr>
                 ))}
               </tbody>
@@ -263,7 +263,7 @@ export default function GameStatisticsPage() {
         </section>
       </div>
 
-      <button className="fixed bottom-10 right-10 bg-amber-500 text-on-primary-container p-4 rounded-full shadow-2xl shadow-amber-500/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+      <button className="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 bg-amber-500 text-on-primary-container p-3 sm:p-4 rounded-full shadow-2xl shadow-amber-500/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
         <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
           add
         </span>

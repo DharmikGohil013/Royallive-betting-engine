@@ -59,10 +59,10 @@ export default function GameManagementPage() {
   }
   return (
     <div className="font-body">
-      <div className="mb-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+      <div className="mb-6 sm:mb-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
         <div>
           <p className="text-amber-500 font-bold tracking-widest text-xs uppercase mb-1">System Management</p>
-          <h1 className="text-3xl font-black text-slate-100">Game Management</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-100">Game Management</h1>
         </div>
 
         <button onClick={handleAddGame} className="flex items-center gap-2 bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold px-6 py-3 rounded-xl shadow-lg shadow-amber-500/20 active:scale-95 transition-all w-fit">
@@ -71,16 +71,16 @@ export default function GameManagementPage() {
         </button>
       </div>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+      <section className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-10">
         {stats.map((card) => (
-          <article key={card.label} className={`bg-surface-container p-6 rounded-xl shadow-sm border-l-4 ${card.border}`}>
-            <p className="text-slate-400 text-sm mb-2">{card.label}</p>
-            <h3 className="text-2xl font-black text-white">{card.value}</h3>
+          <article key={card.label} className={`bg-surface-container p-4 sm:p-6 rounded-xl shadow-sm border-l-4 ${card.border}`}>
+            <p className="text-slate-400 text-xs sm:text-sm mb-1 sm:mb-2">{card.label}</p>
+            <h3 className="text-lg sm:text-2xl font-black text-white">{card.value}</h3>
           </article>
         ))}
       </section>
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
         {games.slice(0, 6).map((game) => (
           <article
             key={game._id}
@@ -88,7 +88,7 @@ export default function GameManagementPage() {
               game.isActive ? "" : "opacity-80"
             }`}
           >
-            <div className={`relative h-44 ${game.isActive ? "" : "grayscale"}`}>
+            <div className={`relative h-32 sm:h-44 ${game.isActive ? "" : "grayscale"}`}>
               <div className="absolute inset-0 bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-low" />
               <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg ${game.isActive ? "bg-secondary text-on-secondary" : "bg-surface-container-highest text-slate-400"}`}>
                 <span className={`w-2 h-2 rounded-full ${game.isActive ? "bg-on-secondary live-pulse" : "bg-slate-500"}`} />
@@ -96,16 +96,16 @@ export default function GameManagementPage() {
               </div>
             </div>
 
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
+            <div className="p-4 sm:p-6">
+              <div className="flex justify-between items-start mb-3 sm:mb-4">
                 <div>
-                  <h4 className="text-xl font-bold text-white mb-1">{game.name}</h4>
+                  <h4 className="text-base sm:text-xl font-bold text-white mb-1">{game.name}</h4>
                   <p className="text-sm text-slate-400">{game.category}</p>
                 </div>
                 <span className={`material-symbols-outlined ${game.isActive ? "text-amber-500" : "text-slate-500"}`}>sports_cricket</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/5 mb-6">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 py-3 sm:py-4 border-y border-white/5 mb-4 sm:mb-6">
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Total Bets</p>
                   <p className="text-lg font-black text-slate-100">{fmt(game.totalBets)}</p>
@@ -138,8 +138,8 @@ export default function GameManagementPage() {
       </section>
 
       <section className="bg-surface-container-low rounded-2xl overflow-hidden border border-white/5">
-        <div className="px-8 py-6 border-b border-white/5 flex justify-between items-center">
-          <h5 className="text-lg font-bold text-white">Game Details</h5>
+        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-b border-white/5 flex justify-between items-center">
+          <h5 className="text-base sm:text-lg font-bold text-white">Game Details</h5>
           <button className="text-sm text-amber-500 hover:underline">View All</button>
         </div>
 
@@ -147,20 +147,20 @@ export default function GameManagementPage() {
           <table className="w-full min-w-[860px] text-left">
             <thead>
               <tr className="bg-surface-container-highest/30">
-                <th className="px-8 py-4 text-[10px] uppercase tracking-widest text-slate-400">Game ID</th>
-                <th className="px-8 py-4 text-[10px] uppercase tracking-widest text-slate-400">Game Name</th>
-                <th className="px-8 py-4 text-[10px] uppercase tracking-widest text-slate-400">Type</th>
-                <th className="px-8 py-4 text-[10px] uppercase tracking-widest text-slate-400">Participants</th>
-                <th className="px-8 py-4 text-[10px] uppercase tracking-widest text-slate-400">Success Rate</th>
-                <th className="px-8 py-4 text-[10px] uppercase tracking-widest text-slate-400">Action</th>
+                <th className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-[10px] uppercase tracking-widest text-slate-400">Game ID</th>
+                <th className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-[10px] uppercase tracking-widest text-slate-400">Game Name</th>
+                <th className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-[10px] uppercase tracking-widest text-slate-400">Type</th>
+                <th className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-[10px] uppercase tracking-widest text-slate-400">Participants</th>
+                <th className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-[10px] uppercase tracking-widest text-slate-400">Success Rate</th>
+                <th className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-[10px] uppercase tracking-widest text-slate-400">Action</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-white/5">
               {games.map((game) => (
                 <tr key={game._id} className="hover:bg-white/5 transition-colors">
-                  <td className="px-8 py-5 text-sm font-mono text-slate-500">#{String(game._id).slice(-5)}</td>
-                  <td className="px-8 py-5">
+                  <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-sm font-mono text-slate-500">#{String(game._id).slice(-5)}</td>
+                  <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded flex items-center justify-center ${game.isActive ? "bg-amber-500/20 text-amber-500" : "bg-primary/20 text-primary"}`}>
                         <span className="material-symbols-outlined text-sm">sports_cricket</span>
@@ -168,14 +168,14 @@ export default function GameManagementPage() {
                       <span className="text-sm font-bold text-slate-100">{game.name}</span>
                     </div>
                   </td>
-                  <td className="px-8 py-5 text-sm text-slate-400">{game.category}</td>
-                  <td className="px-8 py-5 text-sm font-medium text-slate-100">{fmt(game.totalBets)}</td>
-                  <td className="px-8 py-5">
+                  <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-sm text-slate-400">{game.category}</td>
+                  <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-sm font-medium text-slate-100">{fmt(game.totalBets)}</td>
+                  <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
                     <div className="w-24 h-2 bg-surface-container rounded-full overflow-hidden" title={`RTP: ${game.rtp || 95}%`}>
                       <div className={`h-full ${game.isActive ? "bg-secondary" : "bg-primary"}`} style={{ width: `${game.rtp || 95}%` }} />
                     </div>
                   </td>
-                  <td className="px-8 py-5">
+                  <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
                     <button className="text-slate-400 hover:text-white" onClick={() => handleDelete(game)}>
                       <span className="material-symbols-outlined text-lg">more_vert</span>
                     </button>

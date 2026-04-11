@@ -192,6 +192,7 @@ export const sidebarNav = [
   { icon: "policy", label: "Policy", path: "/policy" },
   { icon: "account_balance_wallet", label: "Payment Methods", path: "/payment-methods" },
   { icon: "notifications", label: "Notifications", path: "/notifications" },
+  { icon: "api", label: "API Logs", path: "/api-logs" },
   { icon: "database", label: "Data", path: "/data" },
   { icon: "settings", label: "Settings", path: "/settings" },
 ];

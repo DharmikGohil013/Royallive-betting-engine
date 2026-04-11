@@ -4,7 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require("path");
 const fs = require("fs");
-const { securityMiddleware, apiLimiter, authLimiter } = require("./middleware/auth");
+const { securityMiddleware, apiLimiter, authLimiter, apiLogger } = require("./middleware/auth");
 
 // Routes
 const adminRoutes = require("./routes/admin");
@@ -82,6 +82,9 @@ app.use("/api/user/signup", authLimiter);
 
 // General API rate limit
 app.use("/api/", apiLimiter);
+
+// Log all API requests
+app.use("/api/", apiLogger);
 
 // Admin routes
 app.use("/api/admin", adminRoutes);
