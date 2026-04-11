@@ -9,6 +9,13 @@ const userSchema = new mongoose.Schema(
       trim: true,
       match: [/^\d{10,15}$/, "Mobile must contain 10 to 15 digits"],
     },
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      sparse: true,
+      default: null,
+    },
     username: {
       type: String,
       required: [true, "Username is required"],
@@ -23,31 +30,62 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
     referralCode: {
       type: String,
       default: null,
       trim: true,
       uppercase: true,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
+    balance: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
+    status: {
+      type: String,
+      enum: ["active", "suspended", "banned"],
+      default: "active",
+    },
+    lastLogin: { type: Date },
+    loginCount: { type: Number, default: 0 },
+    totalDeposits: { type: Number, default: 0 },
+    totalWithdrawals: { type: Number, default: 0 },
+    totalBets: { type: Number, default: 0 },
+    totalWinnings: { type: Number, default: 0 },
+    totalWins: { type: Number, default: 0 },
   },
   {
+    timestamps: true,
     versionKey: false,
   }
 );
 
 userSchema.index({ mobile: 1 }, { unique: true });
 userSchema.index({ username: 1 }, { unique: true });
+userSchema.index({ email: 1 }, { sparse: true });
+userSchema.index({ status: 1 });
+userSchema.index({ createdAt: -1 });
 
 userSchema.methods.toSafeObject = function toSafeObject() {
   return {
     id: this._id,
     mobile: this.mobile,
+    email: this.email,
     username: this.username,
+    role: this.role,
     referralCode: this.referralCode,
+    balance: this.balance,
+    status: this.status,
+    totalDeposits: this.totalDeposits,
+    totalWithdrawals: this.totalWithdrawals,
+    totalBets: this.totalBets,
+    totalWinnings: this.totalWinnings,
+    totalWins: this.totalWins,
     createdAt: this.createdAt,
   };
 };

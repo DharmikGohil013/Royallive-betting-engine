@@ -1,42 +1,49 @@
-require("dotenv").config();
+require("dotenv").config({ path: require("path").join(__dirname, ".env") });
 const express = require("express");
 const cors = require("cors");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const path = require("path");
 const fs = require("fs");
-const { router: userAuthRoutes, signupHandler } = require("./routes/userAuth");
+const { securityMiddleware, apiLimiter, authLimiter } = require("./middleware/auth");
+
+// Routes
+const adminRoutes = require("./routes/admin");
+const analyticsRoutes = require("./routes/analytics");
+const { router: userRoutes } = require("./routes/userRoutes");
 
 const app = express();
 
 // --------------- Config ---------------
 const PORT = process.env.PORT || 4000;
-const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-change-me";
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/gainlive";
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
 
 if (!ADMIN_PASSWORD_HASH) {
   console.error(
     "\n❌  ADMIN_PASSWORD_HASH is not set in .env\n" +
-      '   Run: npm run create-admin  to generate one.\n'
+    '   Run: npm run create-admin  to generate one.\n'
   );
   process.exit(1);
 }
 
-// --------------- Middleware ---------------
-app.use(cors());
-app.use(express.json());
+// --------------- Security Middleware ---------------
+app.use(...securityMiddleware());
+app.use(cors({
+  origin: process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(",").map(s => s.trim())
+    : ["http://localhost:5173", "http://localhost:5174", "http://localhost:4000"],
+  credentials: true,
+}));
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: false }));
+
+// Prevent fingerprinting
+app.disable("x-powered-by");
 
 // --------------- Database ---------------
 async function connectToDatabase() {
   try {
-    await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-    });
+    await mongoose.connect(MONGODB_URI);
     console.log("✅  MongoDB connected");
   } catch (error) {
     console.error("❌  MongoDB connection failed:", error.message);
@@ -44,69 +51,28 @@ async function connectToDatabase() {
   }
 }
 
-// --------------- Auth Routes ---------------
+// --------------- API Routes ---------------
 
-// POST /api/auth/login
-app.post("/api/auth/login", async (req, res) => {
-  try {
-    const { username, password } = req.body;
+// Rate limit auth routes
+app.use("/api/admin/login", authLimiter);
+app.use("/api/user/login", authLimiter);
+app.use("/api/user/register", authLimiter);
+app.use("/api/user/signup", authLimiter);
 
-    if (!username || !password) {
-      return res.status(400).json({ error: "Username and password are required" });
-    }
+// General API rate limit
+app.use("/api/", apiLimiter);
 
-    // Check username
-    if (username !== ADMIN_USERNAME) {
-      return res.status(401).json({ error: "Invalid username or password" });
-    }
+// Admin routes
+app.use("/api/admin", adminRoutes);
 
-    // Check password against hash
-    const isMatch = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid username or password" });
-    }
+// Analytics routes (admin only)
+app.use("/api/analytics", analyticsRoutes);
 
-    // Generate JWT
-    const token = jwt.sign(
-      { username: ADMIN_USERNAME, role: "admin" },
-      JWT_SECRET,
-      { expiresIn: "24h" }
-    );
-
-    return res.json({
-      success: true,
-      token,
-      user: { username: ADMIN_USERNAME, role: "admin" },
-    });
-  } catch (err) {
-    console.error("Login error:", err);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// GET /api/auth/verify — check if a token is still valid
-app.get("/api/auth/verify", (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ valid: false });
-  }
-
-  try {
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, JWT_SECRET);
-    return res.json({ valid: true, user: decoded });
-  } catch {
-    return res.status(401).json({ valid: false });
-  }
-});
-
-// --------------- User Auth Routes ---------------
-app.use("/api/user", userAuthRoutes);
-app.post("/api/auth/signup", signupHandler);
-app.post("/api/auth/register", signupHandler);
+// User routes
+app.use("/api/user", userRoutes);
 
 // --------------- Health/Test Routes ---------------
-app.get("/api/health", (req, res) => {
+app.get("/api/health", (_req, res) => {
   return res.json({
     success: true,
     status: "ok",
@@ -116,48 +82,38 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.get("/api/test", (req, res) => {
-  return res.json({
-    success: true,
-    message: "Test API is working",
-    method: req.method,
-  });
-});
-
 // --------------- Serve Frontends (production) ---------------
 const adminDistPath = path.join(__dirname, "admin-dist");
-const userDistPath = path.join(__dirname, "..", "Users", "Gain Live Frontend", "dist");
+const userDistPath = path.join(__dirname, "..", "Users", "gain-live-frontend", "dist");
 
-app.use("/admin", express.static(adminDistPath));
-app.use(express.static(userDistPath));
+if (fs.existsSync(adminDistPath)) {
+  app.use("/admin", express.static(adminDistPath));
+}
+if (fs.existsSync(userDistPath)) {
+  app.use(express.static(userDistPath));
+}
 
-// SPA fallback — route admin and user app separately, keep /api protected
+// SPA fallback
 app.get("*", (req, res) => {
   if (req.path.startsWith("/api/")) {
     return res.status(404).json({ error: "API route not found" });
   }
 
   if (req.path.startsWith("/admin")) {
-    const adminIndexPath = path.join(adminDistPath, "index.html");
-    if (!fs.existsSync(adminIndexPath)) {
-      return res.status(503).json({
-        error: "Admin frontend build not found",
-        hint: "Build Admin and deploy admin-dist/index.html",
-      });
-    }
-
-    return res.sendFile(path.join(adminDistPath, "index.html"));
+    const adminIndex = path.join(adminDistPath, "index.html");
+    if (fs.existsSync(adminIndex)) return res.sendFile(adminIndex);
+    return res.status(503).json({ error: "Admin frontend build not found" });
   }
 
-  const userIndexPath = path.join(userDistPath, "index.html");
-  if (!fs.existsSync(userIndexPath)) {
-    return res.status(503).json({
-      error: "User frontend build not found",
-      hint: "Build user frontend and deploy Users/Gain Live Frontend/dist/index.html",
-    });
-  }
+  const userIndex = path.join(userDistPath, "index.html");
+  if (fs.existsSync(userIndex)) return res.sendFile(userIndex);
+  return res.status(503).json({ error: "User frontend build not found" });
+});
 
-  return res.sendFile(path.join(userDistPath, "index.html"));
+// --------------- Global Error Handler ---------------
+app.use((err, _req, res, _next) => {
+  console.error("Unhandled error:", err);
+  return res.status(500).json({ error: "Internal server error" });
 });
 
 // --------------- Start ---------------
@@ -166,9 +122,10 @@ async function startServer() {
 
   app.listen(PORT, () => {
     console.log(`\n✅  GAIN LIVE Server running on port ${PORT}`);
-    console.log(`   User app:    http://localhost:${PORT}`);
-    console.log(`   Admin panel: http://localhost:${PORT}/admin`);
-    console.log(`   Login API:   http://localhost:${PORT}/api/auth/login\n`);
+    console.log(`   Health:      http://localhost:${PORT}/api/health`);
+    console.log(`   Admin API:   http://localhost:${PORT}/api/admin`);
+    console.log(`   User API:    http://localhost:${PORT}/api/user`);
+    console.log(`   Analytics:   http://localhost:${PORT}/api/analytics\n`);
   });
 }
 

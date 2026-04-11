@@ -1,7 +1,24 @@
+import { useState, useEffect } from "react";
 import { bettingCards } from "../../data/homeData";
+import { getGames } from "../../services/api";
 import BettingCard from "../ui/BettingCard";
 
 const LiveMarkets = () => {
+  const [cards, setCards] = useState(bettingCards);
+
+  useEffect(() => {
+    getGames({ category: "sports" }).then(data => {
+      const items = data.games || data || [];
+      if (items.length) {
+        setCards(items.map(g => ({
+          league: g.category || "Sports",
+          match: g.name || g.title,
+          timeLeft: g.isActive ? "LIVE" : "Upcoming",
+          options: g.odds || bettingCards[0]?.options || [],
+        })));
+      }
+    }).catch(() => {});
+  }, []);
   return (
     <section className="mb-10">
       <div className="px-4 flex justify-between items-end mb-4">
@@ -13,7 +30,7 @@ const LiveMarkets = () => {
         </span>
       </div>
       <div className="flex flex-col gap-3 px-4">
-        {bettingCards.map((card, index) => (
+        {cards.map((card, index) => (
           <BettingCard key={index} card={card} />
         ))}
       </div>

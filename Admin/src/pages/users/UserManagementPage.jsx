@@ -1,73 +1,83 @@
-const userStats = [
-  {
-    id: "total",
-    title: "Total Users",
-    value: "12,450",
-    accent: "border-primary",
-  },
-  {
-    id: "active-now",
-    title: "Active Now",
-    value: "1,208",
-    accent: "border-secondary",
-  },
-  {
-    id: "today-new",
-    title: "New Today",
-    value: "452",
-    accent: "border-amber-500",
-  },
-  {
-    id: "blocked",
-    title: "Blocked Users",
-    value: "89",
-    accent: "border-error",
-  },
+import { useState, useEffect, useCallback } from "react";
+import { getUsers, updateUserStatus, updateUserBalance, getUserById } from "../../services/api";
+
+const fallbackStats = [
+  { id: "total", title: "Total Users", value: "0", accent: "border-primary" },
+  { id: "active-now", title: "Active Now", value: "0", accent: "border-secondary" },
+  { id: "today-new", title: "New Today", value: "0", accent: "border-amber-500" },
+  { id: "blocked", title: "Blocked Users", value: "0", accent: "border-error" },
 ];
 
-const users = [
-  {
-    id: "#88904",
-    name: "Tanvir Ahmed",
-    phone: "01700000000",
-    balance: "BDT 4,500",
-    deposit: "↓ BDT 10,000 (Deposit)",
-    withdraw: "↑ BDT 5,500 (Withdraw)",
-    status: "Active",
-    blocked: false,
-  },
-  {
-    id: "#88905",
-    name: "Rakibul Islam",
-    phone: "01900000000",
-    balance: "BDT 12,800",
-    deposit: "↓ BDT 20,000",
-    withdraw: "↑ BDT 7,200",
-    status: "Active",
-    blocked: false,
-  },
-  {
-    id: "#88906",
-    name: "Kamrul Hasan",
-    phone: "01600000000",
-    balance: "BDT 0.00",
-    deposit: "↓ BDT 100",
-    withdraw: "↑ BDT 100",
-    status: "Blocked",
-    blocked: true,
-  },
-];
+function fmt(n) {
+  return n != null ? Number(n).toLocaleString() : "0";
+}
 
-const selectedUser = {
-  name: "Tanvir Ahmed",
-  joinedAt: "20 January, 2024",
-  badge: "VIP Member",
-  balance: "BDT 4,500.00",
-  totalDeposit: "BDT 10,000",
-  totalWithdraw: "BDT 5,500",
-};
+function fmtBDT(n) {
+  return n != null ? `BDT ${Number(n).toLocaleString()}` : "BDT 0";
+}
 
 export default function UserManagementPage() {
+  const [users, setUsers] = useState([]);
+  const [userStats, setUserStats] = useState(fallbackStats);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [search, setSearch] = useState("");
+  const limit = 10;
+
+  const loadUsers = useCallback(async () => {
+    try {
+      const params = { page, limit };
+      if (statusFilter) params.status = statusFilter;
+      if (search) params.search = search;
+      const data = await getUsers(params);
+      setUsers(data.users || []);
+      setTotal(data.total || 0);
+      if (data.stats) {
+        setUserStats([
+          { id: "total", title: "Total Users", value: fmt(data.stats.total), accent: "border-primary" },
+          { id: "active", title: "Active Users", value: fmt(data.stats.active), accent: "border-secondary" },
+          { id: "today-new", title: "New Today", value: fmt(data.stats.todayNew), accent: "border-amber-500" },
+          { id: "blocked", title: "Blocked Users", value: fmt(data.stats.blocked), accent: "border-error" },
+        ]);
+      }
+      if (data.users?.length && !selectedUser) {
+        selectUser(data.users[0]);
+      }
+    } catch { /* keep fallback */ }
+  }, [page, statusFilter, search]);
+
+  useEffect(() => { loadUsers(); }, [loadUsers]);
+
+  async function selectUser(u) {
+    try {
+      const data = await getUserById(u._id);
+      setSelectedUser(data.user || u);
+    } catch {
+      setSelectedUser(u);
+    }
+  }
+
+  async function toggleBlock(user) {
+    const newStatus = user.status === "active" ? "suspended" : "active";
+    try {
+      await updateUserStatus(user._id, newStatus);
+      loadUsers();
+    } catch { /* silent */ }
+  }
+
+  async function adjustBalance(type) {
+    if (!selectedUser) return;
+    const raw = prompt(`Enter amount to ${type === "add" ? "add" : "deduct"}:`);
+    const amount = Number(raw);
+    if (!amount || amount <= 0) return;
+    try {
+      await updateUserBalance(selectedUser._id, amount, type, `Manual ${type} by admin`);
+      loadUsers();
+      selectUser(selectedUser);
+    } catch (err) { alert(err.message); }
+  }
   return (
     <div className="font-body">
       <div className="absolute top-20 right-6 sm:right-12 h-40 w-40 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
@@ -142,27 +152,29 @@ export default function UserManagementPage() {
               </thead>
 
               <tbody className="divide-y divide-white/5">
-                {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-white/5 transition-colors group">
-                    <td className="px-6 py-5 font-headline text-primary font-bold">{user.id}</td>
+                {users.map((user) => {
+                  const blocked = user.status !== "active";
+                  return (
+                  <tr key={user._id} className="hover:bg-white/5 transition-colors group">
+                    <td className="px-6 py-5 font-headline text-primary font-bold">#{String(user._id).slice(-5)}</td>
                     <td className="px-6 py-5">
                       <div className="flex flex-col">
-                        <span className="text-slate-200 font-bold">{user.name}</span>
-                        <span className="text-slate-500 text-xs">{user.phone}</span>
+                        <span className="text-slate-200 font-bold">{user.username || user.mobile}</span>
+                        <span className="text-slate-500 text-xs">{user.mobile}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-5 font-black text-slate-100">{user.balance}</td>
+                    <td className="px-6 py-5 font-black text-slate-100">{fmtBDT(user.balance)}</td>
                     <td className="px-6 py-5">
                       <div className="flex flex-col text-[11px]">
-                        <span className="text-secondary">{user.deposit}</span>
-                        <span className="text-error">{user.withdraw}</span>
+                        <span className="text-secondary">↓ {fmtBDT(user.totalDeposits)}</span>
+                        <span className="text-error">↑ {fmtBDT(user.totalWithdrawals)}</span>
                       </div>
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex justify-center">
                         <span
                           className={
-                            user.blocked
+                            blocked
                               ? "px-3 py-1 bg-error/10 text-error text-[10px] font-bold rounded-full uppercase"
                               : "px-3 py-1 bg-secondary/10 text-secondary text-[10px] font-bold rounded-full uppercase"
                           }
@@ -173,41 +185,43 @@ export default function UserManagementPage() {
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
-                        <button className="p-2 hover:bg-primary/20 text-primary rounded-lg" title="View">
+                        <button className="p-2 hover:bg-primary/20 text-primary rounded-lg" title="View" onClick={() => selectUser(user)}>
                           <span className="material-symbols-outlined text-lg">visibility</span>
                         </button>
-                        <button className="p-2 hover:bg-white/10 text-slate-300 rounded-lg" title="Edit">
+                        <button className="p-2 hover:bg-white/10 text-slate-300 rounded-lg" title="Edit" onClick={() => selectUser(user)}>
                           <span className="material-symbols-outlined text-lg">edit</span>
                         </button>
                         <button
                           className={
-                            user.blocked
+                            blocked
                               ? "p-2 hover:bg-secondary/20 text-secondary rounded-lg"
                               : "p-2 hover:bg-error/20 text-error rounded-lg"
                           }
-                          title={user.blocked ? "Unblock" : "Block"}
+                          title={blocked ? "Unblock" : "Block"}
+                          onClick={() => toggleBlock(user)}
                         >
                           <span className="material-symbols-outlined text-lg">
-                            {user.blocked ? "lock_open" : "block"}
+                            {blocked ? "lock_open" : "block"}
                           </span>
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
           <div className="px-6 sm:px-8 py-5 bg-surface-container-low/60 flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between sm:items-center">
             <span className="text-xs text-slate-500 font-medium tracking-wide">
-              Showing 1-10 of 12,450 users
+              Showing {(page - 1) * limit + 1}-{Math.min(page * limit, total)} of {fmt(total)} users
             </span>
             <div className="flex gap-2">
-              <button className="px-4 py-2 bg-surface-container-high rounded text-slate-400 hover:text-slate-100 transition-all text-xs font-bold uppercase">
+              <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="px-4 py-2 bg-surface-container-high rounded text-slate-400 hover:text-slate-100 transition-all text-xs font-bold uppercase disabled:opacity-40">
                 Previous
               </button>
-              <button className="px-4 py-2 bg-primary text-on-primary rounded font-bold transition-all text-xs uppercase">
+              <button disabled={page * limit >= total} onClick={() => setPage((p) => p + 1)} className="px-4 py-2 bg-primary text-on-primary rounded font-bold transition-all text-xs uppercase disabled:opacity-40">
                 Next
               </button>
             </div>
@@ -222,9 +236,11 @@ export default function UserManagementPage() {
               <h2 className="text-lg sm:text-xl font-black text-slate-100 font-headline uppercase tracking-tight">
                 User Details
               </h2>
-              <span className="px-3 py-1 bg-secondary/20 text-secondary text-[10px] font-bold rounded-full whitespace-nowrap">
-                Active
+              {selectedUser && (
+              <span className={`px-3 py-1 text-[10px] font-bold rounded-full whitespace-nowrap ${selectedUser.status === "active" ? "bg-secondary/20 text-secondary" : "bg-error/20 text-error"}`}>
+                {selectedUser.status || "N/A"}
               </span>
+              )}
             </div>
 
             <div className="flex items-center gap-5 sm:gap-6 mb-8 sm:mb-10">
@@ -236,14 +252,16 @@ export default function UserManagementPage() {
                     className="w-full h-full object-cover rounded-xl"
                   />
                 </div>
+                {selectedUser?.status === "active" && (
                 <div className="absolute -bottom-2 -right-2 bg-secondary w-6 h-6 rounded-full border-4 border-surface-container flex items-center justify-center">
                   <div className="w-2 h-2 bg-white rounded-full live-pulse" />
                 </div>
+                )}
               </div>
 
               <div>
-                <h4 className="text-base sm:text-lg font-bold text-slate-100">{selectedUser.name}</h4>
-                <p className="text-slate-400 text-sm">Joined: {selectedUser.joinedAt}</p>
+                <h4 className="text-base sm:text-lg font-bold text-slate-100">{selectedUser?.username || selectedUser?.mobile || "Select a user"}</h4>
+                <p className="text-slate-400 text-sm">Joined: {selectedUser?.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : "N/A"}</p>
                 <div className="flex items-center gap-1.5 mt-2">
                   <span
                     className="material-symbols-outlined text-sm text-primary"
@@ -251,7 +269,7 @@ export default function UserManagementPage() {
                   >
                     star
                   </span>
-                  <span className="text-xs font-bold text-primary uppercase">{selectedUser.badge}</span>
+                  <span className="text-xs font-bold text-primary uppercase">{selectedUser?.role === "admin" ? "Admin" : "Member"}</span>
                 </div>
               </div>
             </div>
@@ -261,7 +279,7 @@ export default function UserManagementPage() {
                 <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Current Balance</p>
                 <div className="flex justify-between items-center gap-3">
                   <p className="text-2xl sm:text-3xl font-black text-primary font-headline tracking-tight">
-                    {selectedUser.balance}
+                    {fmtBDT(selectedUser?.balance)}
                   </p>
                   <span className="material-symbols-outlined text-slate-600">account_balance_wallet</span>
                 </div>
@@ -270,11 +288,11 @@ export default function UserManagementPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-white/5 rounded-xl border border-white/5">
                   <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Total Deposit</p>
-                  <p className="text-lg font-bold text-secondary">{selectedUser.totalDeposit}</p>
+                  <p className="text-lg font-bold text-secondary">{fmtBDT(selectedUser?.totalDeposits)}</p>
                 </div>
                 <div className="p-4 bg-white/5 rounded-xl border border-white/5">
                   <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Total Withdraw</p>
-                  <p className="text-lg font-bold text-error">{selectedUser.totalWithdraw}</p>
+                  <p className="text-lg font-bold text-error">{fmtBDT(selectedUser?.totalWithdrawals)}</p>
                 </div>
               </div>
             </div>
@@ -285,11 +303,11 @@ export default function UserManagementPage() {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button className="flex items-center justify-center gap-2 py-3 bg-secondary/10 hover:bg-secondary/20 text-secondary rounded-xl transition-all font-bold border border-secondary/20">
+                <button onClick={() => adjustBalance("add")} className="flex items-center justify-center gap-2 py-3 bg-secondary/10 hover:bg-secondary/20 text-secondary rounded-xl transition-all font-bold border border-secondary/20">
                   <span className="material-symbols-outlined text-lg">add_circle</span>
                   Add Balance
                 </button>
-                <button className="flex items-center justify-center gap-2 py-3 bg-error/10 hover:bg-error/20 text-error rounded-xl transition-all font-bold border border-error/20">
+                <button onClick={() => adjustBalance("deduct")} className="flex items-center justify-center gap-2 py-3 bg-error/10 hover:bg-error/20 text-error rounded-xl transition-all font-bold border border-error/20">
                   <span className="material-symbols-outlined text-lg">remove_circle</span>
                   Deduct Balance
                 </button>

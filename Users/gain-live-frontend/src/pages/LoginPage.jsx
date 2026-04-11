@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { login } from "../services/api";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -54,27 +55,11 @@ const LoginPage = () => {
 
     try {
       setSubmitting(true);
-      const response = await fetch("/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginPayload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || "Authentication failed");
-        return;
-      }
-
-      localStorage.setItem("gain-live-user-token", data.token);
-      localStorage.setItem("gain-live-user", JSON.stringify(data.user));
+      const data = await login(loginPayload);
       localStorage.setItem("gain-live-remember-me", form.rememberMe ? "true" : "false");
       navigate("/");
-    } catch {
-      setError("Unable to connect to server");
+    } catch (err) {
+      setError(err.message || "Authentication failed");
     } finally {
       setSubmitting(false);
     }

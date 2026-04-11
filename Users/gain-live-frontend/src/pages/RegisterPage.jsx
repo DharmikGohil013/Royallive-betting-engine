@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { register } from "../services/api";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -25,26 +26,10 @@ const RegisterPage = () => {
 
     try {
       setSubmitting(true);
-      const response = await fetch("/api/user/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || "Registration failed");
-        return;
-      }
-
-      localStorage.setItem("gain-live-user-token", data.token);
-      localStorage.setItem("gain-live-user", JSON.stringify(data.user));
+      const data = await register(form);
       navigate("/");
-    } catch {
-      setError("Unable to connect to server");
+    } catch (err) {
+      setError(err.message || "Registration failed");
     } finally {
       setSubmitting(false);
     }

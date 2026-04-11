@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Header from "./components/layout/Header";
 import BottomNav from "./components/layout/BottomNav";
@@ -8,11 +8,27 @@ import HomePage from "./pages/HomePage";
 import AuthLayout from "./components/layout/AuthLayout";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import { verifyToken, isLoggedIn, logout, getStoredUser } from "./services/api";
 
 function AppContent() {
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState(getStoredUser());
   const location = useLocation();
   const isAuthRoute = location.pathname === "/login" || location.pathname === "/register";
+
+  useEffect(() => {
+    if (isLoggedIn()) {
+      verifyToken().then(data => {
+        if (data.user) {
+          setUser(data.user);
+          localStorage.setItem("gain-live-user", JSON.stringify(data.user));
+        }
+      }).catch(() => {
+        logout();
+        setUser(null);
+      });
+    }
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);

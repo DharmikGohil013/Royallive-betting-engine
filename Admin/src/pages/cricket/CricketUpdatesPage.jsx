@@ -36,8 +36,9 @@ export default function CricketUpdatesPage() {
   const handleSaveMatch = async () => {
     if (!form.teamA || !form.teamB) return alert("Enter both team names");
     try {
-      if (form._id) { await updateCricketMatch(form._id, form); }
-      else { await createCricketMatch(form); }
+      const payload = mapToApi(form);
+      if (form._id) { await updateCricketMatch(form._id, payload); }
+      else { await createCricketMatch(payload); }
       setForm({ teamA: "", teamB: "", league: "", matchType: "ODI", venue: "", startTime: "", scoreA: "", scoreB: "", status: "upcoming" });
       loadMatches();
     } catch (err) { alert(err.message || "Failed to save match"); }

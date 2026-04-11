@@ -1,7 +1,25 @@
-import { featuredGames } from "../../data/homeData";
+import { useState, useEffect } from "react";
+import { featuredGames as staticGames } from "../../data/homeData";
+import { getFeaturedGames } from "../../services/api";
 import GameCard from "../ui/GameCard";
 
 const FeaturedGames = () => {
+  const [games, setGames] = useState(staticGames);
+
+  useEffect(() => {
+    getFeaturedGames().then(data => {
+      const apiGames = data.games || data || [];
+      if (apiGames.length) {
+        setGames(apiGames.map(g => ({
+          badge: g.category || g.badge || "Game",
+          badgeColor: "text-primary-container",
+          title: g.name || g.title,
+          img: g.image || g.img || staticGames[0]?.img,
+          alt: g.description || g.name,
+        })));
+      }
+    }).catch(() => {});
+  }, []);
   return (
     <section className="px-4 mb-10">
       <div className="flex justify-between items-end mb-4">
@@ -13,7 +31,7 @@ const FeaturedGames = () => {
         </span>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {featuredGames.map((game, index) => (
+        {games.map((game, index) => (
           <GameCard key={index} game={game} />
         ))}
       </div>
