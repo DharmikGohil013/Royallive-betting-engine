@@ -11,7 +11,6 @@ const ABOUT_KEYS = [
   { key: "about_address", default: "Gulshan 2, Dhaka 1212, Bangladesh" },
   { key: "about_facebook", default: "" },
   { key: "about_telegram", default: "" },
-  { key: "about_is_live", default: true },
   { key: "about_quote", default: "Cricket is not just a game, it is an emotion. We bring that emotion to your fingertips through technology." },
   { key: "about_mission", default: "Provide the best user experience through modern analytics and a premium interface." },
   { key: "about_achievement", default: "More than 1 million active users and a nationwide cricket network." },
@@ -293,28 +292,6 @@ export default function AboutManagementPage() {
               </div>
             </article>
 
-            {/* Public View Status */}
-            <article className="bg-primary/5 border border-primary/20 rounded-2xl p-6 relative overflow-hidden group">
-              <div className="relative z-10">
-                <h4 className="font-bold text-primary mb-2 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-lg">verified_user</span>
-                  Public View Status
-                </h4>
-                <div className="flex items-center gap-4 mt-4">
-                  <button
-                    onClick={() => handleChange("about_is_live", !form.about_is_live)}
-                    className={`w-12 h-6 rounded-full relative p-1 cursor-pointer transition-colors ${form.about_is_live ? "bg-secondary-container" : "bg-slate-600"}`}
-                  >
-                    <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${form.about_is_live ? "translate-x-6" : "translate-x-0"}`} />
-                  </button>
-                  <span className="text-sm text-slate-300 font-medium">{form.about_is_live ? "Live (Visible)" : "Hidden"}</span>
-                </div>
-              </div>
-              <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-8xl">language</span>
-              </div>
-            </article>
-
             {/* Stats */}
             <article className="bg-surface-container rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm">
               <h3 className="text-lg sm:text-xl font-bold text-slate-100 mb-6">Statistics & Highlights</h3>
@@ -364,56 +341,104 @@ export default function AboutManagementPage() {
               </button>
             </div>
 
-            <div className="bg-surface-container rounded-[2rem] p-6 sm:p-8 lg:p-10 overflow-hidden relative">
-              <div className="max-w-3xl">
-                <h2 className="text-3xl sm:text-4xl font-black text-slate-100 font-headline mb-8">Learn About Us</h2>
-                <div className="prose prose-invert max-w-none">
-                  <p className="text-slate-300 text-lg leading-relaxed font-body italic border-l-4 border-primary pl-6 py-2 mb-10 bg-white/5 rounded-r-xl">
-                    &ldquo;{form.about_quote}&rdquo;
-                  </p>
+            <div className="bg-surface-container rounded-[2rem] overflow-hidden relative">
+              {/* Banner */}
+              {bannerUrl && (
+                <div className="w-full h-40 sm:h-56 overflow-hidden">
+                  <img src={`${API_BASE}${bannerUrl}`} alt="Banner" className="w-full h-full object-cover" />
+                </div>
+              )}
 
-                  <div className="text-slate-300 leading-relaxed whitespace-pre-wrap mb-10">{form.about_content}</div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12 mt-12">
-                    <div>
-                      <h6 className="text-primary font-bold mb-4 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">target</span>
-                        Our Mission
-                      </h6>
-                      <p className="text-slate-400 leading-relaxed">{form.about_mission}</p>
-                    </div>
-                    <div>
-                      <h6 className="text-primary font-bold mb-4 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">stars</span>
-                        Our Achievement
-                      </h6>
-                      <p className="text-slate-400 leading-relaxed">{form.about_achievement}</p>
-                    </div>
+              <div className="p-6 sm:p-8 lg:p-10">
+                {/* Logo + Title */}
+                <div className="flex items-center gap-5 mb-8">
+                  {logoUrl && (
+                    <img src={`${API_BASE}${logoUrl}`} alt="Logo" className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-xl bg-surface-container-high p-2 shrink-0" />
+                  )}
+                  <div>
+                    <h2 className="text-3xl sm:text-4xl font-black text-slate-100 font-headline">Learn About Us</h2>
+                    <p className="text-slate-500 text-sm mt-1">{form.about_website_name}</p>
                   </div>
                 </div>
 
-                <div className="mt-16 flex flex-wrap items-center gap-8 sm:gap-12">
-                  <div className="flex flex-col">
-                    <span className="text-3xl font-black text-slate-100 font-headline">{form.about_years}</span>
-                    <span className="text-xs text-slate-500 uppercase font-headline tracking-tighter">Years Experience</span>
-                  </div>
-                  <div className="w-px h-10 bg-slate-800 hidden sm:block" />
-                  <div className="flex flex-col">
-                    <span className="text-3xl font-black text-slate-100 font-headline">{form.about_users_count}</span>
-                    <span className="text-xs text-slate-500 uppercase font-headline tracking-tighter">Active Users</span>
-                  </div>
-                  <div className="w-px h-10 bg-slate-800 hidden sm:block" />
-                  <div className="flex flex-col">
-                    <span className="text-3xl font-black text-slate-100 font-headline">{form.about_uptime}</span>
-                    <span className="text-xs text-slate-500 uppercase font-headline tracking-tighter">Uptime</span>
-                  </div>
-                </div>
+                <div className="max-w-3xl">
+                  <div className="prose prose-invert max-w-none">
+                    {/* Quote */}
+                    {form.about_quote && (
+                      <p className="text-slate-300 text-lg leading-relaxed font-body italic border-l-4 border-primary pl-6 py-2 mb-10 bg-white/5 rounded-r-xl">
+                        &ldquo;{form.about_quote}&rdquo;
+                      </p>
+                    )}
 
-                <div className="mt-12 p-6 bg-surface-container-high rounded-xl space-y-3">
-                  <h6 className="text-primary font-bold text-sm">Contact Info</h6>
-                  <p className="text-slate-400 text-sm">{form.about_website_name} | {form.about_contact_email}</p>
-                  <p className="text-slate-400 text-sm">{form.about_helpline}</p>
-                  <p className="text-slate-400 text-sm">{form.about_address}</p>
+                    {/* Content */}
+                    <div className="text-slate-300 leading-relaxed whitespace-pre-wrap mb-10">{form.about_content}</div>
+
+                    {/* Mission & Achievement */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12 mt-12">
+                      {form.about_mission && (
+                        <div className="p-5 rounded-xl bg-surface-container-high">
+                          <h6 className="text-primary font-bold mb-3 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm">target</span>
+                            Our Mission
+                          </h6>
+                          <p className="text-slate-400 leading-relaxed text-sm">{form.about_mission}</p>
+                        </div>
+                      )}
+                      {form.about_achievement && (
+                        <div className="p-5 rounded-xl bg-surface-container-high">
+                          <h6 className="text-primary font-bold mb-3 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm">stars</span>
+                            Our Achievement
+                          </h6>
+                          <p className="text-slate-400 leading-relaxed text-sm">{form.about_achievement}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="mt-16 flex flex-wrap items-center gap-8 sm:gap-12">
+                    <div className="flex flex-col">
+                      <span className="text-3xl font-black text-slate-100 font-headline">{form.about_years}</span>
+                      <span className="text-xs text-slate-500 uppercase font-headline tracking-tighter">Years Experience</span>
+                    </div>
+                    <div className="w-px h-10 bg-slate-800 hidden sm:block" />
+                    <div className="flex flex-col">
+                      <span className="text-3xl font-black text-slate-100 font-headline">{form.about_users_count}</span>
+                      <span className="text-xs text-slate-500 uppercase font-headline tracking-tighter">Active Users</span>
+                    </div>
+                    <div className="w-px h-10 bg-slate-800 hidden sm:block" />
+                    <div className="flex flex-col">
+                      <span className="text-3xl font-black text-slate-100 font-headline">{form.about_uptime}</span>
+                      <span className="text-xs text-slate-500 uppercase font-headline tracking-tighter">Uptime</span>
+                    </div>
+                  </div>
+
+                  {/* Contact Info */}
+                  <div className="mt-12 p-6 bg-surface-container-high rounded-xl space-y-3">
+                    <h6 className="text-primary font-bold text-sm">Contact Info</h6>
+                    <p className="text-slate-400 text-sm">{form.about_website_name} | {form.about_contact_email}</p>
+                    <p className="text-slate-400 text-sm">{form.about_helpline}</p>
+                    <p className="text-slate-400 text-sm">{form.about_address}</p>
+                  </div>
+
+                  {/* Social Media Links */}
+                  {(form.about_facebook || form.about_telegram) && (
+                    <div className="mt-8 flex flex-wrap items-center gap-4">
+                      {form.about_facebook && (
+                        <a href={form.about_facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600/10 text-blue-400 hover:bg-blue-600/20 transition-all text-sm font-medium">
+                          <span className="material-symbols-outlined text-lg">public</span>
+                          Facebook
+                        </a>
+                      )}
+                      {form.about_telegram && (
+                        <a href={form.about_telegram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 transition-all text-sm font-medium">
+                          <span className="material-symbols-outlined text-lg">chat</span>
+                          Telegram
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
