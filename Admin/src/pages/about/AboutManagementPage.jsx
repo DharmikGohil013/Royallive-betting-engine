@@ -1,8 +1,6 @@
 ﻿import { useState, useEffect, useCallback, useRef } from "react";
 import { getSettings, updateSettingsBulk, uploadFile } from "../../services/api";
 
-const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://45.77.168.91:4000");
-
 const ABOUT_KEYS = [
   { key: "about_content", default: "We are a premium cricket platform delivering real-time updates and an elevated gaming experience. Our mission is to combine a passion for cricket with modern technology to create a trusted community. For over 10 years, we have been serving thousands of users with reliable services.\n\nOur commitments:\n1. Transparent gaming policy\n2. Fast payment processing\n3. 24/7 customer support" },
   { key: "about_website_name", default: "Gain Live" },
@@ -201,7 +199,7 @@ export default function AboutManagementPage() {
                     </div>
                   ) : logoUrl ? (
                     <div className="flex flex-col items-center">
-                      <img src={`${API_BASE}${logoUrl}`} alt="Brand Logo" className="w-24 h-24 object-contain rounded-xl mb-3 bg-surface-container-high p-2" />
+                      <img src={logoUrl} alt="Brand Logo" className="w-24 h-24 object-contain rounded-xl mb-3 bg-surface-container-high p-2" />
                       <p className="text-slate-100 font-bold">Logo Uploaded</p>
                       <p className="text-xs text-primary mt-1">Click to replace</p>
                     </div>
@@ -234,7 +232,7 @@ export default function AboutManagementPage() {
                     </div>
                   ) : bannerUrl ? (
                     <div className="flex flex-col items-center">
-                      <img src={`${API_BASE}${bannerUrl}`} alt="Banner" className="w-full h-24 object-cover rounded-xl mb-3 bg-surface-container-high" />
+                      <img src={bannerUrl} alt="Banner" className="w-full h-24 object-cover rounded-xl mb-3 bg-surface-container-high" />
                       <p className="text-slate-100 font-bold">Banner Uploaded</p>
                       <p className="text-xs text-primary mt-1">Click to replace</p>
                     </div>
@@ -345,7 +343,7 @@ export default function AboutManagementPage() {
               {/* Banner */}
               {bannerUrl && (
                 <div className="w-full h-40 sm:h-56 overflow-hidden">
-                  <img src={`${API_BASE}${bannerUrl}`} alt="Banner" className="w-full h-full object-cover" />
+                  <img src={bannerUrl} alt="Banner" className="w-full h-full object-cover" />
                 </div>
               )}
 
@@ -353,7 +351,7 @@ export default function AboutManagementPage() {
                 {/* Logo + Title */}
                 <div className="flex items-center gap-5 mb-8">
                   {logoUrl && (
-                    <img src={`${API_BASE}${logoUrl}`} alt="Logo" className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-xl bg-surface-container-high p-2 shrink-0" />
+                    <img src={logoUrl} alt="Logo" className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-xl bg-surface-container-high p-2 shrink-0" />
                   )}
                   <div>
                     <h2 className="text-3xl sm:text-4xl font-black text-slate-100 font-headline">Learn About Us</h2>
