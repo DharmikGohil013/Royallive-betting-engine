@@ -452,11 +452,35 @@ router.put("/settings", authToken, adminOnly, logActivity("update_settings", "ad
 
     const setting = await Setting.findOneAndUpdate(
       { key },
-      { value, category, description },
+      { value, category: category || "general", description: description || "" },
       { new: true, upsert: true, runValidators: true }
     );
     return res.json({ success: true, setting });
   } catch (err) {
+    console.error("PUT /settings error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/settings/bulk", authToken, adminOnly, logActivity("update_settings_bulk", "admin"), async (req, res) => {
+  try {
+    const { settings } = req.body;
+    if (!Array.isArray(settings) || settings.length === 0) {
+      return res.status(400).json({ error: "Settings array is required" });
+    }
+    const ops = settings.map((s) => ({
+      updateOne: {
+        filter: { key: s.key },
+        update: { $set: { value: s.value, category: s.category || "general", description: s.description || "" } },
+        upsert: true,
+      },
+    }));
+    await Setting.bulkWrite(ops);
+    const keys = settings.map((s) => s.key);
+    const updated = await Setting.find({ key: { $in: keys } }).lean();
+    return res.json({ success: true, settings: updated });
+  } catch (err) {
+    console.error("PUT /settings/bulk error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -148,6 +148,10 @@ export async function updateSetting(key, value, category, description) {
   return api("/admin/settings", { method: "PUT", body: { key, value, category, description } });
 }
 
+export async function updateSettingsBulk(settings) {
+  return api("/admin/settings/bulk", { method: "PUT", body: { settings } });
+}
+
 // ==================== CRICKET ====================
 export async function getCricketMatches(params = {}) {
   return api("/admin/cricket", { params });
