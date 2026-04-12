@@ -1,6 +1,9 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 const User = require("../models/User");
 const Transaction = require("../models/Transaction");
 const Bet = require("../models/Bet");
@@ -8,6 +11,29 @@ const Game = require("../models/Game");
 const Notification = require("../models/Notification");
 const PaymentMethod = require("../models/PaymentMethod");
 const Setting = require("../models/Setting");
+
+// --------------- Multer Upload Config ---------------
+const uploadsDir = path.join(__dirname, "..", "uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const name = file.fieldname + "-" + Date.now() + ext;
+    cb(null, name);
+  },
+});
+
+const ALLOWED_TYPES = ["image/png", "image/svg+xml", "image/jpeg", "image/webp"];
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter: (_req, file, cb) => {
+    if (ALLOWED_TYPES.includes(file.mimetype)) return cb(null, true);
+    cb(new Error("Only PNG, SVG, JPEG, and WebP images are allowed"));
+  },
+});
 const CricketMatch = require("../models/CricketMatch");
 const ActivityLog = require("../models/ActivityLog");
 const { authToken, adminOnly, logActivity } = require("../middleware/auth");
@@ -430,6 +456,50 @@ router.delete("/payment-methods/:id", authToken, adminOnly, async (req, res) => 
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }
+});
+
+// ==================== FILE UPLOAD ====================
+
+router.post("/upload", authToken, adminOnly, (req, res) => {
+  upload.single("file")(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ error: err.code === "LIMIT_FILE_SIZE" ? "File too large (max 5 MB)" : err.message });
+    }
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const { field } = req.body; // "about_logo" or "about_banner"
+    if (!field) {
+      return res.status(400).json({ error: "field name is required" });
+    }
+
+    const fileUrl = `/uploads/${req.file.filename}`;
+
+    try {
+      // Remove old file if setting exists
+      const existing = await Setting.findOne({ key: field });
+      if (existing && existing.value) {
+        const oldPath = path.join(__dirname, "..", existing.value);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+
+      // Save URL to settings
+      await Setting.findOneAndUpdate(
+        { key: field },
+        { value: fileUrl, category: "about", description: field.replace("about_", "").replace(/_/g, " ") },
+        { upsert: true, new: true }
+      );
+
+      return res.json({ success: true, url: fileUrl });
+    } catch (error) {
+      console.error("Upload setting save error:", error);
+      return res.status(500).json({ error: "Failed to save upload" });
+    }
+  });
 });
 
 // ==================== SETTINGS ====================

@@ -58,6 +58,11 @@ app.use(cors({
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: false }));
 
+// Serve uploaded files
+const uploadsPath = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath, { recursive: true });
+app.use("/uploads", express.static(uploadsPath));
+
 // Prevent fingerprinting
 app.disable("x-powered-by");
 

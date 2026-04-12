@@ -139,6 +139,30 @@ export async function deletePaymentMethod(id) {
   return api(`/admin/payment-methods/${id}`, { method: "DELETE" });
 }
 
+// ==================== FILE UPLOAD ====================
+export async function uploadFile(file, field) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("field", field);
+
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/api/admin/upload`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  if (res.status === 401) {
+    clearAuth();
+    window.location.href = "/login";
+    throw new Error("Session expired");
+  }
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Upload failed");
+  return data;
+}
+
 // ==================== SETTINGS ====================
 export async function getSettings(category) {
   return api("/admin/settings", { params: category ? { category } : {} });

@@ -1,5 +1,7 @@
-﻿import { useState, useEffect, useCallback } from "react";
-import { getSettings, updateSettingsBulk } from "../../services/api";
+﻿import { useState, useEffect, useCallback, useRef } from "react";
+import { getSettings, updateSettingsBulk, uploadFile } from "../../services/api";
+
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://45.77.168.91:4000");
 
 const ABOUT_KEYS = [
   { key: "about_content", default: "We are a premium cricket platform delivering real-time updates and an elevated gaming experience. Our mission is to combine a passion for cricket with modern technology to create a trusted community. For over 10 years, we have been serving thousands of users with reliable services.\n\nOur commitments:\n1. Transparent gaming policy\n2. Fast payment processing\n3. 24/7 customer support" },
@@ -24,6 +26,11 @@ export default function AboutManagementPage() {
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [toast, setToast] = useState(null);
+  const [logoUrl, setLogoUrl] = useState("");
+  const [bannerUrl, setBannerUrl] = useState("");
+  const [uploading, setUploading] = useState({ logo: false, banner: false });
+  const logoInputRef = useRef(null);
+  const bannerInputRef = useRef(null);
 
   const showToast = useCallback((msg, type = "success") => {
     setToast({ msg, type });
@@ -35,7 +42,11 @@ export default function AboutManagementPage() {
       try {
         const data = await getSettings("about");
         const loaded = {};
-        for (const s of data.settings || []) loaded[s.key] = s.value;
+        for (const s of data.settings || []) {
+          loaded[s.key] = s.value;
+        }
+        if (loaded.about_logo) setLogoUrl(loaded.about_logo);
+        if (loaded.about_banner) setBannerUrl(loaded.about_banner);
         const merged = {};
         for (const item of ABOUT_KEYS) {
           merged[item.key] = loaded[item.key] !== undefined ? loaded[item.key] : item.default;
@@ -51,6 +62,28 @@ export default function AboutManagementPage() {
       }
     })();
   }, [showToast]);
+
+  const handleUpload = async (file, field) => {
+    const type = field === "about_logo" ? "logo" : "banner";
+    setUploading((prev) => ({ ...prev, [type]: true }));
+    try {
+      const data = await uploadFile(file, field);
+      if (field === "about_logo") setLogoUrl(data.url);
+      else setBannerUrl(data.url);
+      showToast(`${type === "logo" ? "Logo" : "Banner"} uploaded successfully!`);
+    } catch (err) {
+      showToast(err.message || "Upload failed", "error");
+    } finally {
+      setUploading((prev) => ({ ...prev, [type]: false }));
+    }
+  };
+
+  const handleFileSelect = (e, field) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    handleUpload(file, field);
+    e.target.value = "";
+  };
 
   const handleChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -150,19 +183,71 @@ export default function AboutManagementPage() {
                 Brand Logo and Banner
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="p-6 rounded-xl bg-surface-container-low border-2 border-dashed border-outline-variant hover:border-primary/50 transition-all cursor-pointer group text-center">
-                  <div className="w-20 h-20 mx-auto rounded-xl bg-surface-container-high flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-3xl text-slate-500 group-hover:text-primary">upload_file</span>
-                  </div>
-                  <p className="text-slate-100 font-bold">Upload Logo</p>
-                  <p className="text-xs text-slate-500 mt-1">PNG or SVG (500x500 px)</p>
+                {/* Logo Upload */}
+                <div
+                  onClick={() => !uploading.logo && logoInputRef.current?.click()}
+                  className="p-6 rounded-xl bg-surface-container-low border-2 border-dashed border-outline-variant hover:border-primary/50 transition-all cursor-pointer group text-center relative overflow-hidden"
+                >
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/png,image/svg+xml"
+                    className="hidden"
+                    onChange={(e) => handleFileSelect(e, "about_logo")}
+                  />
+                  {uploading.logo ? (
+                    <div className="flex flex-col items-center justify-center py-4">
+                      <div className="animate-spin w-10 h-10 border-2 border-primary border-t-transparent rounded-full mb-3" />
+                      <p className="text-slate-400 text-sm">Uploading...</p>
+                    </div>
+                  ) : logoUrl ? (
+                    <div className="flex flex-col items-center">
+                      <img src={`${API_BASE}${logoUrl}`} alt="Brand Logo" className="w-24 h-24 object-contain rounded-xl mb-3 bg-surface-container-high p-2" />
+                      <p className="text-slate-100 font-bold">Logo Uploaded</p>
+                      <p className="text-xs text-primary mt-1">Click to replace</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-20 h-20 mx-auto rounded-xl bg-surface-container-high flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <span className="material-symbols-outlined text-3xl text-slate-500 group-hover:text-primary">upload_file</span>
+                      </div>
+                      <p className="text-slate-100 font-bold">Upload Logo</p>
+                      <p className="text-xs text-slate-500 mt-1">PNG or SVG (500x500 px)</p>
+                    </>
+                  )}
                 </div>
-                <div className="p-6 rounded-xl bg-surface-container-low border-2 border-dashed border-outline-variant hover:border-primary/50 transition-all cursor-pointer group text-center">
-                  <div className="w-20 h-20 mx-auto rounded-xl bg-surface-container-high flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-3xl text-slate-500 group-hover:text-primary">add_photo_alternate</span>
-                  </div>
-                  <p className="text-slate-100 font-bold">Banner Image</p>
-                  <p className="text-xs text-slate-500 mt-1">JPEG or WebP (1920x480 px)</p>
+                {/* Banner Upload */}
+                <div
+                  onClick={() => !uploading.banner && bannerInputRef.current?.click()}
+                  className="p-6 rounded-xl bg-surface-container-low border-2 border-dashed border-outline-variant hover:border-primary/50 transition-all cursor-pointer group text-center relative overflow-hidden"
+                >
+                  <input
+                    ref={bannerInputRef}
+                    type="file"
+                    accept="image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(e) => handleFileSelect(e, "about_banner")}
+                  />
+                  {uploading.banner ? (
+                    <div className="flex flex-col items-center justify-center py-4">
+                      <div className="animate-spin w-10 h-10 border-2 border-primary border-t-transparent rounded-full mb-3" />
+                      <p className="text-slate-400 text-sm">Uploading...</p>
+                    </div>
+                  ) : bannerUrl ? (
+                    <div className="flex flex-col items-center">
+                      <img src={`${API_BASE}${bannerUrl}`} alt="Banner" className="w-full h-24 object-cover rounded-xl mb-3 bg-surface-container-high" />
+                      <p className="text-slate-100 font-bold">Banner Uploaded</p>
+                      <p className="text-xs text-primary mt-1">Click to replace</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-20 h-20 mx-auto rounded-xl bg-surface-container-high flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <span className="material-symbols-outlined text-3xl text-slate-500 group-hover:text-primary">add_photo_alternate</span>
+                      </div>
+                      <p className="text-slate-100 font-bold">Banner Image</p>
+                      <p className="text-xs text-slate-500 mt-1">JPEG or WebP (1920x480 px)</p>
+                    </>
+                  )}
                 </div>
               </div>
             </article>
