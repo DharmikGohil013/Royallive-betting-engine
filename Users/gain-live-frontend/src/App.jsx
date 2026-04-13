@@ -5,6 +5,13 @@ import BottomNav from "./components/layout/BottomNav";
 import FloatingChat from "./components/ui/FloatingChat";
 import Loader from "./components/ui/Loader";
 import HomePage from "./pages/HomePage";
+import GamesPage from "./pages/GamesPage";
+import SportsPage from "./pages/SportsPage";
+import LiveCasinoPage from "./pages/LiveCasinoPage";
+import CricketPage from "./pages/CricketPage";
+import WalletPage from "./pages/WalletPage";
+import AccountPage from "./pages/AccountPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import AuthLayout from "./components/layout/AuthLayout";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -45,6 +52,13 @@ function AppContent() {
           {!isAuthRoute && <Header />}
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/games" element={<GamesPage />} />
+            <Route path="/sports" element={<SportsPage />} />
+            <Route path="/live-casino" element={<LiveCasinoPage />} />
+            <Route path="/cricket" element={<CricketPage />} />
+            <Route path="/wallet" element={<WalletPage />} />
+            <Route path="/account" element={<AccountPage />} />
+            <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route
               path="/login"
               element={
