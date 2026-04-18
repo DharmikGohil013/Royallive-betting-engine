@@ -141,7 +141,7 @@ export default function PromotionsPage() {
                   )}
                 </div>
               ))}
-              {/* Image Upload */}
+              {/* Image: Upload or URL */}
               <div>
                 <label className="text-xs text-slate-500 font-bold">Promotion Image</label>
                 {form.image && (
@@ -159,6 +159,13 @@ export default function PromotionsPage() {
                   <span className="material-symbols-outlined text-lg">{uploading ? "hourglass_top" : "cloud_upload"}</span>
                   {uploading ? "Uploading..." : form.image ? "Change Image" : "Upload Image"}
                 </button>
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="flex-1 h-px bg-white/10" />
+                  <span className="text-[10px] text-slate-600 uppercase tracking-widest">or paste URL</span>
+                  <div className="flex-1 h-px bg-white/10" />
+                </div>
+                <input type="text" placeholder="https://example.com/image.jpg" value={form.image} onChange={e => setForm({...form, image: e.target.value})}
+                  className="w-full bg-surface-dim border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-100 mt-1" />
               </div>
               <div>
                 <label className="text-xs text-slate-500 font-bold">Type</label>

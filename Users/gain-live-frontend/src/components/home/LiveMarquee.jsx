@@ -1,22 +1,21 @@
 import { useState, useEffect } from "react";
+import { getMarqueeItems } from "../../services/api";
 import { marqueeWinners } from "../../data/homeData";
-
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 const LiveMarquee = () => {
   const [items, setItems] = useState(marqueeWinners);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/user/marquee`)
-      .then((r) => r.json())
+    getMarqueeItems()
       .then((data) => {
         const apiItems = data.items || [];
         if (apiItems.length) {
           setItems(
             apiItems.map((m) => ({
-              label: m.label || "WIN",
+              label: m.label || "WINNER:",
               user: m.username,
-              amount: `৳${Number(m.amount).toLocaleString()}`,
+              amount: m.amount,
+              highlighted: m.highlighted,
             }))
           );
         }
@@ -32,10 +31,11 @@ const LiveMarquee = () => {
         <div className="marquee-content flex flex-nowrap w-max gap-8 items-center font-headline font-bold text-[10px] tracking-widest">
           {/* Render twice for seamless loop */}
           {[...items, ...items].map((winner, index) => (
-            <span key={index} className="flex items-center gap-2">
+            <span key={index} className={`flex items-center gap-2 ${winner.highlighted ? "text-yellow-400" : ""}`}>
               <span className="text-primary-container">{winner.label}</span>
-              <span className="text-on-surface">{winner.user}</span>
-              <span className="text-secondary-container">{winner.amount}</span>
+              <span className={winner.highlighted ? "text-yellow-300" : "text-on-surface"}>{winner.user}</span>
+              <span className={winner.highlighted ? "text-yellow-200" : "text-secondary-container"}>{winner.amount}</span>
+              {winner.highlighted && <span className="text-yellow-400">★</span>}
             </span>
           ))}
         </div>
