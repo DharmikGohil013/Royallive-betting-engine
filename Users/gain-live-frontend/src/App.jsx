@@ -12,6 +12,10 @@ import CricketPage from "./pages/CricketPage";
 import WalletPage from "./pages/WalletPage";
 import AccountPage from "./pages/AccountPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import HelpCenterPage from "./pages/HelpCenterPage";
+import ReferFriendPage from "./pages/ReferFriendPage";
+import PromotionsPage from "./pages/PromotionsPage";
+import AboutPage from "./pages/AboutPage";
 import AuthLayout from "./components/layout/AuthLayout";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -59,6 +63,10 @@ function AppContent() {
             <Route path="/wallet" element={<WalletPage />} />
             <Route path="/account" element={<AccountPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Route path="/help" element={<HelpCenterPage />} />
+            <Route path="/refer" element={<ReferFriendPage />} />
+            <Route path="/promotions" element={<PromotionsPage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route
               path="/login"
               element={

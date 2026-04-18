@@ -152,3 +152,66 @@ export async function getPublicSetting(key) {
 export async function getNotifications(params = {}) {
   return api("/notifications", { params });
 }
+
+// ==================== MARQUEE ====================
+export async function getMarqueeItems() {
+  const res = await fetch(`${API_BASE}/api/user/marquee`);
+  return res.json();
+}
+
+// ==================== BLOCK / REPORT ====================
+export async function blockUser(userId) {
+  return api("/block", { method: "POST", body: { userId } });
+}
+
+export async function unblockUser(userId) {
+  return api("/unblock", { method: "POST", body: { userId } });
+}
+
+export async function reportUser(userId, reason) {
+  return api("/report", { method: "POST", body: { userId, reason } });
+}
+
+export async function getBlockedUsers() {
+  return api("/blocked-users");
+}
+
+// ==================== HELP CENTER ====================
+export async function submitHelpRequest(subject, message, category) {
+  return api("/help", { method: "POST", body: { subject, message, category } });
+}
+
+export async function getMyHelpRequests() {
+  return api("/help");
+}
+
+export async function getFAQ() {
+  return api("/support/faq", { auth: false });
+}
+
+// ==================== PROMOTIONS ====================
+export async function getPromotions() {
+  const res = await fetch(`${API_BASE}/api/user/promotions`);
+  return res.json();
+}
+
+export async function submitPromotionRequest(data) {
+  return api("/promotions/request", { method: "POST", body: data });
+}
+
+// ==================== REFERRAL ====================
+export async function getReferralInfo() {
+  return api("/referral");
+}
+
+// ==================== HALL OF GLORY ====================
+export async function getHallOfGlory() {
+  const res = await fetch(`${API_BASE}/api/user/hall-of-glory`);
+  return res.json();
+}
+
+// ==================== POLICIES ====================
+export async function getPolicies() {
+  const res = await fetch(`${API_BASE}/api/user/policies`);
+  return res.json();
+}

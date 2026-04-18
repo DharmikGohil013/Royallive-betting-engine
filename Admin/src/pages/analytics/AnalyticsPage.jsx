@@ -29,12 +29,14 @@ export default function AnalyticsPage() {
     { id: "expected-profit", icon: "analytics", iconClass: "bg-surface-container-highest text-on-surface-variant", title: "Active Bets", value: "0" },
   ];
 
+  const maxDeposit = weeklyData.length > 0 ? Math.max(1, ...weeklyData.map((w) => w.deposits || 1)) : 1;
   const dailyTrend = weeklyData.length > 0 ? weeklyData.map((d) => ({
     day: d._id || d.day || "?",
-    height: `h-[${Math.max(5, Math.min(95, Math.round((d.deposits || 0) / Math.max(1, ...weeklyData.map((w) => w.deposits || 1)) * 95)))}%]`,
+    pct: Math.max(5, Math.min(95, Math.round((d.deposits || 0) / maxDeposit * 95))),
+    amount: d.deposits || 0,
   })) : [
-    { day: "Sat", height: "h-[45%]" }, { day: "Sun", height: "h-[60%]" }, { day: "Mon", height: "h-[52%]" },
-    { day: "Tue", height: "h-[85%]" }, { day: "Wed", height: "h-[68%]" }, { day: "Thu", height: "h-[92%]" }, { day: "Fri", height: "h-[75%]" },
+    { day: "Sat", pct: 45 }, { day: "Sun", pct: 60 }, { day: "Mon", pct: 52 },
+    { day: "Tue", pct: 85 }, { day: "Wed", pct: 68 }, { day: "Thu", pct: 92 }, { day: "Fri", pct: 75 },
   ];
   return (
     <div className="font-body">
@@ -144,9 +146,10 @@ export default function AnalyticsPage() {
             </div>
 
             {dailyTrend.map((bar) => (
-              <div key={bar.day} className="flex-1 flex flex-col justify-end items-center group">
+              <div key={bar.day} className="flex-1 flex flex-col justify-end items-center group" title={bar.amount != null ? `BDT ${bar.amount.toLocaleString()}` : ''}>
                 <div
-                  className={`w-full bg-gradient-to-t from-amber-500/5 to-amber-500/40 ${bar.height} rounded-t-sm transition-all group-hover:to-amber-500/60`}
+                  className="w-full bg-gradient-to-t from-amber-500/5 to-amber-500/40 rounded-t-sm transition-all group-hover:to-amber-500/60"
+                  style={{ height: `${bar.pct}%` }}
                 />
                 <span className="text-[10px] mt-4 font-bold text-slate-500 uppercase">{bar.day}</span>
               </div>

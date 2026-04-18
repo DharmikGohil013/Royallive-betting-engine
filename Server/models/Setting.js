@@ -6,7 +6,7 @@ const settingSchema = new mongoose.Schema(
     value: { type: mongoose.Schema.Types.Mixed, required: true },
     category: {
       type: String,
-      enum: ["general", "game", "payment", "notification", "security", "about", "policy"],
+      enum: ["general", "game", "payment", "notification", "security", "about", "policy", "site", "notifications", "referral", "promotion"],
       default: "general",
     },
     description: { type: String, default: "" },

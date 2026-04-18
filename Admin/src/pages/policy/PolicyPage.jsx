@@ -2,17 +2,17 @@
 import { getSettings, updateSettingsBulk } from "../../services/api";
 
 const TABS = [
-  { key: "policy_privacy", label: "à¦—à§‹à¦ªà¦¨à§€à¦¯à¦¼à¦¤à¦¾ à¦¨à§€à¦¤à¦¿", labelEn: "Privacy Policy" },
-  { key: "policy_terms", label: "à¦¬à§à¦¯à¦¬à¦¹à¦¾à¦°à§‡à¦° à¦¶à¦°à§à¦¤à¦¾à¦¬à¦²à§€", labelEn: "Terms of Use" },
-  { key: "policy_responsible_gaming", label: "à¦¦à¦¾à¦¯à¦¼à¦¿à¦¤à§à¦¬à¦¶à§€à¦² à¦—à§‡à¦®à¦¿à¦‚", labelEn: "Responsible Gaming" },
-  { key: "policy_refund", label: "à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦¨à§€à¦¤à¦¿", labelEn: "Refund Policy" },
+  { key: "policy_privacy", label: "Privacy Policy", labelEn: "Privacy Policy" },
+  { key: "policy_terms", label: "Terms of Use", labelEn: "Terms of Use" },
+  { key: "policy_responsible_gaming", label: "Responsible Gaming", labelEn: "Responsible Gaming" },
+  { key: "policy_refund", label: "Refund Policy", labelEn: "Refund Policy" },
 ];
 
 const DEFAULT_CONTENT = {
-  policy_privacy: `à¦†à¦®à¦¾à¦¦à§‡à¦° à¦ªà§à¦²à§à¦¯à¦¾à¦Ÿà¦«à¦°à§à¦® à¦¬à§à¦¯à¦¬à¦¹à¦¾à¦° à¦•à¦°à¦¾à¦° à¦œà¦¨à§à¦¯ à¦†à¦ªà¦¨à¦¾à¦•à§‡ à¦§à¦¨à§à¦¯à¦¬à¦¾à¦¦à¥¤ à¦†à¦ªà¦¨à¦¾à¦° à¦¬à§à¦¯à¦•à§à¦¤à¦¿à¦—à¦¤ à¦¤à¦¥à§à¦¯à§‡à¦° à¦¸à§à¦°à¦•à§à¦·à¦¾ à¦¨à¦¿à¦¶à§à¦šà¦¿à¦¤ à¦•à¦°à¦¾ à¦†à¦®à¦¾à¦¦à§‡à¦° à¦…à¦¨à§à¦¯à¦¤à¦® à¦ªà§à¦°à¦§à¦¾à¦¨ à¦²à¦•à§à¦·à§à¦¯à¥¤\n\nà§§. à¦¤à¦¥à§à¦¯ à¦¸à¦‚à¦—à§à¦°à¦¹\nà¦†à¦®à¦°à¦¾ à¦†à¦ªà¦¨à¦¾à¦° à¦¨à¦¾à¦®, à¦‡à¦®à§‡à¦² à¦ à¦¿à¦•à¦¾à¦¨à¦¾, à¦«à§‹à¦¨ à¦¨à¦®à§à¦¬à¦° à¦à¦¬à¦‚ à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¸à¦‚à¦•à§à¦°à¦¾à¦¨à§à¦¤ à¦¤à¦¥à§à¦¯ à¦¸à¦‚à¦—à§à¦°à¦¹ à¦•à¦°à¦¤à§‡ à¦ªà¦¾à¦°à¦¿à¥¤\n\nà§¨. à¦¤à¦¥à§à¦¯à§‡à¦° à¦¬à§à¦¯à¦¬à¦¹à¦¾à¦°\n- à¦ªà¦°à¦¿à¦·à§‡à¦¬à¦¾ à¦ªà§à¦°à¦¦à¦¾à¦¨ à¦à¦¬à¦‚ à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿà§‡à¦° à¦¨à¦¿à¦°à¦¾à¦ªà¦¤à§à¦¤à¦¾ à¦¨à¦¿à¦¶à§à¦šà¦¿à¦¤ à¦•à¦°à¦¾à¥¤\n- à¦¨à¦¤à§à¦¨ à¦®à§à¦¯à¦¾à¦š à¦à¦¬à¦‚ à¦…à¦«à¦¾à¦° à¦¸à¦®à§à¦ªà¦°à§à¦•à§‡ à¦†à¦ªà¦¨à¦¾à¦•à§‡ à¦…à¦¬à¦¹à¦¿à¦¤ à¦•à¦°à¦¾à¥¤\n- à¦²à§‡à¦¨à¦¦à§‡à¦¨ à¦¸à¦‚à¦•à§à¦°à¦¾à¦¨à§à¦¤ à¦­à§‡à¦°à¦¿à¦«à¦¿à¦•à§‡à¦¶à¦¨ à¦à¦¬à¦‚ à¦¸à¦¾à¦ªà§‹à¦°à§à¦Ÿ à¦ªà§à¦°à¦¦à¦¾à¦¨à¥¤\n\nà§©. à¦•à§à¦•à¦¿à¦œ à¦ªà¦²à¦¿à¦¸à¦¿\nà¦†à¦®à¦°à¦¾ à¦†à¦ªà¦¨à¦¾à¦° à¦¬à§à¦°à¦¾à¦‰à¦œà¦¿à¦‚ à¦…à¦­à¦¿à¦œà§à¦žà¦¤à¦¾ à¦‰à¦¨à§à¦¨à¦¤ à¦•à¦°à¦¤à§‡ à¦•à§à¦•à¦¿à¦œ à¦¬à§à¦¯à¦¬à¦¹à¦¾à¦° à¦•à¦°à¦¿à¥¤`,
-  policy_terms: `à¦à¦‡ à¦“à¦¯à¦¼à§‡à¦¬à¦¸à¦¾à¦‡à¦Ÿ à¦¬à§à¦¯à¦¬à¦¹à¦¾à¦° à¦•à¦°à§‡ à¦†à¦ªà¦¨à¦¿ à¦¨à¦¿à¦®à§à¦¨à¦²à¦¿à¦–à¦¿à¦¤ à¦¶à¦°à§à¦¤à¦¾à¦¬à¦²à§€à¦¤à§‡ à¦¸à¦®à§à¦®à¦¤ à¦¹à¦šà§à¦›à§‡à¦¨à¥¤\n\nà§§. à¦¬à§à¦¯à¦¬à¦¹à¦¾à¦°à¦•à¦¾à¦°à§€à¦° à¦¯à§‹à¦—à§à¦¯à¦¤à¦¾\nà¦†à¦ªà¦¨à¦¾à¦•à§‡ à¦•à¦®à¦ªà¦•à§à¦·à§‡ à§§à§® à¦¬à¦›à¦° à¦¬à¦¯à¦¼à¦¸à§€ à¦¹à¦¤à§‡ à¦¹à¦¬à§‡à¥¤\n\nà§¨. à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¦à¦¾à¦¯à¦¼à¦¿à¦¤à§à¦¬\nà¦†à¦ªà¦¨à¦¾à¦° à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿà§‡à¦° à¦¨à¦¿à¦°à¦¾à¦ªà¦¤à§à¦¤à¦¾ à¦†à¦ªà¦¨à¦¾à¦° à¦¦à¦¾à¦¯à¦¼à¦¿à¦¤à§à¦¬à¥¤\n\nà§©. à¦ªà¦°à¦¿à¦·à§‡à¦¬à¦¾à¦° à¦ªà¦°à¦¿à¦¬à¦°à§à¦¤à¦¨\nà¦†à¦®à¦°à¦¾ à¦¯à§‡à¦•à§‹à¦¨à§‹ à¦¸à¦®à¦¯à¦¼ à¦ªà¦°à¦¿à¦·à§‡à¦¬à¦¾ à¦ªà¦°à¦¿à¦¬à¦°à§à¦¤à¦¨ à¦¬à¦¾ à¦¬à¦¨à§à¦§ à¦•à¦°à¦¾à¦° à¦…à¦§à¦¿à¦•à¦¾à¦° à¦°à¦¾à¦–à¦¿à¥¤`,
-  policy_responsible_gaming: `à¦†à¦®à¦°à¦¾ à¦¦à¦¾à¦¯à¦¼à¦¿à¦¤à§à¦¬à¦¶à§€à¦² à¦—à§‡à¦®à¦¿à¦‚-à¦ à¦¬à¦¿à¦¶à§à¦¬à¦¾à¦¸ à¦•à¦°à¦¿à¥¤\n\nà§§. à¦¸à§€à¦®à¦¾ à¦¨à¦¿à¦°à§à¦§à¦¾à¦°à¦£\nà¦†à¦ªà¦¨à¦¿ à¦†à¦ªà¦¨à¦¾à¦° à¦¦à§ˆà¦¨à¦¿à¦•, à¦¸à¦¾à¦ªà§à¦¤à¦¾à¦¹à¦¿à¦• à¦¬à¦¾ à¦®à¦¾à¦¸à¦¿à¦• à¦œà¦®à¦¾ à¦¸à§€à¦®à¦¾ à¦¨à¦¿à¦°à§à¦§à¦¾à¦°à¦£ à¦•à¦°à¦¤à§‡ à¦ªà¦¾à¦°à§‡à¦¨à¥¤\n\nà§¨. à¦¸à§à¦¬-à¦¬à¦°à§à¦œà¦¨\nà¦†à¦ªà¦¨à¦¿ à¦šà¦¾à¦‡à¦²à§‡ à¦¨à¦¿à¦°à§à¦¦à¦¿à¦·à§à¦Ÿ à¦¸à¦®à¦¯à¦¼à§‡à¦° à¦œà¦¨à§à¦¯ à¦†à¦ªà¦¨à¦¾à¦° à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¬à¦¨à§à¦§ à¦•à¦°à¦¤à§‡ à¦ªà¦¾à¦°à§‡à¦¨à¥¤\n\nà§©. à¦¸à¦¹à¦¾à¦¯à¦¼à¦¤à¦¾\nà¦—à§‡à¦®à¦¿à¦‚ à¦¸à¦®à¦¸à§à¦¯à¦¾à¦¯à¦¼ à¦ªà¦¡à¦¼à¦²à§‡ à¦†à¦®à¦¾à¦¦à§‡à¦° à¦¸à¦¾à¦ªà§‹à¦°à§à¦Ÿ à¦Ÿà¦¿à¦®à§‡ à¦¯à§‹à¦—à¦¾à¦¯à§‹à¦— à¦•à¦°à§à¦¨à¥¤`,
-  policy_refund: `à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦¸à¦‚à¦•à§à¦°à¦¾à¦¨à§à¦¤ à¦¨à§€à¦¤à¦¿à¦®à¦¾à¦²à¦¾:\n\nà§§. à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡à§‡à¦° à¦¯à§‹à¦—à§à¦¯à¦¤à¦¾\nà¦­à§à¦² à¦²à§‡à¦¨à¦¦à§‡à¦¨ à¦¬à¦¾ à¦¸à¦¿à¦¸à§à¦Ÿà§‡à¦® à¦¤à§à¦°à§à¦Ÿà¦¿à¦° à¦•à§à¦·à§‡à¦¤à§à¦°à§‡ à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦ªà§à¦°à¦¯à§‹à¦œà§à¦¯à¥¤\n\nà§¨. à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦ªà§à¦°à¦•à§à¦°à¦¿à¦¯à¦¼à¦¾\nà¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦…à¦¨à§à¦°à§‹à¦§ à¦œà¦®à¦¾ à¦¦à§‡à¦“à¦¯à¦¼à¦¾à¦° à§©-à§« à¦•à¦¾à¦°à§à¦¯à¦¦à¦¿à¦¬à¦¸à§‡à¦° à¦®à¦§à§à¦¯à§‡ à¦ªà§à¦°à¦•à§à¦°à¦¿à¦¯à¦¼à¦¾ à¦•à¦°à¦¾ à¦¹à¦¬à§‡à¥¤\n\nà§©. à¦…-à¦«à§‡à¦°à¦¤à¦¯à§‹à¦—à§à¦¯\nà¦¸à¦®à§à¦ªà¦¨à§à¦¨ à¦¬à§‡à¦Ÿ à¦à¦¬à¦‚ à¦¬à§à¦¯à¦¬à¦¹à§ƒà¦¤ à¦¬à§‹à¦¨à¦¾à¦¸ à¦«à§‡à¦°à¦¤à¦¯à§‹à¦—à§à¦¯ à¦¨à¦¯à¦¼à¥¤`,
+  policy_privacy: `Thank you for using our platform. Protecting your personal information is one of our top priorities.\n\n1. Information Collection\nWe may collect your name, email address, phone number and payment-related information.\n\n2. Use of Information\n- To provide services and ensure account security.\n- To notify you about new matches and offers.\n- For transaction verification and support.\n\n3. Cookie Policy\nWe use cookies to improve your browsing experience.\n\n4. Data Protection\nWe use industry-standard security measures to protect your data. Your information is never sold to third parties.\n\n5. Contact\nFor any privacy concerns, please contact our support team.`,
+  policy_terms: `By using this website, you agree to the following terms and conditions.\n\n1. Eligibility\nYou must be at least 18 years of age to use this platform.\n\n2. Account Responsibility\nYou are responsible for maintaining the security of your account and password.\n\n3. Fair Play\nAny attempt to manipulate games, exploit bugs, or engage in fraudulent activity will result in account suspension.\n\n4. Service Changes\nWe reserve the right to modify or discontinue services at any time.\n\n5. Limitation of Liability\nWe are not liable for any losses incurred through the use of our platform beyond the balance in your account.`,
+  policy_responsible_gaming: `We believe in responsible gaming.\n\n1. Set Your Limits\nYou can set daily, weekly or monthly deposit limits to control your spending.\n\n2. Self-Exclusion\nIf you feel you need a break, you can request temporary or permanent account suspension.\n\n3. Warning Signs\nIf gaming is affecting your daily life, finances or relationships, please seek help.\n\n4. Support\nIf you experience gaming-related problems, please contact our support team for assistance.\n\n5. Age Restriction\nOur platform is strictly for users aged 18 and above.`,
+  policy_refund: `Refund Policy:\n\n1. Eligibility for Refund\nRefunds are applicable in cases of incorrect transactions or system errors only.\n\n2. Refund Process\nRefund requests will be processed within 3-5 business days after submission.\n\n3. Non-Refundable\nCompleted bets and used bonuses are non-refundable.\n\n4. How to Request\nContact our support team with your transaction ID and reason for refund.\n\n5. Decision\nAll refund decisions are final and at the discretion of the management.`,
 };
 
 export default function PolicyPage() {
@@ -45,7 +45,7 @@ export default function PolicyPage() {
           if (!loaded[tab.key]) loaded[tab.key] = DEFAULT_CONTENT[tab.key] || "";
         }
         setContents(loaded);
-        if (latest) setLastUpdated(new Date(latest).toLocaleString("bn-BD"));
+        if (latest) setLastUpdated(new Date(latest).toLocaleString("en-US"));
       } catch {
         showToast("Failed to load policies", "error");
         const defaults = {};
@@ -67,7 +67,7 @@ export default function PolicyPage() {
         description: tab.labelEn,
       }));
       await updateSettingsBulk(settings);
-      setLastUpdated(new Date().toLocaleString("bn-BD"));
+      setLastUpdated(new Date().toLocaleString("en-US"));
       showToast("All policies published successfully!");
     } catch {
       showToast("Failed to publish policies", "error");
@@ -127,7 +127,7 @@ export default function PolicyPage() {
               className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-5 py-2 rounded-lg font-bold text-xs flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
             >
               <span className="material-symbols-outlined text-lg">{saving ? "hourglass_top" : "publish"}</span>
-              {saving ? "Publishing..." : "à¦ªà§à¦°à¦•à¦¾à¦¶ à¦•à¦°à§à¦¨"}
+              {saving ? "Publishing..." : "Publish"}
             </button>
           </div>
         </section>
@@ -207,7 +207,7 @@ export default function PolicyPage() {
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-white/5">
                   <span className="text-xs text-slate-500">Language</span>
-                  <span className="text-xs text-slate-300">Bengali</span>
+                  <span className="text-xs text-slate-300">English</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-xs text-slate-500">Total Sections</span>

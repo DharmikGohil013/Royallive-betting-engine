@@ -83,6 +83,26 @@ export async function updateUserBalance(id, amount, type, note) {
   return api(`/admin/users/${id}/balance`, { method: "PATCH", body: { amount, type, note } });
 }
 
+export async function editUser(id, data) {
+  return api(`/admin/users/${id}`, { method: "PUT", body: data });
+}
+
+export async function deleteUser(id) {
+  return api(`/admin/users/${id}`, { method: "DELETE" });
+}
+
+export async function updateUser(id, data) {
+  return api(`/admin/users/${id}`, { method: "PUT", body: data });
+}
+
+export async function createUser(data) {
+  return api("/admin/users", { method: "POST", body: data });
+}
+
+export async function getUserTransactions(id, params = {}) {
+  return api(`/admin/users/${id}/transactions`, { params });
+}
+
 // ==================== TRANSACTIONS ====================
 export async function getTransactions(params = {}) {
   return api("/admin/transactions", { params });
@@ -270,4 +290,82 @@ export async function getUserRetention() {
 
 export async function getPlatformSummary() {
   return api("/analytics/summary");
+}
+
+// ==================== MARQUEE ====================
+export async function getMarqueeItems() {
+  return api("/admin/marquee");
+}
+
+export async function createMarqueeItem(data) {
+  return api("/admin/marquee", { method: "POST", body: data });
+}
+
+export async function updateMarqueeItem(id, data) {
+  return api(`/admin/marquee/${id}`, { method: "PUT", body: data });
+}
+
+export async function deleteMarqueeItem(id) {
+  return api(`/admin/marquee/${id}`, { method: "DELETE" });
+}
+
+// ==================== REPORTS ====================
+export async function getReports(params = {}) {
+  return api("/admin/reports", { params });
+}
+
+export async function updateReport(id, data) {
+  return api(`/admin/reports/${id}`, { method: "PATCH", body: data });
+}
+
+// ==================== HELP REQUESTS ====================
+export async function getHelpRequests(params = {}) {
+  return api("/admin/help-requests", { params });
+}
+
+export async function replyHelpRequest(id, data) {
+  return api(`/admin/help-requests/${id}`, { method: "PATCH", body: data });
+}
+
+export async function deleteHelpRequest(id) {
+  return api(`/admin/help-requests/${id}`, { method: "DELETE" });
+}
+
+// ==================== PROMOTIONS ====================
+export async function getPromotions() {
+  return api("/admin/promotions");
+}
+
+export async function createPromotion(data) {
+  return api("/admin/promotions", { method: "POST", body: data });
+}
+
+export async function updatePromotion(id, data) {
+  return api(`/admin/promotions/${id}`, { method: "PUT", body: data });
+}
+
+export async function deletePromotion(id) {
+  return api(`/admin/promotions/${id}`, { method: "DELETE" });
+}
+
+// ==================== HALL OF GLORY ====================
+export async function getHallOfGlory(date) {
+  return api("/admin/hall-of-glory", { params: date ? { date } : {} });
+}
+
+export async function generateHallOfGlory() {
+  return api("/admin/hall-of-glory/generate", { method: "POST" });
+}
+
+export async function updateHallOfGloryEntry(id, data) {
+  return api(`/admin/hall-of-glory/${id}`, { method: "PUT", body: data });
+}
+
+export async function createHallOfGloryEntry(data) {
+  return api("/admin/hall-of-glory", { method: "POST", body: data });
+}
+
+// ==================== REFERRALS ====================
+export async function getReferrals(params = {}) {
+  return api("/admin/referrals", { params });
 }

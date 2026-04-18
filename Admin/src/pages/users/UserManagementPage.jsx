@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getUsers, updateUserStatus, updateUserBalance, getUserById } from "../../services/api";
+import { getUsers, updateUserStatus, updateUserBalance, getUserById, createUser, updateUser, deleteUser } from "../../services/api";
 
 const fallbackStats = [
   { id: "total", title: "Total Users", value: "0", accent: "border-primary" },
@@ -78,8 +78,89 @@ export default function UserManagementPage() {
       selectUser(selectedUser);
     } catch (err) { alert(err.message); }
   }
+
+  const [showModal, setShowModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({ username: "", mobile: "", password: "", balance: 1000, status: "active" });
+
+  function openCreateModal() {
+    setEditMode(false);
+    setFormData({ username: "", mobile: "", password: "", balance: 1000, status: "active" });
+    setShowModal(true);
+  }
+
+  function openEditModal(user) {
+    setEditMode(true);
+    setFormData({ username: user.username || "", mobile: user.mobile || "", password: "", balance: user.balance || 0, status: user.status || "active", _id: user._id });
+    setShowModal(true);
+  }
+
+  async function handleSaveUser(e) {
+    e.preventDefault();
+    try {
+      if (editMode) {
+        await updateUser(formData._id, { username: formData.username, mobile: formData.mobile, status: formData.status, balance: Number(formData.balance) });
+      } else {
+        await createUser({ username: formData.username, mobile: formData.mobile, password: formData.password, balance: Number(formData.balance) });
+      }
+      setShowModal(false);
+      loadUsers();
+    } catch (err) { alert(err.message || "Failed to save user"); }
+  }
+
+  async function handleDeleteUser(id) {
+    if (!confirm("Are you sure you want to delete this user?")) return;
+    try {
+      await deleteUser(id);
+      if (selectedUser?._id === id) setSelectedUser(null);
+      loadUsers();
+    } catch (err) { alert(err.message || "Failed to delete user"); }
+  }
+
   return (
     <div className="font-body">
+      {/* Create/Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
+          <div className="bg-surface-container rounded-xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <h2 className="text-lg font-black text-slate-100 mb-4">{editMode ? "Edit User" : "Create New User"}</h2>
+            <form onSubmit={handleSaveUser} className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase">Username</label>
+                <input className="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface mt-1" value={formData.username} onChange={e => setFormData({...formData, username: e.target.value})} required />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase">Mobile</label>
+                <input className="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface mt-1" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} required />
+              </div>
+              {!editMode && (
+                <div>
+                  <label className="text-xs font-bold text-slate-500 uppercase">Password</label>
+                  <input type="password" className="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface mt-1" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} required />
+                </div>
+              )}
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase">Balance (BDT)</label>
+                <input type="number" className="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface mt-1" value={formData.balance} onChange={e => setFormData({...formData, balance: e.target.value})} />
+              </div>
+              {editMode && (
+                <div>
+                  <label className="text-xs font-bold text-slate-500 uppercase">Status</label>
+                  <select className="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface mt-1" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+                    <option value="active">Active</option>
+                    <option value="suspended">Suspended</option>
+                  </select>
+                </div>
+              )}
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-2.5 rounded-lg border border-outline-variant/20 text-sm font-bold text-slate-400">Cancel</button>
+                <button type="submit" className="flex-1 py-2.5 rounded-lg bg-primary text-on-primary text-sm font-bold">{editMode ? "Save Changes" : "Create User"}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="absolute top-20 right-6 sm:right-12 h-40 w-40 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
 
       <div className="mb-8 sm:mb-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
@@ -95,27 +176,33 @@ export default function UserManagementPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:flex gap-3 sm:gap-4 w-full xl:w-auto">
           <label className="flex flex-col gap-1.5">
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider pl-1">
-              Status
+              Search
             </span>
-            <select className="bg-surface-container border border-outline-variant/20 rounded-lg text-sm px-4 py-2.5 text-slate-200 focus:ring-1 focus:ring-primary/50 min-w-[150px]">
-              <option>All Status</option>
-              <option>Active</option>
-              <option>Blocked</option>
-            </select>
+            <input
+              className="bg-surface-container border border-outline-variant/20 rounded-lg text-sm px-4 py-2.5 text-slate-200 focus:ring-1 focus:ring-primary/50 min-w-[150px]"
+              type="text"
+              placeholder="Username or mobile..."
+              value={search}
+              onChange={e => { setSearch(e.target.value); setPage(1); }}
+            />
           </label>
 
           <label className="flex flex-col gap-1.5">
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider pl-1">
-              Date
+              Status
             </span>
-            <input
-              className="bg-surface-container border border-outline-variant/20 rounded-lg text-sm px-4 py-2.5 text-slate-200 focus:ring-1 focus:ring-primary/50"
-              type="text"
-              placeholder="dd-mm-yyyy"
-            />
+            <select
+              className="bg-surface-container border border-outline-variant/20 rounded-lg text-sm px-4 py-2.5 text-slate-200 focus:ring-1 focus:ring-primary/50 min-w-[150px]"
+              value={statusFilter}
+              onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
+            >
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="suspended">Blocked</option>
+            </select>
           </label>
 
-          <button className="sm:col-span-2 xl:col-span-1 xl:self-end bg-gradient-to-tr from-primary to-primary-container text-on-primary font-bold px-6 py-2.5 rounded-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20 whitespace-nowrap">
+          <button onClick={openCreateModal} className="sm:col-span-2 xl:col-span-1 xl:self-end bg-gradient-to-tr from-primary to-primary-container text-on-primary font-bold px-6 py-2.5 rounded-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20 whitespace-nowrap">
             <span className="material-symbols-outlined text-lg">person_add</span>
             New User
           </button>
@@ -188,7 +275,7 @@ export default function UserManagementPage() {
                         <button className="p-2 hover:bg-primary/20 text-primary rounded-lg" title="View" onClick={() => selectUser(user)}>
                           <span className="material-symbols-outlined text-lg">visibility</span>
                         </button>
-                        <button className="p-2 hover:bg-white/10 text-slate-300 rounded-lg" title="Edit" onClick={() => selectUser(user)}>
+                        <button className="p-2 hover:bg-white/10 text-slate-300 rounded-lg" title="Edit" onClick={() => openEditModal(user)}>
                           <span className="material-symbols-outlined text-lg">edit</span>
                         </button>
                         <button
@@ -203,6 +290,9 @@ export default function UserManagementPage() {
                           <span className="material-symbols-outlined text-lg">
                             {blocked ? "lock_open" : "block"}
                           </span>
+                        </button>
+                        <button className="p-2 hover:bg-error/20 text-error/60 rounded-lg" title="Delete" onClick={() => handleDeleteUser(user._id)}>
+                          <span className="material-symbols-outlined text-lg">delete</span>
                         </button>
                       </div>
                     </td>
@@ -320,11 +410,11 @@ export default function UserManagementPage() {
             </div>
 
             <div className="mt-8 pt-8 border-t border-white/5 flex gap-3 sm:gap-4">
-              <button className="flex-1 py-3 text-slate-400 hover:text-slate-100 font-bold transition-all text-sm uppercase flex items-center justify-center gap-2">
+              <button onClick={() => selectedUser && openEditModal(selectedUser)} className="flex-1 py-3 text-slate-400 hover:text-slate-100 font-bold transition-all text-sm uppercase flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined text-lg">edit</span>
                 Edit Profile
               </button>
-              <button className="px-4 py-3 text-error/70 hover:text-error transition-all rounded-lg hover:bg-error/10">
+              <button onClick={() => selectedUser && handleDeleteUser(selectedUser._id)} className="px-4 py-3 text-error/70 hover:text-error transition-all rounded-lg hover:bg-error/10">
                 <span className="material-symbols-outlined text-lg">delete</span>
               </button>
             </div>

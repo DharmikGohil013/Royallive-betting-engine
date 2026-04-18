@@ -12,7 +12,7 @@ export default function NotificationsPage() {
   const [stats, setStats] = useState(fallbackStats);
   const [notifications, setNotifications] = useState([]);
   const [banners, setBanners] = useState([]);
-  const [form, setForm] = useState({ title: "", message: "", target: "All Users", actionUrl: "", imageUrl: "" });
+  const [form, setForm] = useState({ title: "", message: "", target: "All Users", actionUrl: "", imageUrl: "", type: "push" });
   const [sending, setSending] = useState(false);
 
   const loadNotifications = async () => {
@@ -40,8 +40,8 @@ export default function NotificationsPage() {
     if (!form.title || !form.message) return;
     setSending(true);
     try {
-      await createNotification({ ...form, type: "push" });
-      setForm({ title: "", message: "", target: "All Users", actionUrl: "", imageUrl: "" });
+      await createNotification({ ...form });
+      setForm({ title: "", message: "", target: "All Users", actionUrl: "", imageUrl: "", type: "push" });
       loadNotifications();
     } catch (err) { alert(err.message || "Failed to send notification"); }
     setSending(false);
@@ -112,10 +112,18 @@ export default function NotificationsPage() {
             </div>
 
             <form className="space-y-6" onSubmit={handleSend}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Notification Title</label>
                   <input className="w-full bg-surface-container border-none rounded-xl py-3 px-4 text-sm text-on-surface focus:ring-1 focus:ring-primary/50" placeholder="E.g. New bonus offer!" type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Type</label>
+                  <select className="w-full bg-surface-container border-none rounded-xl py-3 px-4 text-sm text-on-surface focus:ring-1 focus:ring-primary/50" value={form.type} onChange={e => setForm({...form, type: e.target.value})}>
+                    <option value="push">Push Notification</option>
+                    <option value="banner">Banner</option>
+                    <option value="popup">Pop-up</option>
+                  </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Target Audience</label>

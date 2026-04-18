@@ -6,7 +6,7 @@ const notificationSchema = new mongoose.Schema(
     message: { type: String, required: true },
     type: {
       type: String,
-      enum: ["info", "warning", "success", "error", "promo"],
+      enum: ["info", "warning", "success", "error", "promo", "push", "banner", "popup"],
       default: "info",
     },
     target: {
@@ -15,8 +15,17 @@ const notificationSchema = new mongoose.Schema(
       default: "all",
     },
     targetUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    targetUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     isRead: { type: Boolean, default: false },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    actionLink: { type: String, default: "" },
+    image: { type: String, default: "" },
+    status: { type: String, enum: ["sent", "scheduled", "draft", "failed"], default: "sent" },
+    scheduledAt: { type: Date },
+    sentAt: { type: Date },
+    clickCount: { type: Number, default: 0 },
+    deliveredCount: { type: Number, default: 0 },
+    failedCount: { type: Number, default: 0 },
   },
   { timestamps: true, versionKey: false }
 );

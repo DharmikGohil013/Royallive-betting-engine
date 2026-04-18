@@ -10,6 +10,12 @@ const PaymentMethod = require("../models/PaymentMethod");
 const CricketMatch = require("../models/CricketMatch");
 const Setting = require("../models/Setting");
 const ActivityLog = require("../models/ActivityLog");
+const BlockReport = require("../models/BlockReport");
+const HelpRequest = require("../models/HelpRequest");
+const Promotion = require("../models/Promotion");
+const Referral = require("../models/Referral");
+const Marquee = require("../models/Marquee");
+const HallOfGlory = require("../models/HallOfGlory");
 const { authToken, activeUser } = require("../middleware/auth");
 
 const router = express.Router();
@@ -89,13 +95,39 @@ async function signupHandler(req, res) {
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
+    // Generate unique referral code for this user
+    const myRefCode = normalizedUsername.toUpperCase().slice(0, 4) + Math.random().toString(36).substring(2, 6).toUpperCase();
+
+    // Check if referralCode belongs to an existing user
+    let referredByUser = null;
+    if (referralCode) {
+      referredByUser = await User.findOne({ myReferralCode: referralCode.toUpperCase() });
+    }
+
     const user = await User.create({
       mobile: normalizedMobile,
       email: normalizedEmail,
       username: normalizedUsername,
       password: hashedPassword,
       referralCode: referralCode ? String(referralCode).trim().toUpperCase() : null,
+      myReferralCode: myRefCode,
+      referredBy: referredByUser ? referredByUser._id : null,
     });
+
+    // Process referral reward
+    if (referredByUser) {
+      const rewardAmount = 50; // BDT reward
+      await Referral.create({
+        referrer: referredByUser._id,
+        referred: user._id,
+        referralCode: referralCode.toUpperCase(),
+        rewardAmount,
+      });
+      // Award bonus to referrer
+      await User.findByIdAndUpdate(referredByUser._id, {
+        $inc: { balance: rewardAmount, totalReferrals: 1, referralEarnings: rewardAmount },
+      });
+    }
 
     const token = createUserToken(user);
 
@@ -487,6 +519,232 @@ router.get("/notifications", authToken, activeUser, async (req, res) => {
     ]);
 
     return res.json({ success: true, notifications, total, page, totalPages: Math.ceil(total / limit) });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== MARQUEE WINNERS (public) ====================
+router.get("/marquee", async (_req, res) => {
+  try {
+    const items = await Marquee.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).lean();
+    return res.json({ success: true, items });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== BLOCK/REPORT USER ====================
+router.post("/block", authToken, activeUser, async (req, res) => {
+  try {
+    const { userId, reason } = req.body;
+    if (!userId) return res.status(400).json({ error: "User ID is required" });
+    if (userId === req.user.sub) return res.status(400).json({ error: "Cannot block yourself" });
+
+    const targetUser = await User.findById(userId);
+    if (!targetUser) return res.status(404).json({ error: "User not found" });
+
+    // Check if already blocked
+    const existing = await BlockReport.findOne({ reporter: req.user.sub, reported: userId, type: "block" });
+    if (existing) return res.status(409).json({ error: "User already blocked" });
+
+    await BlockReport.create({ reporter: req.user.sub, reported: userId, type: "block", reason, status: "resolved" });
+    await User.findByIdAndUpdate(req.user.sub, { $addToSet: { blockedUsers: userId } });
+
+    return res.json({ success: true, message: "User blocked" });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/unblock", authToken, activeUser, async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ error: "User ID is required" });
+
+    await BlockReport.deleteMany({ reporter: req.user.sub, reported: userId, type: "block" });
+    await User.findByIdAndUpdate(req.user.sub, { $pull: { blockedUsers: userId } });
+
+    return res.json({ success: true, message: "User unblocked" });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/report", authToken, activeUser, async (req, res) => {
+  try {
+    const { userId, reason } = req.body;
+    if (!userId || !reason) return res.status(400).json({ error: "User ID and reason are required" });
+    if (userId === req.user.sub) return res.status(400).json({ error: "Cannot report yourself" });
+
+    const targetUser = await User.findById(userId);
+    if (!targetUser) return res.status(404).json({ error: "User not found" });
+
+    await BlockReport.create({ reporter: req.user.sub, reported: userId, type: "report", reason });
+    await User.findByIdAndUpdate(userId, { $inc: { reportCount: 1 } });
+
+    return res.json({ success: true, message: "User reported successfully" });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/blocked-users", authToken, activeUser, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.sub).populate("blockedUsers", "username mobile").lean();
+    return res.json({ success: true, blockedUsers: user?.blockedUsers || [] });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== HELP CENTER ====================
+router.post("/help", authToken, activeUser, async (req, res) => {
+  try {
+    const { subject, message, category } = req.body;
+    if (!subject || !message) return res.status(400).json({ error: "Subject and message are required" });
+
+    const helpReq = await HelpRequest.create({
+      user: req.user.sub,
+      subject,
+      message,
+      category: category || "other",
+    });
+    return res.status(201).json({ success: true, request: helpReq });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/help", authToken, activeUser, async (req, res) => {
+  try {
+    const requests = await HelpRequest.find({ user: req.user.sub }).sort({ createdAt: -1 }).limit(20).lean();
+    return res.json({ success: true, requests });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== LIVE SUPPORT FAQ ====================
+router.get("/support/faq", async (_req, res) => {
+  const faqs = [
+    { id: 1, question: "How do I deposit money?", answer: "Go to Wallet > Deposit, select payment method, enter amount and follow instructions." },
+    { id: 2, question: "How do I withdraw my winnings?", answer: "Go to Wallet > Withdraw, enter amount and payment details. Withdrawals are processed within 24 hours." },
+    { id: 3, question: "What is the minimum deposit?", answer: "The minimum deposit is BDT 100." },
+    { id: 4, question: "How do I change my password?", answer: "Go to Account > Settings > Change Password." },
+    { id: 5, question: "How does the referral program work?", answer: "Share your referral code with friends. When they sign up using your code, both of you get BDT 50 bonus!" },
+    { id: 6, question: "My bet was not settled correctly", answer: "Please contact our support team through Help Center with your bet ID and we will investigate." },
+    { id: 7, question: "How do I verify my account?", answer: "Go to Account > Verification and upload your ID documents." },
+    { id: 8, question: "What payment methods are available?", answer: "We support bKash, Nagad, Rocket, and bank transfer." },
+    { id: 9, question: "I forgot my password", answer: "Use the 'Forgot Password' option on the login page or contact support." },
+    { id: 10, question: "How do I block another user?", answer: "Go to the user's profile and tap the block button, or go to Account > Blocked Users." },
+  ];
+  return res.json({ success: true, faqs });
+});
+
+// ==================== PROMOTIONS (public) ====================
+router.get("/promotions", async (_req, res) => {
+  try {
+    const now = new Date();
+    const promotions = await Promotion.find({
+      isActive: true,
+      $or: [
+        { endDate: { $gte: now } },
+        { endDate: null },
+      ],
+    }).sort({ sortOrder: 1, createdAt: -1 }).lean();
+    return res.json({ success: true, promotions });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Promotion request from brand
+router.post("/promotions/request", async (req, res) => {
+  try {
+    const { brandName, title, description, contactEmail, link } = req.body;
+    if (!brandName || !title || !contactEmail) {
+      return res.status(400).json({ error: "Brand name, title, and contact email are required" });
+    }
+    const promo = await Promotion.create({
+      title,
+      description: description || "",
+      brandName,
+      link: link || "",
+      isActive: false, // needs admin approval
+      type: "promotion",
+    });
+    return res.status(201).json({ success: true, promotion: promo, message: "Promotion request submitted for review" });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== REFERRAL ====================
+router.get("/referral", authToken, activeUser, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.sub).select("myReferralCode totalReferrals referralEarnings").lean();
+    const referrals = await Referral.find({ referrer: req.user.sub })
+      .populate("referred", "username createdAt")
+      .sort({ createdAt: -1 })
+      .lean();
+    return res.json({
+      success: true,
+      referralCode: user?.myReferralCode || "",
+      totalReferrals: user?.totalReferrals || 0,
+      referralEarnings: user?.referralEarnings || 0,
+      referrals,
+    });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== HALL OF GLORY (public) ====================
+router.get("/hall-of-glory", async (_req, res) => {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    let entries = await HallOfGlory.find({ date: today }).sort({ rank: 1 }).limit(3).lean();
+
+    // Fallback to latest available date
+    if (entries.length === 0) {
+      const latest = await HallOfGlory.findOne().sort({ date: -1 }).lean();
+      if (latest) {
+        entries = await HallOfGlory.find({ date: latest.date }).sort({ rank: 1 }).limit(3).lean();
+      }
+    }
+
+    // If still no entries, get from user data
+    if (entries.length === 0) {
+      const topUsers = await User.find({ role: "user", totalWinnings: { $gt: 0 } })
+        .select("username totalWinnings")
+        .sort({ totalWinnings: -1 })
+        .limit(3)
+        .lean();
+      entries = topUsers.map((u, i) => ({
+        username: u.username,
+        totalPayout: u.totalWinnings,
+        rank: i + 1,
+        date: today,
+      }));
+    }
+
+    return res.json({ success: true, entries });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== PUBLIC POLICIES ====================
+router.get("/policies", async (_req, res) => {
+  try {
+    const Setting = require("../models/Setting");
+    const settings = await Setting.find({ category: "policy" }).lean();
+    const policies = {};
+    for (const s of settings) {
+      policies[s.key] = { content: s.value, updatedAt: s.updatedAt, description: s.description };
+    }
+    return res.json({ success: true, policies });
   } catch {
     return res.status(500).json({ error: "Internal server error" });
   }

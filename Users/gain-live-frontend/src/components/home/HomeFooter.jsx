@@ -1,22 +1,22 @@
 const quickLinks = [
-  { label: "Promotions", href: "#promotions" },
-  { label: "VIP Club", href: "#featured-games" },
-  { label: "Refer a Friend", href: "#hall-of-glory" },
-  { label: "Affiliate Program", href: "#live-markets" },
+  { label: "Promotions", href: "/promotions" },
+  { label: "VIP Club", href: "/games" },
+  { label: "Refer a Friend", href: "/refer" },
+  { label: "About Us", href: "/about" },
 ];
 
 const categoryLinks = [
-  { label: "Live Casino", href: "#featured-games" },
-  { label: "Slot HUD", href: "#featured-games" },
-  { label: "Esports Hub", href: "#live-sports" },
-  { label: "Instant Wins", href: "#live-markets" },
+  { label: "Live Casino", href: "/live-casino" },
+  { label: "Sports", href: "/sports" },
+  { label: "Cricket", href: "/cricket" },
+  { label: "All Games", href: "/games" },
 ];
 
 const supportLinks = [
-  { label: "Help Center", href: "#" },
-  { label: "Live Support", href: "#" },
-  { label: "Privacy Policy", href: "#" },
-  { label: "Terms of Ops", href: "#" },
+  { label: "Help Center", href: "/help" },
+  { label: "Live Support", href: "/help" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Use", href: "/privacy" },
 ];
 
 const socialLinks = [

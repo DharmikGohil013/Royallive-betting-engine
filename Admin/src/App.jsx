@@ -17,6 +17,12 @@ import GameStatisticsPage from "./pages/game-stats/GameStatisticsPage";
 import PaymentMethodsPage from "./pages/payment-methods/PaymentMethodsPage";
 import PolicyPage from "./pages/policy/PolicyPage";
 import ApiLogsPage from "./pages/api-logs/ApiLogsPage";
+import MarqueeManagementPage from "./pages/marquee/MarqueeManagementPage";
+import HelpRequestsPage from "./pages/help-requests/HelpRequestsPage";
+import ReportsPage from "./pages/reports/ReportsPage";
+import PromotionsPage from "./pages/promotions/PromotionsPage";
+import HallOfGloryPage from "./pages/hall-of-glory/HallOfGloryPage";
+import ReferralsPage from "./pages/referrals/ReferralsPage";
 import { adminLogout } from "./services/api";
 
 export default function App() {
@@ -79,9 +85,15 @@ export default function App() {
           <Route path="/payment-methods" element={<PaymentMethodsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/api-logs" element={<ApiLogsPage />} />
-              <Route path="statistics" element={<GameStatisticsPage />} />
+          <Route path="/statistics" element={<GameStatisticsPage />} />
           <Route path="/data" element={<DataManagementPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/marquee" element={<MarqueeManagementPage />} />
+          <Route path="/help-requests" element={<HelpRequestsPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/promotions" element={<PromotionsPage />} />
+          <Route path="/hall-of-glory" element={<HallOfGloryPage />} />
+          <Route path="/referrals" element={<ReferralsPage />} />
         </Routes>
       </main>
     </div>

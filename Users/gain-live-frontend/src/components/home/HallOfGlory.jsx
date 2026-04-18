@@ -7,17 +7,17 @@ const HallOfGlory = () => {
   const [winners, setWinners] = useState(hallOfGloryWinners);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/user/games/leaderboard`)
+    fetch(`${API_BASE}/api/user/hall-of-glory`)
       .then(r => r.json())
       .then(data => {
-        const users = data.users || data || [];
-        if (users.length) {
-          setWinners(users.map((u, i) => ({
-            rank: i + 1,
-            username: u.username || `Player ${i + 1}`,
-            amount: `৳${(u.totalWinnings || u.totalDeposits || 0).toLocaleString()}`,
-            label: i === 0 ? "Top Winner" : "",
-            highlighted: i === 0,
+        const entries = data.entries || [];
+        if (entries.length) {
+          setWinners(entries.map((e) => ({
+            rank: e.rank || 0,
+            username: e.username || e.user?.username || `Player`,
+            amount: `৳${(e.totalPayout || 0).toLocaleString()}`,
+            label: e.rank === 1 ? "Top Winner" : "",
+            highlighted: e.rank === 1,
           })));
         }
       })

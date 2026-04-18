@@ -36,6 +36,12 @@ const upload = multer({
 });
 const CricketMatch = require("../models/CricketMatch");
 const ActivityLog = require("../models/ActivityLog");
+const Marquee = require("../models/Marquee");
+const BlockReport = require("../models/BlockReport");
+const HelpRequest = require("../models/HelpRequest");
+const Promotion = require("../models/Promotion");
+const Referral = require("../models/Referral");
+const HallOfGlory = require("../models/HallOfGlory");
 const { authToken, adminOnly, logActivity } = require("../middleware/auth");
 
 const ApiLog = require("../models/ApiLog");
@@ -240,6 +246,142 @@ router.patch("/users/:id/balance", authToken, adminOnly, logActivity("update_use
     return res.json({ success: true, balance: user.balance });
   } catch (err) {
     console.error("Update balance error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Edit user profile
+router.put("/users/:id", authToken, adminOnly, logActivity("edit_user", "admin"), async (req, res) => {
+  try {
+    const allowed = ["email", "username", "status", "profileImage", "dateOfBirth", "address", "city", "country"];
+    const updates = {};
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    }
+    const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true }).select("-password");
+    if (!user) return res.status(404).json({ error: "User not found" });
+    return res.json({ success: true, user });
+  } catch (err) {
+    console.error("Edit user error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Delete user
+router.delete("/users/:id", authToken, adminOnly, logActivity("delete_user", "admin"), async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    return res.json({ success: true, message: "User deleted" });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Create user by admin
+router.post("/users", authToken, adminOnly, logActivity("create_user", "admin"), async (req, res) => {
+  try {
+    const { mobile, email, username, password } = req.body;
+    if (!mobile || !username || !password) return res.status(400).json({ error: "Mobile, username, password required" });
+    const bcryptLib = require("bcryptjs");
+    const hashed = await bcryptLib.hash(password, 12);
+    const code = username.toUpperCase().slice(0, 4) + Math.random().toString(36).substring(2, 6).toUpperCase();
+    const user = await User.create({
+      mobile: mobile.replace(/\D/g, ""),
+      email: email || null,
+      username: username.toLowerCase(),
+      password: hashed,
+      myReferralCode: code,
+    });
+    return res.status(201).json({ success: true, user: { ...user.toObject(), password: undefined } });
+  } catch (err) {
+    if (err.code === 11000) {
+      const dup = Object.keys(err.keyPattern || {})[0];
+      return res.status(409).json({ error: `${dup} already in use` });
+    }
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Get user transaction history
+router.get("/users/:id/transactions", authToken, adminOnly, async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const [transactions, total] = await Promise.all([
+      Transaction.find({ user: req.params.id }).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+      Transaction.countDocuments({ user: req.params.id }),
+    ]);
+    return res.json({ success: true, transactions, total, page, totalPages: Math.ceil(total / limit) });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Edit user profile
+router.put("/users/:id", authToken, adminOnly, logActivity("edit_user", "admin"), async (req, res) => {
+  try {
+    const allowed = ["email", "username", "status", "profileImage", "dateOfBirth", "address", "city", "country"];
+    const updates = {};
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    }
+    const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true }).select("-password");
+    if (!user) return res.status(404).json({ error: "User not found" });
+    return res.json({ success: true, user });
+  } catch (err) {
+    console.error("Edit user error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Delete user
+router.delete("/users/:id", authToken, adminOnly, logActivity("delete_user", "admin"), async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    return res.json({ success: true, message: "User deleted" });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Create user by admin
+router.post("/users", authToken, adminOnly, logActivity("create_user", "admin"), async (req, res) => {
+  try {
+    const { mobile, email, username, password } = req.body;
+    if (!mobile || !username || !password) return res.status(400).json({ error: "Mobile, username, password required" });
+    const bcryptLib = require("bcryptjs");
+    const hashed = await bcryptLib.hash(password, 12);
+    const code = username.toUpperCase().slice(0, 4) + Math.random().toString(36).substring(2, 6).toUpperCase();
+    const user = await User.create({
+      mobile: mobile.replace(/\D/g, ""),
+      email: email || null,
+      username: username.toLowerCase(),
+      password: hashed,
+      myReferralCode: code,
+    });
+    return res.status(201).json({ success: true, user: { ...user.toObject(), password: undefined } });
+  } catch (err) {
+    if (err.code === 11000) {
+      const dup = Object.keys(err.keyPattern || {})[0];
+      return res.status(409).json({ error: `${dup} already in use` });
+    }
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Get user transaction history
+router.get("/users/:id/transactions", authToken, adminOnly, async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const [transactions, total] = await Promise.all([
+      Transaction.find({ user: req.params.id }).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+      Transaction.countDocuments({ user: req.params.id }),
+    ]);
+    return res.json({ success: true, transactions, total, page, totalPages: Math.ceil(total / limit) });
+  } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -749,6 +891,296 @@ router.delete("/api-logs", authToken, adminOnly, logActivity("clear_api_logs", "
     const days = Math.max(1, parseInt(req.query.olderThanDays) || 30);
     const result = await ApiLog.deleteMany({ createdAt: { $lt: new Date(Date.now() - days * 86400000) } });
     return res.json({ success: true, deleted: result.deletedCount });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== MARQUEE WINNERS ====================
+
+router.get("/marquee", authToken, adminOnly, async (_req, res) => {
+  try {
+    const items = await Marquee.find().sort({ sortOrder: 1, createdAt: -1 }).lean();
+    return res.json({ success: true, items });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/marquee", authToken, adminOnly, logActivity("create_marquee", "admin"), async (req, res) => {
+  try {
+    const { label, username, amount, highlighted } = req.body;
+    if (!username || !amount) return res.status(400).json({ error: "Username and amount are required" });
+    const item = await Marquee.create({ label: label || "WINNER:", username, amount, highlighted });
+    return res.status(201).json({ success: true, item });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/marquee/:id", authToken, adminOnly, logActivity("update_marquee", "admin"), async (req, res) => {
+  try {
+    const allowed = ["label", "username", "amount", "highlighted", "isActive", "sortOrder"];
+    const updates = {};
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    }
+    const item = await Marquee.findByIdAndUpdate(req.params.id, updates, { new: true });
+    if (!item) return res.status(404).json({ error: "Marquee item not found" });
+    return res.json({ success: true, item });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/marquee/:id", authToken, adminOnly, logActivity("delete_marquee", "admin"), async (req, res) => {
+  try {
+    await Marquee.findByIdAndDelete(req.params.id);
+    return res.json({ success: true, message: "Marquee item deleted" });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== BLOCK/REPORT MANAGEMENT ====================
+
+router.get("/reports", authToken, adminOnly, async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const status = req.query.status || "";
+    const type = req.query.type || "";
+    const filter = {};
+    if (status) filter.status = status;
+    if (type) filter.type = type;
+
+    const [reports, total] = await Promise.all([
+      BlockReport.find(filter)
+        .populate("reporter", "username mobile")
+        .populate("reported", "username mobile status reportCount")
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      BlockReport.countDocuments(filter),
+    ]);
+    return res.json({ success: true, reports, total, page, totalPages: Math.ceil(total / limit) });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.patch("/reports/:id", authToken, adminOnly, logActivity("update_report", "admin"), async (req, res) => {
+  try {
+    const { status, adminNote } = req.body;
+    if (!["reviewed", "resolved", "dismissed"].includes(status)) {
+      return res.status(400).json({ error: "Invalid status" });
+    }
+    const report = await BlockReport.findByIdAndUpdate(
+      req.params.id,
+      { status, adminNote: adminNote || "", resolvedBy: "admin", resolvedAt: new Date() },
+      { new: true }
+    ).populate("reporter", "username").populate("reported", "username");
+    if (!report) return res.status(404).json({ error: "Report not found" });
+    return res.json({ success: true, report });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== HELP REQUESTS ====================
+
+router.get("/help-requests", authToken, adminOnly, async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const status = req.query.status || "";
+    const filter = {};
+    if (status) filter.status = status;
+
+    const [requests, total] = await Promise.all([
+      HelpRequest.find(filter)
+        .populate("user", "username mobile email")
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      HelpRequest.countDocuments(filter),
+    ]);
+    return res.json({ success: true, requests, total, page, totalPages: Math.ceil(total / limit) });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.patch("/help-requests/:id", authToken, adminOnly, logActivity("reply_help_request", "admin"), async (req, res) => {
+  try {
+    const { status, adminReply } = req.body;
+    const updates = {};
+    if (status) updates.status = status;
+    if (adminReply) {
+      updates.adminReply = adminReply;
+      updates.repliedBy = "admin";
+      updates.repliedAt = new Date();
+    }
+    const request = await HelpRequest.findByIdAndUpdate(req.params.id, updates, { new: true })
+      .populate("user", "username mobile email");
+    if (!request) return res.status(404).json({ error: "Help request not found" });
+    return res.json({ success: true, request });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/help-requests/:id", authToken, adminOnly, async (req, res) => {
+  try {
+    await HelpRequest.findByIdAndDelete(req.params.id);
+    return res.json({ success: true, message: "Help request deleted" });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== PROMOTIONS ====================
+
+router.get("/promotions", authToken, adminOnly, async (_req, res) => {
+  try {
+    const promotions = await Promotion.find().sort({ sortOrder: 1, createdAt: -1 }).lean();
+    return res.json({ success: true, promotions });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/promotions", authToken, adminOnly, logActivity("create_promotion", "admin"), async (req, res) => {
+  try {
+    const { title, description, image, brandName, link, type, startDate, endDate } = req.body;
+    if (!title) return res.status(400).json({ error: "Title is required" });
+    const promo = await Promotion.create({ title, description, image, brandName, link, type, startDate, endDate });
+    return res.status(201).json({ success: true, promotion: promo });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/promotions/:id", authToken, adminOnly, logActivity("update_promotion", "admin"), async (req, res) => {
+  try {
+    const allowed = ["title", "description", "image", "brandName", "link", "type", "startDate", "endDate", "isActive", "sortOrder"];
+    const updates = {};
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    }
+    const promo = await Promotion.findByIdAndUpdate(req.params.id, updates, { new: true });
+    if (!promo) return res.status(404).json({ error: "Promotion not found" });
+    return res.json({ success: true, promotion: promo });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/promotions/:id", authToken, adminOnly, logActivity("delete_promotion", "admin"), async (req, res) => {
+  try {
+    await Promotion.findByIdAndDelete(req.params.id);
+    return res.json({ success: true, message: "Promotion deleted" });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== HALL OF GLORY ====================
+
+router.get("/hall-of-glory", authToken, adminOnly, async (req, res) => {
+  try {
+    const date = req.query.date || new Date().toISOString().slice(0, 10);
+    const entries = await HallOfGlory.find({ date }).populate("user", "username").sort({ rank: 1 }).lean();
+    return res.json({ success: true, entries });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/hall-of-glory/generate", authToken, adminOnly, logActivity("generate_hall_of_glory", "admin"), async (req, res) => {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    // Delete existing entries for today
+    await HallOfGlory.deleteMany({ date: today, isManual: false });
+
+    // Get top 3 users by profit (totalWinnings - totalDeposits or totalWinnings)
+    const topUsers = await User.find({ role: "user", totalWinnings: { $gt: 0 } })
+      .select("username totalWinnings")
+      .sort({ totalWinnings: -1 })
+      .limit(3)
+      .lean();
+
+    const entries = topUsers.map((u, i) => ({
+      user: u._id,
+      username: u.username,
+      totalPayout: u.totalWinnings,
+      rank: i + 1,
+      date: today,
+      isManual: false,
+    }));
+
+    if (entries.length > 0) {
+      await HallOfGlory.insertMany(entries);
+    }
+
+    const saved = await HallOfGlory.find({ date: today }).sort({ rank: 1 }).lean();
+    return res.json({ success: true, entries: saved });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/hall-of-glory/:id", authToken, adminOnly, logActivity("update_hall_of_glory", "admin"), async (req, res) => {
+  try {
+    const { username, totalPayout, rank } = req.body;
+    const updates = {};
+    if (username) updates.username = username;
+    if (totalPayout !== undefined) updates.totalPayout = totalPayout;
+    if (rank !== undefined) updates.rank = rank;
+    updates.isManual = true;
+
+    const entry = await HallOfGlory.findByIdAndUpdate(req.params.id, updates, { new: true });
+    if (!entry) return res.status(404).json({ error: "Entry not found" });
+    return res.json({ success: true, entry });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/hall-of-glory", authToken, adminOnly, logActivity("create_hall_of_glory", "admin"), async (req, res) => {
+  try {
+    const { username, totalPayout, rank, date } = req.body;
+    if (!username || !totalPayout || !rank) return res.status(400).json({ error: "Username, totalPayout, rank required" });
+    const entry = await HallOfGlory.create({
+      username, totalPayout, rank,
+      date: date || new Date().toISOString().slice(0, 10),
+      isManual: true,
+    });
+    return res.status(201).json({ success: true, entry });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== REFERRAL MANAGEMENT ====================
+
+router.get("/referrals", authToken, adminOnly, async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const [referrals, total] = await Promise.all([
+      Referral.find()
+        .populate("referrer", "username mobile myReferralCode")
+        .populate("referred", "username mobile")
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      Referral.countDocuments(),
+    ]);
+    return res.json({ success: true, referrals, total, page, totalPages: Math.ceil(total / limit) });
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }
