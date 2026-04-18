@@ -1,4 +1,20 @@
+import { useState, useEffect } from "react";
+import { getAboutInfo } from "../services/api";
+
 const AboutPage = () => {
+  const [about, setAbout] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAboutInfo()
+      .then((d) => setAbout(d.about || {}))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const entries = Object.entries(about);
+  const icons = ["rocket_launch", "category", "shield", "mail", "info", "star", "groups", "public"];
+
   return (
     <main className="pt-20 pb-32 px-4">
       <header className="mb-8">
@@ -17,83 +33,45 @@ const AboutPage = () => {
         </p>
       </header>
 
-      <div className="space-y-6">
-        {/* Mission */}
-        <section className="bg-surface-container border border-outline-variant/10 rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-primary-container text-lg">rocket_launch</span>
-            <h3 className="font-headline font-bold text-sm uppercase tracking-widest text-primary-container">Our Mission</h3>
-          </div>
-          <p className="text-xs text-on-surface-variant leading-relaxed">
-            Gain Live is committed to providing a secure, transparent, and entertaining gaming platform. We believe
-            in fair play, responsible gaming, and delivering an exceptional experience for every user.
-          </p>
-        </section>
-
-        {/* What We Offer */}
-        <section className="bg-surface-container border border-outline-variant/10 rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-primary-container text-lg">category</span>
-            <h3 className="font-headline font-bold text-sm uppercase tracking-widest text-primary-container">What We Offer</h3>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { icon: "casino", label: "Live Casino", desc: "Real-time dealer games" },
-              { icon: "sports_cricket", label: "Cricket Betting", desc: "Live matches & odds" },
-              { icon: "sports_esports", label: "Esports", desc: "Competitive gaming bets" },
-              { icon: "style", label: "Card Games", desc: "Poker, Blackjack & more" },
-            ].map((item) => (
-              <div key={item.label} className="bg-surface-container-high rounded-lg p-3">
-                <span className="material-symbols-outlined text-primary-container text-xl mb-1 block">{item.icon}</span>
-                <p className="text-xs font-bold text-on-surface">{item.label}</p>
-                <p className="text-[10px] text-on-surface-variant">{item.desc}</p>
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="animate-spin w-8 h-8 border-2 border-primary-container border-t-transparent rounded-full" />
+        </div>
+      ) : entries.length === 0 ? (
+        <div className="text-center py-16">
+          <span className="material-symbols-outlined text-4xl text-on-surface-variant/30 mb-2">info</span>
+          <p className="text-on-surface-variant text-sm">No about information available yet.</p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {entries.map(([key, val], i) => (
+            <section key={key} className="bg-surface-container border border-outline-variant/10 rounded-xl p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="material-symbols-outlined text-primary-container text-lg">{icons[i % icons.length]}</span>
+                <h3 className="font-headline font-bold text-sm uppercase tracking-widest text-primary-container">
+                  {key.replace(/_/g, " ")}
+                </h3>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Security */}
-        <section className="bg-surface-container border border-outline-variant/10 rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-primary-container text-lg">shield</span>
-            <h3 className="font-headline font-bold text-sm uppercase tracking-widest text-primary-container">Security & Trust</h3>
-          </div>
-          <p className="text-xs text-on-surface-variant leading-relaxed mb-3">
-            Your security is our top priority. We use industry-standard encryption and follow strict regulatory
-            guidelines to ensure your data and funds are always safe.
-          </p>
-          <div className="flex gap-2">
-            {["verified_user", "lock", "encrypted"].map((icon) => (
-              <div key={icon} className="w-10 h-10 bg-primary-container/10 rounded-lg flex items-center justify-center">
-                <span className="material-symbols-outlined text-primary-container text-sm">{icon}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Contact */}
-        <section className="bg-surface-container border border-outline-variant/10 rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-primary-container text-lg">mail</span>
-            <h3 className="font-headline font-bold text-sm uppercase tracking-widest text-primary-container">Contact Us</h3>
-          </div>
-          <div className="space-y-2">
-            <p className="text-xs text-on-surface-variant flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">email</span>
-              support@gainlive.com
-            </p>
-            <p className="text-xs text-on-surface-variant flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">schedule</span>
-              24/7 Live Support Available
-            </p>
-          </div>
-        </section>
-      </div>
+              {val.description && (
+                <p className="text-[10px] text-on-surface-variant/60 uppercase tracking-widest mb-2">{val.description}</p>
+              )}
+              <p className="text-xs text-on-surface-variant leading-relaxed whitespace-pre-line">
+                {val.content}
+              </p>
+              {val.updatedAt && (
+                <p className="text-[9px] text-on-surface-variant/40 mt-3 uppercase tracking-widest">
+                  Last updated: {new Date(val.updatedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                </p>
+              )}
+            </section>
+          ))}
+        </div>
+      )}
 
       {/* Footer */}
       <div className="mt-8 text-center">
         <p className="text-[10px] text-on-surface-variant uppercase tracking-widest">
-          © 2026 Gain Live Systems. All Rights Reserved.
+          &copy; 2026 Gain Live Systems. All Rights Reserved.
         </p>
       </div>
     </main>

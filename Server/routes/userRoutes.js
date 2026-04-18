@@ -750,4 +750,19 @@ router.get("/policies", async (_req, res) => {
   }
 });
 
+// ==================== PUBLIC ABOUT ====================
+router.get("/about", async (_req, res) => {
+  try {
+    const Setting = require("../models/Setting");
+    const settings = await Setting.find({ category: "about" }).lean();
+    const about = {};
+    for (const s of settings) {
+      about[s.key] = { content: s.value, updatedAt: s.updatedAt, description: s.description };
+    }
+    return res.json({ success: true, about });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = { router, signupHandler };

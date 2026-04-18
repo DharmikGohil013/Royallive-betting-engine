@@ -1,81 +1,20 @@
-const sections = [
-  {
-    num: "01",
-    color: "primary-container",
-    title: "Data Collection",
-    content: (
-      <>
-        <p className="mb-4">Our systems collect specific data to optimize your experience. This includes:</p>
-        <ul className="grid grid-cols-2 gap-3">
-          {[
-            { icon: "fingerprint", label: "Biometric Signatures" },
-            { icon: "location_on", label: "Geolocation Flux" },
-            { icon: "payments", label: "Transaction Logs" },
-            { icon: "devices", label: "Terminal Metadata" },
-          ].map((item) => (
-            <li key={item.label} className="flex items-center gap-2 bg-surface-container-lowest p-3 border border-outline-variant/10">
-              <span className="material-symbols-outlined text-primary-container text-sm">{item.icon}</span>
-              <span className="text-[10px] uppercase font-semibold">{item.label}</span>
-            </li>
-          ))}
-        </ul>
-      </>
-    ),
-  },
-  {
-    num: "02",
-    color: "tertiary-fixed-dim",
-    title: "Operational Usage",
-    content: (
-      <>
-        <p className="mb-4">Data utilization is strictly confined to algorithmic enhancements and risk mitigation protocols.</p>
-        <div className="space-y-3">
-          <div className="p-3 bg-surface-container-low border-l border-tertiary-fixed-dim/30">
-            <strong className="text-tertiary-fixed-dim uppercase text-[10px] block mb-1 tracking-tighter">Integrity Check</strong>
-            <p className="text-xs">Identify non-human betting patterns and prevent illicit synchronization between external nodes.</p>
-          </div>
-          <div className="p-3 bg-surface-container-low border-l border-tertiary-fixed-dim/30">
-            <strong className="text-tertiary-fixed-dim uppercase text-[10px] block mb-1 tracking-tighter">Kinetic Personalization</strong>
-            <p className="text-xs">Dynamic UI adaptation based on your most frequent sportsbook destinations and market preferences.</p>
-          </div>
-        </div>
-      </>
-    ),
-  },
-  {
-    num: "03",
-    color: "primary-container",
-    title: "Quantum Cookies",
-    content: (
-      <p>We use session-based tracking beacons to maintain terminal stability. Disabling these may lead to synchronization errors.</p>
-    ),
-  },
-  {
-    num: "04",
-    color: "tertiary-fixed-dim",
-    title: "External Nodes",
-    content: (
-      <p>Your data is never traded on open markets. We only transmit encrypted hashes to verified regulatory nodes and liquidity providers.</p>
-    ),
-  },
-  {
-    num: "05",
-    color: "primary-container",
-    title: "Fortress Protocols",
-    content: (
-      <>
-        <p className="mb-4">Security is implemented via multi-layered AES-512 encryption. In the event of a terminal compromise, all active sessions are immediately terminated.</p>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="h-1 bg-primary-container/20" />
-          <div className="h-1 bg-primary-container/60" />
-          <div className="h-1 bg-primary-container/20" />
-        </div>
-      </>
-    ),
-  },
-];
+import { useState, useEffect } from "react";
+import { getPolicies } from "../services/api";
 
 const PrivacyPolicyPage = () => {
+  const [policies, setPolicies] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getPolicies()
+      .then((d) => setPolicies(d.policies || {}))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const entries = Object.entries(policies);
+  const colors = ["primary-container", "tertiary-fixed-dim"];
+
   return (
     <main className="pt-20 pb-32 px-4 max-w-4xl mx-auto">
       {/* Intro Banner */}
@@ -96,40 +35,67 @@ const PrivacyPolicyPage = () => {
         </div>
       </header>
 
-      {/* Section Chips */}
-      <div className="flex overflow-x-auto gap-2 pb-4 mb-6 hide-scrollbar">
-        {["Data Collection", "Cookies", "Third Parties", "Security", "User Rights"].map((chip, i) => (
-          <button
-            key={chip}
-            className={`whitespace-nowrap px-4 py-2 text-[10px] font-bold uppercase tracking-widest border rounded-sm ${
-              i === 0
-                ? "bg-primary-container text-on-primary-container border-primary-container/50"
-                : "bg-surface-container-high text-on-surface-variant border-outline-variant/30 hover:border-primary-container/50 transition-colors"
-            }`}
-          >
-            {chip}
-          </button>
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="animate-spin w-8 h-8 border-2 border-primary-container border-t-transparent rounded-full" />
+        </div>
+      ) : entries.length === 0 ? (
+        <div className="text-center py-16">
+          <span className="material-symbols-outlined text-4xl text-on-surface-variant/30 mb-2">description</span>
+          <p className="text-on-surface-variant text-sm">No policy content available yet.</p>
+        </div>
+      ) : (
+        <>
+          {/* Section Chips */}
+          <div className="flex overflow-x-auto gap-2 pb-4 mb-6 hide-scrollbar">
+            {entries.map(([key], i) => (
+              <button
+                key={key}
+                className={`whitespace-nowrap px-4 py-2 text-[10px] font-bold uppercase tracking-widest border rounded-sm ${
+                  i === 0
+                    ? "bg-primary-container text-on-primary-container border-primary-container/50"
+                    : "bg-surface-container-high text-on-surface-variant border-outline-variant/30 hover:border-primary-container/50 transition-colors"
+                }`}
+              >
+                {key.replace(/_/g, " ")}
+              </button>
+            ))}
+          </div>
 
-      {/* Content Sections */}
-      <div className="space-y-4">
-        {sections.map((s) => (
-          <section
-            key={s.num}
-            className={`glass-card border-l-4 border-l-${s.color} border-y border-r border-outline-variant/10 p-6 rounded-r-xl relative`}
-          >
-            <span className={`absolute top-3 right-4 font-headline font-black text-4xl opacity-5 text-${s.color} select-none`}>{s.num}</span>
-            <div className="flex items-start gap-3 mb-4">
-              <div className={`mt-1 w-2 h-6 bg-${s.color}`} />
-              <h3 className={`font-headline font-bold text-lg text-${s.color} uppercase tracking-widest`}>{s.title}</h3>
-            </div>
-            <div className="text-on-surface-variant leading-relaxed font-light text-sm">
-              {s.content}
-            </div>
-          </section>
-        ))}
-      </div>
+          {/* Content Sections */}
+          <div className="space-y-4">
+            {entries.map(([key, val], i) => {
+              const num = String(i + 1).padStart(2, "0");
+              const color = colors[i % 2];
+              return (
+                <section
+                  key={key}
+                  className={`glass-card border-l-4 border-l-${color} border-y border-r border-outline-variant/10 p-6 rounded-r-xl relative`}
+                >
+                  <span className={`absolute top-3 right-4 font-headline font-black text-4xl opacity-5 text-${color} select-none`}>{num}</span>
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className={`mt-1 w-2 h-6 bg-${color}`} />
+                    <h3 className={`font-headline font-bold text-lg text-${color} uppercase tracking-widest`}>
+                      {key.replace(/_/g, " ")}
+                    </h3>
+                  </div>
+                  {val.description && (
+                    <p className="text-on-surface-variant/60 text-[10px] uppercase tracking-widest mb-3">{val.description}</p>
+                  )}
+                  <div className="text-on-surface-variant leading-relaxed font-light text-sm whitespace-pre-line">
+                    {val.content}
+                  </div>
+                  {val.updatedAt && (
+                    <p className="text-[9px] text-on-surface-variant/40 mt-4 uppercase tracking-widest">
+                      Last updated: {new Date(val.updatedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                    </p>
+                  )}
+                </section>
+              );
+            })}
+          </div>
+        </>
+      )}
 
       {/* Decorative */}
       <div className="mt-12 flex justify-center opacity-20">

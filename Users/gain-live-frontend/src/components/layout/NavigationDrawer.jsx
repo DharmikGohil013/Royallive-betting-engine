@@ -22,6 +22,7 @@ const menuSections = [
       { icon: "history", label: "History", path: "/history" },
       { icon: "settings", label: "Settings", path: "/settings" },
       { icon: "verified_user", label: "Responsible Gaming", path: "/responsible-gaming" },
+      { icon: "info", label: "About", path: "/about" },
     ],
   },
 ];

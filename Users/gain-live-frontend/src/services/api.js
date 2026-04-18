@@ -215,3 +215,9 @@ export async function getPolicies() {
   const res = await fetch(`${API_BASE}/api/user/policies`);
   return res.json();
 }
+
+// ==================== ABOUT ====================
+export async function getAboutInfo() {
+  const res = await fetch(`${API_BASE}/api/user/about`);
+  return res.json();
+}
