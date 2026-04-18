@@ -1,6 +1,26 @@
 import { useState, useEffect } from "react";
 import { getAboutInfo } from "../services/api";
 
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+
+const IMAGE_KEYS = ["about_logo", "about_banner"];
+
+const ICON_MAP = {
+  about_content: "article",
+  about_website_name: "language",
+  about_contact_email: "mail",
+  about_helpline: "call",
+  about_address: "location_on",
+  about_facebook: "share",
+  about_telegram: "send",
+  about_quote: "format_quote",
+  about_mission: "rocket_launch",
+  about_achievement: "emoji_events",
+  about_years: "schedule",
+  about_users_count: "groups",
+  about_uptime: "speed",
+};
+
 const AboutPage = () => {
   const [about, setAbout] = useState({});
   const [loading, setLoading] = useState(true);
@@ -12,15 +32,33 @@ const AboutPage = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const entries = Object.entries(about);
-  const icons = ["rocket_launch", "category", "shield", "mail", "info", "star", "groups", "public"];
+  const logoUrl = about.about_logo?.content;
+  const bannerUrl = about.about_banner?.content;
+  const entries = Object.entries(about).filter(([key]) => !IMAGE_KEYS.includes(key));
+
+  const formatLabel = (key) =>
+    key.replace(/^about_/, "").replace(/_/g, " ");
+
+  const resolveUrl = (path) =>
+    path?.startsWith("/") ? `${API_BASE}${path}` : path;
 
   return (
     <main className="pt-20 pb-32 px-4">
+      {/* Banner */}
+      {bannerUrl && (
+        <div className="rounded-xl overflow-hidden mb-6 -mx-1">
+          <img
+            src={resolveUrl(bannerUrl)}
+            alt="Banner"
+            className="w-full h-40 object-cover"
+          />
+        </div>
+      )}
+
       <header className="mb-8">
         <div className="flex items-center gap-4 mb-4">
           <img
-            src="/logos/gain-live-logo-blue-w-5.png"
+            src={logoUrl ? resolveUrl(logoUrl) : "/logos/gain-live-logo-blue-w-5.png"}
             alt="Gain Live"
             className="h-16 w-auto object-contain"
           />
@@ -44,12 +82,14 @@ const AboutPage = () => {
         </div>
       ) : (
         <div className="space-y-6">
-          {entries.map(([key, val], i) => (
+          {entries.map(([key, val]) => (
             <section key={key} className="bg-surface-container border border-outline-variant/10 rounded-xl p-5">
               <div className="flex items-center gap-2 mb-3">
-                <span className="material-symbols-outlined text-primary-container text-lg">{icons[i % icons.length]}</span>
+                <span className="material-symbols-outlined text-primary-container text-lg">
+                  {ICON_MAP[key] || "info"}
+                </span>
                 <h3 className="font-headline font-bold text-sm uppercase tracking-widest text-primary-container">
-                  {key.replace(/_/g, " ")}
+                  {formatLabel(key)}
                 </h3>
               </div>
               {val.description && (
