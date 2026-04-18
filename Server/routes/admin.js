@@ -1043,6 +1043,17 @@ router.delete("/help-requests/:id", authToken, adminOnly, async (req, res) => {
 
 // ==================== PROMOTIONS ====================
 
+router.post("/promotions/upload-image", authToken, adminOnly, (req, res) => {
+  upload.single("file")(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ error: err.code === "LIMIT_FILE_SIZE" ? "File too large (max 5 MB)" : err.message });
+    }
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    return res.json({ success: true, url: `/uploads/${req.file.filename}` });
+  });
+});
+
 router.get("/promotions", authToken, adminOnly, async (_req, res) => {
   try {
     const promotions = await Promotion.find().sort({ sortOrder: 1, createdAt: -1 }).lean();

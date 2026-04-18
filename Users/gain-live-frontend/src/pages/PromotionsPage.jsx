@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { getPromotions } from "../services/api";
 
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
+const resolveUrl = (path) => (path?.startsWith("/") ? `${API_BASE}${path}` : path);
+
 const PromotionsPage = () => {
   const [promos, setPromos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +49,7 @@ const PromotionsPage = () => {
               {promo.image && (
                 <div className="h-40 overflow-hidden">
                   <img
-                    src={promo.image}
+                    src={resolveUrl(promo.image)}
                     alt={promo.title}
                     className="w-full h-full object-cover"
                   />

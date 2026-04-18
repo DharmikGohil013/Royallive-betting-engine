@@ -348,6 +348,21 @@ export async function deletePromotion(id) {
   return api(`/admin/promotions/${id}`, { method: "DELETE" });
 }
 
+export async function uploadPromotionImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/api/admin/promotions/upload-image`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (res.status === 401) { clearAuth(); window.location.href = "/login"; throw new Error("Session expired"); }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Upload failed");
+  return data;
+}
+
 // ==================== HALL OF GLORY ====================
 export async function getHallOfGlory(date) {
   return api("/admin/hall-of-glory", { params: date ? { date } : {} });

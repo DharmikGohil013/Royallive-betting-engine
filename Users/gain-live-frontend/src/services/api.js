@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 function getToken() {
   return localStorage.getItem("gain-live-user-token") || "";

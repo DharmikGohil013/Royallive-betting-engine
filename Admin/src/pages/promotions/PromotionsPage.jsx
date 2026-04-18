@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
-import { getPromotions, createPromotion, updatePromotion, deletePromotion } from "../../services/api";
+import { useState, useEffect, useRef } from "react";
+import { getPromotions, createPromotion, updatePromotion, deletePromotion, uploadPromotionImage } from "../../services/api";
+
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://45.77.168.91:4000");
+const resolveUrl = (path) => (path?.startsWith("/") ? `${API_BASE}${path}` : path);
 
 const TYPES = ["banner", "popup", "promotion", "offer"];
 
@@ -8,7 +11,9 @@ export default function PromotionsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({ title: "", description: "", image: "", brandName: "", link: "", type: "promotion", startDate: "", endDate: "" });
+  const fileInputRef = useRef(null);
 
   useEffect(() => { load(); }, []);
 
@@ -48,6 +53,17 @@ export default function PromotionsPage() {
     try { await updatePromotion(item._id, { isActive: !item.isActive }); load(); } catch { }
   }
 
+  async function handleImageUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const data = await uploadPromotionImage(file);
+      setForm((prev) => ({ ...prev, image: data.url }));
+    } catch { }
+    finally { setUploading(false); e.target.value = ""; }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -67,7 +83,7 @@ export default function PromotionsPage() {
             <div key={promo._id} className="bg-surface-container rounded-2xl overflow-hidden group">
               {promo.image && (
                 <div className="h-32 bg-surface-dim overflow-hidden">
-                  <img src={promo.image} alt={promo.title} className="w-full h-full object-cover" />
+                  <img src={resolveUrl(promo.image)} alt={promo.title} className="w-full h-full object-cover" />
                 </div>
               )}
               <div className="p-4">
@@ -111,7 +127,6 @@ export default function PromotionsPage() {
               {[
                 { key: "title", label: "Title", required: true },
                 { key: "description", label: "Description", type: "textarea" },
-                { key: "image", label: "Image URL" },
                 { key: "brandName", label: "Brand Name" },
                 { key: "link", label: "Link URL" },
               ].map(f => (
@@ -126,6 +141,25 @@ export default function PromotionsPage() {
                   )}
                 </div>
               ))}
+              {/* Image Upload */}
+              <div>
+                <label className="text-xs text-slate-500 font-bold">Promotion Image</label>
+                {form.image && (
+                  <div className="mt-2 mb-2 relative rounded-xl overflow-hidden h-32 bg-surface-dim">
+                    <img src={resolveUrl(form.image)} alt="Preview" className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => setForm({...form, image: ""})}
+                      className="absolute top-2 right-2 bg-black/60 hover:bg-red-500/80 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs transition-all">
+                      <span className="material-symbols-outlined text-sm">close</span>
+                    </button>
+                  </div>
+                )}
+                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleImageUpload} className="hidden" />
+                <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                  className="mt-1 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-white/20 text-slate-400 hover:text-amber-400 hover:border-amber-400/40 text-sm transition-all">
+                  <span className="material-symbols-outlined text-lg">{uploading ? "hourglass_top" : "cloud_upload"}</span>
+                  {uploading ? "Uploading..." : form.image ? "Change Image" : "Upload Image"}
+                </button>
+              </div>
               <div>
                 <label className="text-xs text-slate-500 font-bold">Type</label>
                 <select value={form.type} onChange={e => setForm({...form, type: e.target.value})} className="w-full bg-surface-dim border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-100 mt-1">
