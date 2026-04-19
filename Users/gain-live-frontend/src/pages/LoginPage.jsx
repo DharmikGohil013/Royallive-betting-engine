@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "../services/api";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login: authLogin } = useAuth();
   const [form, setForm] = useState({ accessId: "", password: "", rememberMe: false });
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  const from = location.state?.from?.pathname || "/";
 
   const onChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -55,9 +59,9 @@ const LoginPage = () => {
 
     try {
       setSubmitting(true);
-      const data = await login(loginPayload);
+      await authLogin(loginPayload);
       localStorage.setItem("gain-live-remember-me", form.rememberMe ? "true" : "false");
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.message || "Authentication failed");
     } finally {

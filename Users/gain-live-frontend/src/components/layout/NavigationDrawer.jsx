@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const menuSections = [
   {
@@ -14,13 +15,12 @@ const menuSections = [
     items: [
       { icon: "account_balance_wallet", label: "Wallet", path: "/wallet", filled: true },
       { icon: "celebration", label: "Promotions", path: "/promotions" },
-      { icon: "group_add", label: "Referrals", path: "/referrals" },
+      { icon: "group_add", label: "Referrals", path: "/refer" },
     ],
   },
   {
     items: [
-      { icon: "history", label: "History", path: "/history" },
-      { icon: "settings", label: "Settings", path: "/settings" },
+      { icon: "person", label: "Account", path: "/account" },
       { icon: "verified_user", label: "Responsible Gaming", path: "/responsible-gaming" },
       { icon: "info", label: "About", path: "/about" },
     ],
@@ -29,6 +29,19 @@ const menuSections = [
 
 const NavigationDrawer = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const displayName = isAuthenticated ? (user?.username || "USER").toUpperCase() : "GUEST USER";
+  const walletRaw = localStorage.getItem("gain-live-fake-wallet");
+  let balance = 0;
+  try { if (walletRaw) balance = JSON.parse(walletRaw).balance || 0; } catch {}
+
+  const handleLogout = () => {
+    logout();
+    onClose();
+    navigate("/login");
+  };
 
   if (!isOpen) return null;
 
@@ -55,12 +68,14 @@ const NavigationDrawer = ({ isOpen, onClose }) => {
             </div>
           </div>
           <div className="space-y-0.5">
-            <h2 className="font-headline font-bold text-lg text-[#E4E1E9] leading-tight">GUEST USER</h2>
+            <h2 className="font-headline font-bold text-lg text-[#E4E1E9] leading-tight">{displayName}</h2>
             <div className="flex items-center gap-1.5 py-0.5 px-2 bg-tertiary-container/10 border border-tertiary-container/30 rounded-full">
               <span className="material-symbols-outlined text-tertiary-fixed-dim text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
               <span className="text-tertiary-fixed-dim font-headline font-bold text-[10px] tracking-widest">VIP ELITE MEMBER</span>
             </div>
-            <div className="mt-2 text-primary-fixed-dim font-headline font-bold text-sm">$12,450.00</div>
+            <div className="mt-2 text-primary-fixed-dim font-headline font-bold text-sm">
+              ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </div>
           </div>
         </div>
 
@@ -94,14 +109,13 @@ const NavigationDrawer = ({ isOpen, onClose }) => {
             </div>
           ))}
           <div className="pt-2">
-            <Link
-              to="/login"
-              onClick={onClose}
-              className="flex items-center gap-4 px-4 py-3 text-secondary-container hover:bg-secondary-container/10 transition-all duration-200 rounded-lg group"
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-4 px-4 py-3 text-secondary-container hover:bg-secondary-container/10 transition-all duration-200 rounded-lg group"
             >
               <span className="material-symbols-outlined">logout</span>
               <span className="font-headline font-bold text-sm tracking-widest">LOGOUT</span>
-            </Link>
+            </button>
           </div>
         </nav>
 

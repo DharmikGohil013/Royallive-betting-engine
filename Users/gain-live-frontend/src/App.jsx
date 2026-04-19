@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import PrivateRoute from "./components/auth/PrivateRoute";
 import Header from "./components/layout/Header";
 import BottomNav from "./components/layout/BottomNav";
 import FloatingChat from "./components/ui/FloatingChat";
@@ -16,30 +18,16 @@ import HelpCenterPage from "./pages/HelpCenterPage";
 import ReferFriendPage from "./pages/ReferFriendPage";
 import PromotionsPage from "./pages/PromotionsPage";
 import AboutPage from "./pages/AboutPage";
+import ResponsibleGamingPage from "./pages/ResponsibleGamingPage";
 import AuthLayout from "./components/layout/AuthLayout";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import { verifyToken, isLoggedIn, logout, getStoredUser } from "./services/api";
 
 function AppContent() {
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState(getStoredUser());
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const isAuthRoute = location.pathname === "/login" || location.pathname === "/register";
-
-  useEffect(() => {
-    if (isLoggedIn()) {
-      verifyToken().then(data => {
-        if (data.user) {
-          setUser(data.user);
-          localStorage.setItem("gain-live-user", JSON.stringify(data.user));
-        }
-      }).catch(() => {
-        logout();
-        setUser(null);
-      });
-    }
-  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -55,34 +43,49 @@ function AppContent() {
         <div className="relative mx-auto min-h-screen bg-surface-dim text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container md:max-w-[460px] md:shadow-[0_30px_80px_rgba(0,0,0,0.55)] md:border-x md:border-primary-container/20">
           {!isAuthRoute && <Header />}
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/games" element={<GamesPage />} />
-            <Route path="/sports" element={<SportsPage />} />
-            <Route path="/live-casino" element={<LiveCasinoPage />} />
-            <Route path="/cricket" element={<CricketPage />} />
-            <Route path="/wallet" element={<WalletPage />} />
-            <Route path="/account" element={<AccountPage />} />
-            <Route path="/privacy" element={<PrivacyPolicyPage />} />
-            <Route path="/help" element={<HelpCenterPage />} />
-            <Route path="/refer" element={<ReferFriendPage />} />
-            <Route path="/promotions" element={<PromotionsPage />} />
-            <Route path="/about" element={<AboutPage />} />
+            {/* Auth routes — redirect to home if already logged in */}
             <Route
               path="/login"
               element={
-                <AuthLayout title="Initialize Access">
-                  <LoginPage />
-                </AuthLayout>
+                isAuthenticated ? (
+                  <Navigate to="/" replace />
+                ) : (
+                  <AuthLayout title="Initialize Access">
+                    <LoginPage />
+                  </AuthLayout>
+                )
               }
             />
             <Route
               path="/register"
               element={
-                <AuthLayout title="Access Node Registration">
-                  <RegisterPage />
-                </AuthLayout>
+                isAuthenticated ? (
+                  <Navigate to="/" replace />
+                ) : (
+                  <AuthLayout title="Access Node Registration">
+                    <RegisterPage />
+                  </AuthLayout>
+                )
               }
             />
+
+            {/* All protected routes */}
+            <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+            <Route path="/games" element={<PrivateRoute><GamesPage /></PrivateRoute>} />
+            <Route path="/sports" element={<PrivateRoute><SportsPage /></PrivateRoute>} />
+            <Route path="/live-casino" element={<PrivateRoute><LiveCasinoPage /></PrivateRoute>} />
+            <Route path="/cricket" element={<PrivateRoute><CricketPage /></PrivateRoute>} />
+            <Route path="/wallet" element={<PrivateRoute><WalletPage /></PrivateRoute>} />
+            <Route path="/account" element={<PrivateRoute><AccountPage /></PrivateRoute>} />
+            <Route path="/privacy" element={<PrivateRoute><PrivacyPolicyPage /></PrivateRoute>} />
+            <Route path="/help" element={<PrivateRoute><HelpCenterPage /></PrivateRoute>} />
+            <Route path="/refer" element={<PrivateRoute><ReferFriendPage /></PrivateRoute>} />
+            <Route path="/promotions" element={<PrivateRoute><PromotionsPage /></PrivateRoute>} />
+            <Route path="/about" element={<PrivateRoute><AboutPage /></PrivateRoute>} />
+            <Route path="/responsible-gaming" element={<PrivateRoute><ResponsibleGamingPage /></PrivateRoute>} />
+
+            {/* Catch all */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           {!isAuthRoute && <FloatingChat />}
           {!isAuthRoute && <BottomNav />}
@@ -95,7 +98,9 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </BrowserRouter>
   );
 }

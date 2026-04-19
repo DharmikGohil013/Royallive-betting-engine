@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { register } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const { register: authRegister } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     mobile: "",
@@ -26,7 +27,7 @@ const RegisterPage = () => {
 
     try {
       setSubmitting(true);
-      const data = await register(form);
+      await authRegister(form);
       navigate("/");
     } catch (err) {
       setError(err.message || "Registration failed");
