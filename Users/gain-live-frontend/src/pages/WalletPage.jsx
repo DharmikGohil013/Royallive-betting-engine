@@ -3,11 +3,11 @@ import { useAuth } from "../contexts/AuthContext";
 import { getWallet as fetchWalletApi, requestDeposit, requestWithdraw, getTransactions, getPaymentMethods } from "../services/api";
 
 const BONUS_OFFERS = [
-  { id: 1, title: "Welcome Bonus", desc: "200% on first deposit up to à§³5,000", code: "WELCOME200", minDeposit: 500, maxBonus: 5000 },
-  { id: 2, title: "Reload Bonus", desc: "50% on every deposit up to à§³1,000", code: "RELOAD50", minDeposit: 200, maxBonus: 1000 },
-  { id: 3, title: "Weekend Special", desc: "100% bonus up to à§³2,500 on weekends", code: "WEEKEND100", minDeposit: 300, maxBonus: 2500 },
+  { id: 1, title: "Welcome Bonus", desc: "200% on first deposit up to ৳5,000", code: "WELCOME200", minDeposit: 500, maxBonus: 5000 },
+  { id: 2, title: "Reload Bonus", desc: "50% on every deposit up to ৳1,000", code: "RELOAD50", minDeposit: 200, maxBonus: 1000 },
+  { id: 3, title: "Weekend Special", desc: "100% bonus up to ৳2,500 on weekends", code: "WEEKEND100", minDeposit: 300, maxBonus: 2500 },
   { id: 4, title: "VIP Cashback", desc: "10% cashback on net losses", code: "VIPCASH10", minDeposit: 1000, maxBonus: 10000 },
-  { id: 5, title: "Refer & Earn", desc: "Free à§³250 for each friend who joins", code: "REFER25", minDeposit: 0, maxBonus: 250 },
+  { id: 5, title: "Refer & Earn", desc: "Free ৳250 for each friend who joins", code: "REFER25", minDeposit: 0, maxBonus: 250 },
 ];
 
 const FALLBACK_METHODS = [
@@ -143,11 +143,11 @@ const WalletPage = () => {
   const handleDeposit = async () => {
     const amount = parseFloat(depositAmt);
     if (!amount || amount < 100) {
-      setMsg({ type: "error", text: "Minimum deposit is à§³100" });
+      setMsg({ type: "error", text: "Minimum deposit is ৳100" });
       return;
     }
     if (amount > 500000) {
-      setMsg({ type: "error", text: "Maximum deposit is à§³500,000" });
+      setMsg({ type: "error", text: "Maximum deposit is ৳500,000" });
       return;
     }
     if (!depositMethod) {
@@ -175,7 +175,7 @@ const WalletPage = () => {
   const handleWithdraw = async () => {
     const amount = parseFloat(withdrawAmt);
     if (!amount || amount < 100) {
-      setMsg({ type: "error", text: "Minimum withdrawal is à§³100" });
+      setMsg({ type: "error", text: "Minimum withdrawal is ৳100" });
       return;
     }
     if (amount > walletData.balance) {
@@ -256,7 +256,7 @@ const WalletPage = () => {
               <div>
                 <p className="text-[10px] font-label uppercase tracking-[0.2em] text-on-surface-variant mb-1">Available Balance</p>
                 <p className="text-3xl font-headline font-black text-primary-container tracking-tighter">
-                  à§³{walletData.balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ৳{walletData.balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
                 {walletData.pendingCount > 0 && (
                   <p className="text-[10px] text-tertiary-fixed-dim mt-1 flex items-center gap-1">
@@ -312,11 +312,11 @@ const WalletPage = () => {
             </div>
             <div className="glass-card rounded-lg p-4">
               <p className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">Total Deposited</p>
-              <p className="text-xl font-headline font-bold text-on-surface mt-1">à§³{walletData.totalDeposits.toLocaleString()}</p>
+              <p className="text-xl font-headline font-bold text-on-surface mt-1">৳{walletData.totalDeposits.toLocaleString()}</p>
             </div>
             <div className="glass-card rounded-lg p-4">
               <p className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">Total Withdrawn</p>
-              <p className="text-xl font-headline font-bold text-primary-container mt-1">à§³{walletData.totalWithdrawals.toLocaleString()}</p>
+              <p className="text-xl font-headline font-bold text-primary-container mt-1">৳{walletData.totalWithdrawals.toLocaleString()}</p>
             </div>
           </section>
 
@@ -355,7 +355,7 @@ const WalletPage = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-4 font-headline font-bold">à§³{(t.amount || 0).toLocaleString()}</td>
+                        <td className="px-4 py-4 font-headline font-bold">৳{(t.amount || 0).toLocaleString()}</td>
                         <td className="px-4 py-4 text-right">
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${t.status === "approved" || t.status === "completed" ? "text-primary-container bg-primary-container/5" : t.status === "pending" ? "text-secondary-fixed-dim bg-secondary-container/10" : "text-error bg-error-container/10"}`}>{t.status}</span>
                         </td>
@@ -416,7 +416,7 @@ const WalletPage = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-center">
                         <p className="text-xs font-bold capitalize">{t.type}</p>
-                        <p className={`text-sm font-headline font-bold ${t.type === "withdraw" ? "text-secondary-container" : "text-primary-container"}`}>{t.type === "withdraw" ? "-" : "+"}à§³{(t.amount || 0).toLocaleString()}</p>
+                        <p className={`text-sm font-headline font-bold ${t.type === "withdraw" ? "text-secondary-container" : "text-primary-container"}`}>{t.type === "withdraw" ? "-" : "+"}৳{(t.amount || 0).toLocaleString()}</p>
                       </div>
                       <div className="flex justify-between items-center mt-1">
                         <p className="text-[10px] text-on-surface-variant truncate mr-2">{(t.paymentMethod || "").toUpperCase()}{t.reference ? ` â€¢ ${t.reference}` : ""}</p>
@@ -455,8 +455,8 @@ const WalletPage = () => {
               </div>
               <div className="flex items-center justify-between mt-3">
                 <div className="flex gap-4">
-                  {bonus.minDeposit > 0 && <p className="text-[9px] text-on-surface-variant">Min: à§³{bonus.minDeposit}</p>}
-                  <p className="text-[9px] text-on-surface-variant">Max: à§³{bonus.maxBonus}</p>
+                  {bonus.minDeposit > 0 && <p className="text-[9px] text-on-surface-variant">Min: ৳{bonus.minDeposit}</p>}
+                  <p className="text-[9px] text-on-surface-variant">Max: ৳{bonus.maxBonus}</p>
                 </div>
                 <button onClick={() => { setPromoCode(bonus.code); setDepositMethod(paymentMethods[0]?.id || ""); setShowDeposit(true); }} className="px-3 py-1.5 bg-surface-container-high text-on-surface text-[10px] font-bold uppercase tracking-wider rounded border border-outline-variant/30 active:scale-95 transition-transform">Use Code</button>
               </div>
@@ -470,10 +470,10 @@ const WalletPage = () => {
         <section className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "Total Deposited", value: `à§³${walletData.totalDeposits.toLocaleString()}`, color: "text-on-surface" },
-              { label: "Total Withdrawn", value: `à§³${walletData.totalWithdrawals.toLocaleString()}`, color: "text-primary-container" },
-              { label: "Total Won", value: `à§³${walletData.totalWinnings.toLocaleString()}`, color: "text-tertiary-fixed-dim" },
-              { label: "Total Lost", value: `à§³${walletData.totalLosses.toLocaleString()}`, color: "text-error" },
+              { label: "Total Deposited", value: `৳${walletData.totalDeposits.toLocaleString()}`, color: "text-on-surface" },
+              { label: "Total Withdrawn", value: `৳${walletData.totalWithdrawals.toLocaleString()}`, color: "text-primary-container" },
+              { label: "Total Won", value: `৳${walletData.totalWinnings.toLocaleString()}`, color: "text-tertiary-fixed-dim" },
+              { label: "Total Lost", value: `৳${walletData.totalLosses.toLocaleString()}`, color: "text-error" },
             ].map((s, i) => (
               <div key={i} className="glass-card rounded-lg p-4">
                 <p className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">{s.label}</p>
@@ -485,12 +485,12 @@ const WalletPage = () => {
             <h4 className="font-headline font-bold text-xs uppercase tracking-widest text-on-surface">Account Summary</h4>
             <div className="space-y-2">
               {[
-                { label: "Net Profit/Loss", value: `à§³${(walletData.totalWinnings - (walletData.totalDeposits - walletData.totalWithdrawals)).toLocaleString()}`, color: walletData.totalWinnings >= (walletData.totalDeposits - walletData.totalWithdrawals) ? "text-primary-container" : "text-error" },
+                { label: "Net Profit/Loss", value: `৳${(walletData.totalWinnings - (walletData.totalDeposits - walletData.totalWithdrawals)).toLocaleString()}`, color: walletData.totalWinnings >= (walletData.totalDeposits - walletData.totalWithdrawals) ? "text-primary-container" : "text-error" },
                 { label: "Win Rate", value: `${winRate}%`, color: "text-tertiary-fixed-dim" },
                 { label: "Total Bets", value: walletData.totalBets, color: "text-on-surface" },
                 { label: "Total Wins", value: walletData.totalWins, color: "text-primary-container" },
                 { label: "Total Losses", value: walletData.totalLosses, color: "text-error" },
-                { label: "Current Balance", value: `à§³${walletData.balance.toLocaleString()}`, color: "text-primary-container" },
+                { label: "Current Balance", value: `৳${walletData.balance.toLocaleString()}`, color: "text-primary-container" },
                 { label: "Pending Transactions", value: walletData.pendingCount, color: walletData.pendingCount > 0 ? "text-tertiary-fixed-dim" : "text-on-surface" },
                 { label: "Member Since", value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "â€”", color: "text-on-surface-variant" },
               ].map((item, i) => (
@@ -525,12 +525,12 @@ const WalletPage = () => {
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   {[500, 1000, 5000, 10000].map((amt) => (
-                    <button key={amt} onClick={() => setDepositAmt(String(amt))} className={`py-2.5 rounded text-xs font-bold font-headline border transition-all active:scale-95 ${depositAmt === String(amt) ? "bg-primary-container/20 text-primary-container border-primary-container/40" : "bg-surface-container-high border-outline-variant/20 text-on-surface"}`}>à§³{amt.toLocaleString()}</button>
+                    <button key={amt} onClick={() => setDepositAmt(String(amt))} className={`py-2.5 rounded text-xs font-bold font-headline border transition-all active:scale-95 ${depositAmt === String(amt) ? "bg-primary-container/20 text-primary-container border-primary-container/40" : "bg-surface-container-high border-outline-variant/20 text-on-surface"}`}>৳{amt.toLocaleString()}</button>
                   ))}
                 </div>
                 <div className="space-y-2">
-                  <label className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-primary-container">Amount (à§³)</label>
-                  <input type="number" value={depositAmt} onChange={(e) => setDepositAmt(e.target.value)} placeholder="Min à§³100" min="100" max="500000" className="w-full bg-surface-container-lowest/60 px-4 py-3 rounded text-sm font-headline text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-1 focus:ring-primary-container/40 border border-outline-variant/20" />
+                  <label className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-primary-container">Amount (৳)</label>
+                  <input type="number" value={depositAmt} onChange={(e) => setDepositAmt(e.target.value)} placeholder="Min ৳100" min="100" max="500000" className="w-full bg-surface-container-lowest/60 px-4 py-3 rounded text-sm font-headline text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-1 focus:ring-primary-container/40 border border-outline-variant/20" />
                 </div>
                 <div className="space-y-2">
                   <label className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-primary-container">Payment Method</label>
@@ -555,9 +555,9 @@ const WalletPage = () => {
                   )}
                 </div>
                 <button onClick={handleDeposit} disabled={depositLoading || !depositAmt || parseFloat(depositAmt) < 100} className="w-full py-3.5 bg-[linear-gradient(90deg,#00F5FF_0%,#FF2D78_100%)] font-headline text-xs font-black uppercase tracking-[0.18em] text-on-primary rounded-lg shadow-[0_0_20px_rgba(0,245,255,0.3)] active:scale-[0.98] transition-all disabled:opacity-40 disabled:active:scale-100">
-                  {depositLoading ? "Processing..." : `DEPOSIT à§³${depositAmt || "0"}`}
+                  {depositLoading ? "Processing..." : `DEPOSIT ৳${depositAmt || "0"}`}
                 </button>
-                <p className="text-[9px] text-center text-on-surface-variant/50">Deposits are credited after admin approval. Min à§³100, Max à§³500,000</p>
+                <p className="text-[9px] text-center text-on-surface-variant/50">Deposits are credited after admin approval. Min ৳100, Max ৳500,000</p>
               </>
             )}
           </div>
@@ -585,16 +585,16 @@ const WalletPage = () => {
                 </div>
                 <div className="bg-surface-container-lowest/50 rounded-lg p-3 border border-primary-container/20">
                   <p className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">Available Balance</p>
-                  <p className="text-xl font-headline font-bold text-primary-container">à§³{walletData.balance.toLocaleString()}</p>
+                  <p className="text-xl font-headline font-bold text-primary-container">৳{walletData.balance.toLocaleString()}</p>
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   {[500, 1000, 5000, 10000].map((amt) => (
-                    <button key={amt} onClick={() => setWithdrawAmt(String(Math.min(amt, walletData.balance)))} disabled={walletData.balance < 100} className={`py-2.5 rounded text-xs font-bold font-headline border transition-all active:scale-95 disabled:opacity-30 ${withdrawAmt === String(amt) ? "bg-primary-container/20 text-primary-container border-primary-container/40" : "bg-surface-container-high border-outline-variant/20 text-on-surface"}`}>à§³{amt.toLocaleString()}</button>
+                    <button key={amt} onClick={() => setWithdrawAmt(String(Math.min(amt, walletData.balance)))} disabled={walletData.balance < 100} className={`py-2.5 rounded text-xs font-bold font-headline border transition-all active:scale-95 disabled:opacity-30 ${withdrawAmt === String(amt) ? "bg-primary-container/20 text-primary-container border-primary-container/40" : "bg-surface-container-high border-outline-variant/20 text-on-surface"}`}>৳{amt.toLocaleString()}</button>
                   ))}
                 </div>
                 <div className="space-y-2">
-                  <label className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-primary-container">Amount (à§³)</label>
-                  <input type="number" value={withdrawAmt} onChange={(e) => setWithdrawAmt(e.target.value)} placeholder="Min à§³100" min="100" max={walletData.balance} className="w-full bg-surface-container-lowest/60 px-4 py-3 rounded text-sm font-headline text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-1 focus:ring-primary-container/40 border border-outline-variant/20" />
+                  <label className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-primary-container">Amount (৳)</label>
+                  <input type="number" value={withdrawAmt} onChange={(e) => setWithdrawAmt(e.target.value)} placeholder="Min ৳100" min="100" max={walletData.balance} className="w-full bg-surface-container-lowest/60 px-4 py-3 rounded text-sm font-headline text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-1 focus:ring-primary-container/40 border border-outline-variant/20" />
                   {parseFloat(withdrawAmt) > walletData.balance && (
                     <p className="text-[10px] text-error flex items-center gap-1"><span className="material-symbols-outlined text-sm">error</span>Insufficient balance</p>
                   )}
@@ -615,9 +615,9 @@ const WalletPage = () => {
                   <input type="text" value={withdrawAccount} onChange={(e) => setWithdrawAccount(e.target.value)} placeholder="Enter your account number" className="w-full bg-surface-container-lowest/60 px-4 py-3 rounded text-sm font-headline text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-1 focus:ring-primary-container/40 border border-outline-variant/20" />
                 </div>
                 <button onClick={handleWithdraw} disabled={withdrawLoading || !withdrawAmt || parseFloat(withdrawAmt) < 100 || parseFloat(withdrawAmt) > walletData.balance || !withdrawAccount.trim()} className="w-full py-3.5 bg-[linear-gradient(90deg,#00F5FF_0%,#FF2D78_100%)] font-headline text-xs font-black uppercase tracking-[0.18em] text-on-primary rounded-lg shadow-[0_0_20px_rgba(0,245,255,0.3)] active:scale-[0.98] transition-all disabled:opacity-40 disabled:active:scale-100">
-                  {withdrawLoading ? "Processing..." : `WITHDRAW à§³${withdrawAmt || "0"}`}
+                  {withdrawLoading ? "Processing..." : `WITHDRAW ৳${withdrawAmt || "0"}`}
                 </button>
-                <p className="text-[9px] text-center text-on-surface-variant/50">Withdrawals processed within 1-24 hours. Min à§³100</p>
+                <p className="text-[9px] text-center text-on-surface-variant/50">Withdrawals processed within 1-24 hours. Min ৳100</p>
               </>
             )}
           </div>
