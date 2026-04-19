@@ -66,7 +66,7 @@ export default function HallOfGloryPage() {
               <div key={entry._id || idx} className={`relative bg-surface-dim rounded-2xl p-6 text-center border ${idx === 0 ? "border-amber-500/30 shadow-lg shadow-amber-500/10" : "border-white/5"}`}>
                 <div className="text-4xl mb-2">{MEDALS[entry.rank - 1] || `#${entry.rank}`}</div>
                 <h3 className="text-lg font-black text-slate-100 mb-1">{entry.username}</h3>
-                <p className="text-2xl font-black text-amber-400">BDT {entry.totalPayout?.toLocaleString()}</p>
+                <p className="text-2xl font-black text-amber-400">৳{entry.totalPayout?.toLocaleString()}</p>
                 <p className="text-xs text-slate-500 mt-2">Rank #{entry.rank}</p>
                 {entry.isManual && <span className="absolute top-3 right-3 text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold">Manual</span>}
               </div>

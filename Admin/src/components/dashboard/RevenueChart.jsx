@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { getRevenueByGame } from "../../services/api";
 
 const defaultRevenue = [
-  { name: "BPL Special", amount: "BDT 0", color: "bg-primary" },
-  { name: "Live Casino", amount: "BDT 0", color: "bg-secondary" },
-  { name: "Others", amount: "BDT 0", color: "bg-error" },
+  { name: "BPL Special", amount: "৳0", color: "bg-primary" },
+  { name: "Live Casino", amount: "৳0", color: "bg-secondary" },
+  { name: "Others", amount: "৳0", color: "bg-error" },
 ];
 
 export default function RevenueChart() {
   const [revenueData, setRevenueData] = useState(defaultRevenue);
-  const [totalRevenue, setTotalRevenue] = useState("BDT 0");
+  const [totalRevenue, setTotalRevenue] = useState("৳0");
 
   useEffect(() => {
     getRevenueByGame().then(data => {
@@ -17,10 +17,10 @@ export default function RevenueChart() {
       if (games.length) {
         const colors = ["bg-primary", "bg-secondary", "bg-error", "bg-amber-500", "bg-blue-500"];
         const total = games.reduce((s, g) => s + (g.revenue || 0), 0);
-        setTotalRevenue(`BDT ${(total / 100000).toFixed(1)}L`);
+        setTotalRevenue(`৳${(total / 100000).toFixed(1)}L`);
         setRevenueData(games.slice(0, 5).map((g, i) => ({
           name: g.name || g._id || `Game ${i + 1}`,
-          amount: `BDT ${(g.revenue || 0).toLocaleString()}`,
+          amount: `৳${(g.revenue || 0).toLocaleString()}`,
           color: colors[i % colors.length],
         })));
       }

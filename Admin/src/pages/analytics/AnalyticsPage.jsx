@@ -3,7 +3,7 @@ import { getAnalyticsOverview, getWeeklyTransactions, getTopUsers } from "../../
 
 const timeframeOptions = ["Today", "This Week", "This Month", "Yearly"];
 
-function fmtBDT(n) { return n != null ? `BDT ${Number(n).toLocaleString()}` : "BDT 0"; }
+function fmtBDT(n) { return n != null ? `৳${Number(n).toLocaleString()}` : "৳0"; }
 
 export default function AnalyticsPage() {
   const [overview, setOverview] = useState(null);
@@ -23,9 +23,9 @@ export default function AnalyticsPage() {
     { id: "net-profit", icon: "insights", iconClass: "bg-amber-500/10 text-amber-500", trend: overview.profitTrend ? `+${overview.profitTrend}%` : null, trendClass: "text-secondary", title: "Net Profit", value: fmtBDT(overview.netProfit), valueClass: "text-amber-500", cardClass: "bg-gradient-to-br from-surface-container to-surface-container-high" },
     { id: "expected-profit", icon: "analytics", iconClass: "bg-surface-container-highest text-on-surface-variant", title: "Active Bets", value: String(overview.activeBets || 0), cardClass: "border-l-4 border-amber-500" },
   ] : [
-    { id: "total-deposit", icon: "account_balance_wallet", iconClass: "bg-secondary/10 text-secondary", title: "Total Deposit", value: "BDT 0" },
-    { id: "total-withdraw", icon: "payments", iconClass: "bg-error/10 text-error", title: "Total Withdraw", value: "BDT 0" },
-    { id: "net-profit", icon: "insights", iconClass: "bg-amber-500/10 text-amber-500", title: "Net Profit", value: "BDT 0", valueClass: "text-amber-500" },
+    { id: "total-deposit", icon: "account_balance_wallet", iconClass: "bg-secondary/10 text-secondary", title: "Total Deposit", value: "৳0" },
+    { id: "total-withdraw", icon: "payments", iconClass: "bg-error/10 text-error", title: "Total Withdraw", value: "৳0" },
+    { id: "net-profit", icon: "insights", iconClass: "bg-amber-500/10 text-amber-500", title: "Net Profit", value: "৳0", valueClass: "text-amber-500" },
     { id: "expected-profit", icon: "analytics", iconClass: "bg-surface-container-highest text-on-surface-variant", title: "Active Bets", value: "0" },
   ];
 
@@ -146,7 +146,7 @@ export default function AnalyticsPage() {
             </div>
 
             {dailyTrend.map((bar) => (
-              <div key={bar.day} className="flex-1 flex flex-col justify-end items-center group" title={bar.amount != null ? `BDT ${bar.amount.toLocaleString()}` : ''}>
+              <div key={bar.day} className="flex-1 flex flex-col justify-end items-center group" title={bar.amount != null ? `৳${bar.amount.toLocaleString()}` : ''}>
                 <div
                   className="w-full bg-gradient-to-t from-amber-500/5 to-amber-500/40 rounded-t-sm transition-all group-hover:to-amber-500/60"
                   style={{ height: `${bar.pct}%` }}
@@ -163,7 +163,7 @@ export default function AnalyticsPage() {
             <div>
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-slate-400">This Week</span>
-                <span className="text-amber-500 font-bold">BDT 8.4 Lac</span>
+                <span className="text-amber-500 font-bold">৳8.4 Lac</span>
               </div>
               <div className="h-2.5 w-full bg-surface-container-high rounded-full overflow-hidden">
                 <div className="h-full bg-amber-500 w-[85%] rounded-full" />
@@ -173,7 +173,7 @@ export default function AnalyticsPage() {
             <div>
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-slate-400">Last Week</span>
-                <span className="text-slate-100 font-bold">BDT 7.2 Lac</span>
+                <span className="text-slate-100 font-bold">৳7.2 Lac</span>
               </div>
               <div className="h-2.5 w-full bg-surface-container-high rounded-full overflow-hidden">
                 <div className="h-full bg-slate-500 w-[72%] rounded-full" />

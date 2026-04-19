@@ -4,11 +4,11 @@ import { getGames, createGame, updateGame, deleteGame } from "../../services/api
 const fallbackStats = [
   { label: "Total Games", value: "0", border: "border-amber-500" },
   { label: "Active Players", value: "0", border: "border-secondary" },
-  { label: "Today's Revenue", value: "BDT 0", border: "border-primary" },
+  { label: "Today's Revenue", value: "৳0", border: "border-primary" },
   { label: "System Load", value: "—", border: "border-tertiary" },
 ];
 
-function fmtBDT(n) { return n != null ? `BDT ${Number(n).toLocaleString()}` : "BDT 0"; }
+function fmtBDT(n) { return n != null ? `৳${Number(n).toLocaleString()}` : "৳0"; }
 function fmt(n) { return n != null ? Number(n).toLocaleString() : "0"; }
 
 export default function GameManagementPage() {

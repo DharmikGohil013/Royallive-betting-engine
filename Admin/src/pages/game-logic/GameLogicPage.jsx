@@ -180,7 +180,7 @@ export default function GameLogicPage() {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Expected Monthly Margin</span>
-                <span className="text-secondary font-bold text-lg">+BDT {(form.houseEdge * 2.78).toFixed(1)}L</span>
+                <span className="text-secondary font-bold text-lg">+৳{(form.houseEdge * 2.78).toFixed(1)}L</span>
               </div>
               <div className="h-1 bg-surface-container-low rounded-full">
                 <div style={{ width: `${Math.min(form.houseEdge * 10, 100)}%` }} className="h-full bg-secondary rounded-full shadow-[0_0_10px_rgba(78,222,163,0.3)]" />

@@ -41,7 +41,7 @@ export default function ReferralsPage() {
         </div>
         <div className="bg-surface-container rounded-2xl p-4">
           <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Rewards Paid</p>
-          <p className="text-2xl font-black text-amber-400">BDT {referrals.reduce((sum, r) => sum + (r.rewardClaimed ? r.rewardAmount : 0), 0).toLocaleString()}</p>
+          <p className="text-2xl font-black text-amber-400">৳{referrals.reduce((sum, r) => sum + (r.rewardClaimed ? r.rewardAmount : 0), 0).toLocaleString()}</p>
         </div>
       </div>
 
@@ -67,7 +67,7 @@ export default function ReferralsPage() {
                   <td className="p-4 text-sm font-bold text-slate-100">{ref.referrer?.username || "?"}</td>
                   <td className="p-4 text-sm text-slate-300">{ref.referred?.username || "?"}</td>
                   <td className="p-4"><span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded text-xs font-mono font-bold">{ref.referralCode}</span></td>
-                  <td className="p-4 text-sm text-amber-400 font-bold text-right">BDT {ref.rewardAmount}</td>
+                  <td className="p-4 text-sm text-amber-400 font-bold text-right">৳{ref.rewardAmount}</td>
                   <td className="p-4 text-center">
                     <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${ref.rewardClaimed ? "bg-green-500/20 text-green-400" : "bg-slate-500/20 text-slate-400"}`}>
                       {ref.rewardClaimed ? "Yes" : "No"}

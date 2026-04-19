@@ -9,9 +9,9 @@ import RevenueChart from "../../components/dashboard/RevenueChart";
 import MonthlyProfitChart from "../../components/dashboard/MonthlyProfitChart";
 
 function formatBDT(n) {
-  if (n >= 100000) return `BDT ${(n / 100000).toFixed(1)}L`;
-  if (n >= 1000) return `BDT ${(n / 1000).toFixed(0)}K`;
-  return `BDT ${n}`;
+  if (n >= 100000) return `৳${(n / 100000).toFixed(1)}L`;
+  if (n >= 1000) return `৳${(n / 1000).toFixed(0)}K`;
+  return `৳${n}`;
 }
 
 export default function DashboardPage() {

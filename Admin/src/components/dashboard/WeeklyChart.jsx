@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { getWeeklyTransactions } from "../../services/api";
 
 const defaultBars = [
-  { day: "Sat", height: "h-[8rem]", tooltip: "BDT 0" },
-  { day: "Sun", height: "h-[8rem]", tooltip: "BDT 0" },
-  { day: "Mon", height: "h-[8rem]", tooltip: "BDT 0" },
-  { day: "Tue", height: "h-[8rem]", tooltip: "BDT 0" },
-  { day: "Wed", height: "h-[8rem]", tooltip: "BDT 0" },
-  { day: "Thu", height: "h-[8rem]", tooltip: "BDT 0" },
-  { day: "Fri", height: "h-[8rem]", tooltip: "BDT 0" },
+  { day: "Sat", height: "h-[8rem]", tooltip: "৳0" },
+  { day: "Sun", height: "h-[8rem]", tooltip: "৳0" },
+  { day: "Mon", height: "h-[8rem]", tooltip: "৳0" },
+  { day: "Tue", height: "h-[8rem]", tooltip: "৳0" },
+  { day: "Wed", height: "h-[8rem]", tooltip: "৳0" },
+  { day: "Thu", height: "h-[8rem]", tooltip: "৳0" },
+  { day: "Fri", height: "h-[8rem]", tooltip: "৳0" },
 ];
 
 const heightMap = [
@@ -29,7 +29,7 @@ export default function WeeklyChart() {
           return {
             day: d.day || ["Sat","Sun","Mon","Tue","Wed","Thu","Fri"][i] || `D${i}`,
             height: heightMap[idx] || "h-[8rem]",
-            tooltip: `BDT ${(val / 1000).toFixed(0)}K`,
+            tooltip: `৳${(val / 1000).toFixed(0)}K`,
             highlight: idx >= 5,
           };
         }));

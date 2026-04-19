@@ -664,9 +664,9 @@ router.get("/support/faq", async (_req, res) => {
   const faqs = [
     { id: 1, question: "How do I deposit money?", answer: "Go to Wallet > Deposit, select payment method, enter amount and follow instructions." },
     { id: 2, question: "How do I withdraw my winnings?", answer: "Go to Wallet > Withdraw, enter amount and payment details. Withdrawals are processed within 24 hours." },
-    { id: 3, question: "What is the minimum deposit?", answer: "The minimum deposit is BDT 100." },
+    { id: 3, question: "What is the minimum deposit?", answer: "The minimum deposit is ৳100." },
     { id: 4, question: "How do I change my password?", answer: "Go to Account > Settings > Change Password." },
-    { id: 5, question: "How does the referral program work?", answer: "Share your referral code with friends. When they sign up using your code, both of you get BDT 50 bonus!" },
+    { id: 5, question: "How does the referral program work?", answer: "Share your referral code with friends. When they sign up using your code, both of you get ৳50 bonus!" },
     { id: 6, question: "My bet was not settled correctly", answer: "Please contact our support team through Help Center with your bet ID and we will investigate." },
     { id: 7, question: "How do I verify my account?", answer: "Go to Account > Verification and upload your ID documents." },
     { id: 8, question: "What payment methods are available?", answer: "We support bKash, Nagad, Rocket, and bank transfer." },

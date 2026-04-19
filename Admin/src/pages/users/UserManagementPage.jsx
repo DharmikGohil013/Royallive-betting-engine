@@ -352,7 +352,7 @@ export default function UserManagementPage() {
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Balance (BDT)</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Balance (৳)</label>
               <input type="number" className="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg px-3.5 py-2.5 text-sm text-on-surface mt-1 focus:ring-1 focus:ring-primary/50 transition" value={formData.balance} onChange={(e) => setFormData({ ...formData, balance: e.target.value })} />
             </div>
             {editMode && (
@@ -381,7 +381,7 @@ export default function UserManagementPage() {
         <p className="text-xs text-slate-500 mb-5">User: <span className="text-slate-300 font-bold">{selectedUser?.username}</span></p>
         <form onSubmit={handleBalanceSubmit} className="space-y-4">
           <div>
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Amount (BDT) *</label>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Amount (৳) *</label>
             <input type="number" min="1" step="1" className="w-full bg-surface-container-high border border-outline-variant/20 rounded-lg px-3.5 py-3 text-lg font-bold text-on-surface mt-1 focus:ring-1 focus:ring-primary/50 transition" value={balanceAmount} onChange={(e) => setBalanceAmount(e.target.value)} required placeholder="0" autoFocus />
           </div>
           <div>

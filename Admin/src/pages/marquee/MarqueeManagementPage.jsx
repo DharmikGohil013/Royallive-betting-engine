@@ -70,7 +70,7 @@ export default function MarqueeManagementPage() {
           <div className="flex gap-8 animate-marquee whitespace-nowrap">
             {items.filter(i => i.isActive).map((item, idx) => (
               <span key={idx} className={`text-sm ${item.highlighted ? "text-amber-400 font-bold" : "text-slate-300"}`}>
-                {item.label} {item.username} won BDT {item.amount?.toLocaleString()}
+                {item.label} {item.username} won ৳{item.amount?.toLocaleString()}
               </span>
             ))}
           </div>
@@ -98,7 +98,7 @@ export default function MarqueeManagementPage() {
                 <tr key={item._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                   <td className="p-4 text-slate-300 text-sm">{item.label}</td>
                   <td className="p-4 text-slate-100 font-bold text-sm">{item.username}</td>
-                  <td className="p-4 text-amber-400 font-bold text-sm">BDT {item.amount?.toLocaleString()}</td>
+                  <td className="p-4 text-amber-400 font-bold text-sm">৳{item.amount?.toLocaleString()}</td>
                   <td className="p-4 text-center">
                     {item.highlighted ? <span className="text-amber-400">★</span> : <span className="text-slate-600">☆</span>}
                   </td>

@@ -18,10 +18,10 @@ export const statsCards = [
     iconColor: "text-secondary",
     iconBg: "bg-secondary/10",
     trendIcon: "arrow_upward",
-    trendValue: "BDT 42,000",
+    trendValue: "৳42,000",
     trendColor: "text-secondary",
     label: "Today's Deposit",
-    value: "BDT 840,200",
+    value: "৳840,200",
   },
   {
     id: "today-withdraw",
@@ -29,10 +29,10 @@ export const statsCards = [
     iconColor: "text-error",
     iconBg: "bg-error/10",
     trendIcon: "arrow_downward",
-    trendValue: "BDT 12,500",
+    trendValue: "৳12,500",
     trendColor: "text-error",
     label: "Today's Withdraw",
-    value: "BDT 325,000",
+    value: "৳325,000",
   },
   {
     id: "total-profit",
@@ -43,18 +43,18 @@ export const statsCards = [
     trendValue: "+8.4%",
     trendColor: "text-secondary",
     label: "Total Profit",
-    value: "BDT 515,200",
+    value: "৳515,200",
   },
 ];
 
 export const weeklyChartData = [
-  { day: "Sat", height: "h-[8rem]", tooltip: "BDT 40K" },
-  { day: "Sun", height: "h-[12rem]", tooltip: "BDT 60K" },
-  { day: "Mon", height: "h-[9rem]", tooltip: "BDT 45K" },
-  { day: "Tue", height: "h-[14rem]", tooltip: "BDT 70K" },
-  { day: "Wed", height: "h-[11rem]", tooltip: "BDT 55K" },
-  { day: "Thu", height: "h-[15rem]", tooltip: "BDT 80K", highlight: true },
-  { day: "Fri", height: "h-[10rem]", tooltip: "BDT 50K" },
+  { day: "Sat", height: "h-[8rem]", tooltip: "৳40K" },
+  { day: "Sun", height: "h-[12rem]", tooltip: "৳60K" },
+  { day: "Mon", height: "h-[9rem]", tooltip: "৳45K" },
+  { day: "Tue", height: "h-[14rem]", tooltip: "৳70K" },
+  { day: "Wed", height: "h-[11rem]", tooltip: "৳55K" },
+  { day: "Thu", height: "h-[15rem]", tooltip: "৳80K", highlight: true },
+  { day: "Fri", height: "h-[10rem]", tooltip: "৳50K" },
 ];
 
 export const alertsData = [
@@ -64,7 +64,7 @@ export const alertsData = [
     iconBg: "bg-error/20",
     iconColor: "text-error",
     title: "New Withdraw Request",
-    desc: "User: @rahul99 | Amount: BDT 5,000",
+    desc: "User: @rahul99 | Amount: ৳5,000",
     time: "2 minutes ago",
   },
   {
@@ -92,7 +92,7 @@ export const transactionsData = [
     id: 1,
     initials: "AK",
     name: "Abdul Karim",
-    amount: "BDT 5,000",
+    amount: "৳5,000",
     type: "Deposit",
     typeBg: "bg-secondary/10",
     typeColor: "text-secondary",
@@ -105,7 +105,7 @@ export const transactionsData = [
     id: 2,
     initials: "MS",
     name: "Md. Sojib",
-    amount: "BDT 2,500",
+    amount: "৳2,500",
     type: "Withdraw",
     typeBg: "bg-amber-500/10",
     typeColor: "text-amber-500",
@@ -118,7 +118,7 @@ export const transactionsData = [
     id: 3,
     initials: "RH",
     name: "Rakib Hossain",
-    amount: "BDT 10,000",
+    amount: "৳10,000",
     type: "Deposit",
     typeBg: "bg-secondary/10",
     typeColor: "text-secondary",
@@ -131,7 +131,7 @@ export const transactionsData = [
     id: 4,
     initials: "JF",
     name: "Jannatul Ferdous",
-    amount: "BDT 1,200",
+    amount: "৳1,200",
     type: "Withdraw",
     typeBg: "bg-amber-500/10",
     typeColor: "text-amber-500",
@@ -144,7 +144,7 @@ export const transactionsData = [
     id: 5,
     initials: "NH",
     name: "Nazmul Huda",
-    amount: "BDT 4,000",
+    amount: "৳4,000",
     type: "Deposit",
     typeBg: "bg-secondary/10",
     typeColor: "text-secondary",
@@ -156,9 +156,9 @@ export const transactionsData = [
 ];
 
 export const revenueByGame = [
-  { name: "BPL Special", amount: "BDT 420,000", color: "bg-primary" },
-  { name: "Live Casino", amount: "BDT 580,000", color: "bg-secondary" },
-  { name: "Others", amount: "BDT 250,000", color: "bg-error" },
+  { name: "BPL Special", amount: "৳420,000", color: "bg-primary" },
+  { name: "Live Casino", amount: "৳580,000", color: "bg-secondary" },
+  { name: "Others", amount: "৳250,000", color: "bg-error" },
 ];
 
 export const monthlyBars = [

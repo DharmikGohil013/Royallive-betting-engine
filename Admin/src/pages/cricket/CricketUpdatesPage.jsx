@@ -7,7 +7,7 @@ export default function CricketUpdatesPage() {
   const [upcomingMatches, setUpcomingMatches] = useState([]);
   const [statItems, setStatItems] = useState([
     { icon: "trending_up", iconClass: "bg-secondary/10 text-secondary", label: "Total Live Bets", value: "0" },
-    { icon: "payments", iconClass: "bg-amber-500/10 text-amber-500", label: "Transaction Volume", value: "BDT 0" },
+    { icon: "payments", iconClass: "bg-amber-500/10 text-amber-500", label: "Transaction Volume", value: "৳0" },
     { icon: "warning", iconClass: "bg-error/10 text-error", label: "Reported Games", value: "0" },
   ]);
   const [form, setForm] = useState({ teamA: "", teamB: "", league: "", matchType: "ODI", venue: "", startTime: "", scoreA: "", scoreB: "", status: "upcoming" });

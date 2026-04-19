@@ -124,7 +124,7 @@ export default function PaymentMethodsPage() {
                   </div>
                   <div className="flex justify-between items-center bg-surface-container-low p-3 rounded-lg">
                     <span className="text-slate-400 text-sm">Daily Limit</span>
-                    <span className="font-bold text-on-surface">BDT {(method.dailyLimit || 0).toLocaleString()}</span>
+                    <span className="font-bold text-on-surface">৳{(method.dailyLimit || 0).toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -223,7 +223,7 @@ export default function PaymentMethodsPage() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-400">Daily Limit (BDT)</label>
+                <label className="text-sm font-semibold text-slate-400">Daily Limit (৳)</label>
                 <input value={modalForm.dailyLimit} onChange={e => setModalForm({...modalForm, dailyLimit: Number(e.target.value)})} className="w-full bg-surface-container-low border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/50 text-on-surface text-right font-mono" placeholder="25000" type="number" />
               </div>
             </div>

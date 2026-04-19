@@ -11,7 +11,7 @@ export default function TransactionsTable() {
         id: tx._id,
         initials: (tx.userId?.username || "U").slice(0, 2).toUpperCase(),
         name: tx.userId?.username || "User",
-        amount: `BDT ${(tx.amount || 0).toLocaleString()}`,
+        amount: `৳${(tx.amount || 0).toLocaleString()}`,
         type: tx.type === "deposit" ? "Deposit" : "Withdraw",
         typeBg: tx.type === "deposit" ? "bg-secondary/10" : "bg-amber-500/10",
         typeColor: tx.type === "deposit" ? "text-secondary" : "text-amber-500",
