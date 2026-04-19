@@ -1,6 +1,183 @@
 import { useState, useEffect } from "react";
 import { getPaymentMethods, createPaymentMethod, updatePaymentMethod, deletePaymentMethod } from "../../services/api";
 
+const PREDEFINED_METHODS = [
+  { name: "bKash", type: "mobile", icon: "account_balance_wallet", color: "#D8126B" },
+  { name: "Nagad", type: "mobile", icon: "payments", color: "#F7941D" },
+  { name: "Rocket", type: "mobile", icon: "rocket_launch", color: "#8E24AA" },
+  { name: "Upay", type: "mobile", icon: "contactless", color: "#00BCD4" },
+  { name: "USDT", type: "crypto", icon: "currency_bitcoin", color: "#26A17B" },
+  { name: "Bank Transfer", type: "bank", icon: "account_balance", color: "#1976D2" },
+];
+
+export default function PaymentMethodsPage() {
+  const [methods, setMethods] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(null);
+
+  const loadMethods = async () => {
+    try {
+      setLoading(true);
+      const res = await getPaymentMethods();
+      setMethods(res.methods || []);
+    } catch {} finally { setLoading(false); }
+  };
+
+  useEffect(() => { loadMethods(); }, []);
+
+  const isAdded = (name) => methods.some(m => m.name.toLowerCase() === name.toLowerCase());
+  const getMethod = (name) => methods.find(m => m.name.toLowerCase() === name.toLowerCase());
+
+  const handleAdd = async (preset) => {
+    if (isAdded(preset.name)) return;
+    setSaving(preset.name);
+    try {
+      await createPaymentMethod({ name: preset.name, type: preset.type, icon: preset.icon, isActive: true });
+      await loadMethods();
+    } catch (err) { alert(err.message || "Failed to add"); }
+    setSaving(null);
+  };
+
+  const handleToggle = async (method) => {
+    setSaving(method.name);
+    try {
+      await updatePaymentMethod(method._id, { isActive: !method.isActive });
+      await loadMethods();
+    } catch {} finally { setSaving(null); }
+  };
+
+  const handleDelete = async (method) => {
+    if (!confirm(`Remove ${method.name}?`)) return;
+    setSaving(method.name);
+    try {
+      await deletePaymentMethod(method._id);
+      await loadMethods();
+    } catch {} finally { setSaving(null); }
+  };
+
+  const activeCount = methods.filter(m => m.isActive).length;
+  const inactiveCount = methods.filter(m => !m.isActive).length;
+
+  return (
+    <div className="font-body">
+      <div className="max-w-5xl mx-auto pb-16">
+        {/* Header */}
+        <section className="mb-10">
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-100 font-headline tracking-tight">
+            পেমেন্ট পদ্ধতি ব্যবস্থাপনা
+          </h1>
+          <p className="text-slate-400 mt-2 text-sm sm:text-base">
+            Select which payment methods are available for users. Icons are automatically assigned.
+          </p>
+        </section>
+
+        {/* Stats */}
+        <section className="grid grid-cols-3 gap-4 mb-10">
+          {[
+            { label: "Active", value: activeCount, icon: "check_circle", cls: "bg-secondary/10 text-secondary" },
+            { label: "Inactive", value: inactiveCount, icon: "pause_circle", cls: "bg-amber-500/10 text-amber-400" },
+            { label: "Total Added", value: methods.length, icon: "account_balance", cls: "bg-primary/10 text-primary" },
+          ].map(s => (
+            <article key={s.label} className="glass-card p-5 rounded-xl border-none flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${s.cls}`}>
+                <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>{s.icon}</span>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs font-medium">{s.label}</p>
+                <p className="text-2xl font-black text-on-surface">{String(s.value).padStart(2, "0")}</p>
+              </div>
+            </article>
+          ))}
+        </section>
+
+        {/* Payment Methods Grid */}
+        <section>
+          <h2 className="text-lg font-bold text-on-surface mb-5 flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary">payments</span>
+            Available Payment Methods
+          </h2>
+
+          {loading ? (
+            <div className="text-center py-12 text-slate-400">Loading...</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {PREDEFINED_METHODS.map((preset) => {
+                const added = isAdded(preset.name);
+                const method = getMethod(preset.name);
+                const active = method?.isActive;
+                const isSaving = saving === preset.name;
+
+                return (
+                  <article
+                    key={preset.name}
+                    className={`bg-surface-container rounded-xl overflow-hidden transition-all duration-300 ${added ? "ring-1 ring-white/10" : "opacity-60 hover:opacity-90"}`}
+                  >
+                    <div className="h-1.5" style={{ background: added ? `linear-gradient(to right, ${preset.color}, ${preset.color}99)` : "#333" }} />
+                    <div className="p-5">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${preset.color}1A` }}>
+                            <span className="material-symbols-outlined text-2xl" style={{ color: preset.color }}>{preset.icon}</span>
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-on-surface">{preset.name}</h3>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{preset.type}</p>
+                          </div>
+                        </div>
+
+                        {added && (
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${active ? "bg-secondary/10 text-secondary" : "bg-amber-500/10 text-amber-400"}`}>
+                            {active ? "Active" : "Inactive"}
+                          </span>
+                        )}
+                      </div>
+
+                      {!added ? (
+                        <button
+                          disabled={isSaving}
+                          onClick={() => handleAdd(preset)}
+                          className="w-full py-2.5 rounded-lg bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold text-sm hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                          <span className="material-symbols-outlined text-sm">add</span>
+                          {isSaving ? "Adding..." : "Add Method"}
+                        </button>
+                      ) : (
+                        <div className="flex gap-2">
+                          <button
+                            disabled={isSaving}
+                            onClick={() => handleToggle(method)}
+                            className={`flex-1 py-2.5 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 ${
+                              active
+                                ? "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
+                                : "bg-secondary/10 text-secondary hover:bg-secondary/20"
+                            }`}
+                          >
+                            <span className="material-symbols-outlined text-sm">{active ? "pause" : "play_arrow"}</span>
+                            {active ? "Deactivate" : "Activate"}
+                          </button>
+                          <button
+                            disabled={isSaving}
+                            onClick={() => handleDelete(method)}
+                            className="w-11 h-10 rounded-lg bg-surface-container-high text-error hover:bg-error/10 transition-all flex items-center justify-center disabled:opacity-50"
+                          >
+                            <span className="material-symbols-outlined text-lg">delete</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
+import { useState, useEffect } from "react";
+import { getPaymentMethods, createPaymentMethod, updatePaymentMethod, deletePaymentMethod } from "../../services/api";
+
 const colorMap = { bkash: "#D8126B", nagad: "#F7941D", rocket: "#8E24AA", bank: "#ffc174", upay: "#00BCD4" };
 
 export default function PaymentMethodsPage() {

@@ -1,3 +1,15 @@
+import { useState, useEffect } from "react";
+import { getPaymentMethods } from "../../services/api";
+
+const ICON_FALLBACK = {
+  bkash: "account_balance_wallet",
+  nagad: "payments",
+  rocket: "rocket_launch",
+  upay: "contactless",
+  usdt: "currency_bitcoin",
+  "bank transfer": "account_balance",
+};
+
 const quickLinks = [
   { label: "Promotions", href: "/promotions" },
   { label: "VIP Club", href: "/vip" },
@@ -53,6 +65,14 @@ const SocialIcon = ({ name }) => {
 };
 
 const HomeFooter = () => {
+  const [paymentMethods, setPaymentMethods] = useState([]);
+
+  useEffect(() => {
+    getPaymentMethods()
+      .then((data) => setPaymentMethods(data.methods || []))
+      .catch(() => {});
+  }, []);
+
   return (
     <footer className="mt-20 pt-10 pb-28 bg-[#0A0A0F] border-t-2 border-[#00F5FF]/20">
       <div className="px-6 space-y-12">
@@ -152,18 +172,14 @@ const HomeFooter = () => {
               Payment Methods
             </h3>
             <div className="flex flex-wrap justify-center gap-3">
-              {[
-                { name: "bKash", icon: "account_balance_wallet" },
-                { name: "Nagad", icon: "payments" },
-                { name: "Rocket", icon: "rocket_launch" },
-                { name: "USDT", icon: "currency_bitcoin" },
-                { name: "Bank", icon: "account_balance" },
-              ].map((pm) => (
+              {paymentMethods.map((pm) => (
                 <div
-                  key={pm.name}
+                  key={pm._id}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container border border-[#00F5FF]/10 text-on-surface-variant/70"
                 >
-                  <span className="material-symbols-outlined text-sm">{pm.icon}</span>
+                  <span className="material-symbols-outlined text-sm">
+                    {pm.icon || ICON_FALLBACK[pm.name.toLowerCase()] || "account_balance_wallet"}
+                  </span>
                   <span className="text-[10px] font-bold uppercase tracking-wider">{pm.name}</span>
                 </div>
               ))}
