@@ -24,14 +24,14 @@ const ReferFriendPage = () => {
 
   if (!loggedIn) {
     return (
-      <main className="pt-20 pb-32 px-4 text-center">
+      <main className="pt-24 pb-32 px-4 text-center">
         <p className="text-on-surface-variant text-sm mt-20">Please login to access referral program.</p>
       </main>
     );
   }
 
   return (
-    <main className="pt-20 pb-32 px-4">
+    <main className="pt-24 pb-32 px-4">
       <header className="mb-8 text-center">
         <div className="w-16 h-16 mx-auto mb-4 bg-primary-container/10 rounded-full flex items-center justify-center">
           <span className="material-symbols-outlined text-primary-container text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>

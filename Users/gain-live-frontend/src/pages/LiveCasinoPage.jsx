@@ -22,7 +22,7 @@ const LiveCasinoPage = () => {
   const [activeCategory, setActiveCategory] = useState("All Games");
 
   return (
-    <main className="pt-16 pb-32">
+    <main className="pt-24 pb-32">
       {/* Cinematic Hero Banner */}
       <section className="relative h-[220px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0e] via-[#0d1117]/90 to-surface-dim" />

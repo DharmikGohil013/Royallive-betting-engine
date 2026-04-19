@@ -165,7 +165,7 @@ const AccountPage = () => {
           {/* Quick Stats Row */}
           <div className="grid grid-cols-3 gap-2 mt-4">
             <div className="bg-surface-container-lowest/50 rounded-lg p-3 text-center">
-              <p className="text-lg font-headline font-black text-primary-container">³{(p.balance || 0).toLocaleString()}</p>
+              <p className="text-lg font-headline font-black text-primary-container">৳{(p.balance || 0).toLocaleString()}</p>
               <p className="text-[8px] font-label uppercase tracking-widest text-on-surface-variant">Balance</p>
             </div>
             <div className="bg-surface-container-lowest/50 rounded-lg p-3 text-center">
@@ -344,7 +344,7 @@ const AccountPage = () => {
               <span className="material-symbols-outlined text-primary-container/60 text-lg">payments</span>
               <div>
                 <p className="text-[9px] font-label uppercase tracking-widest text-on-surface-variant/60">Currency</p>
-                <p className="text-sm font-headline font-bold text-on-surface">{p.currency || "BDT"} (³)</p>
+                <p className="text-sm font-headline font-bold text-on-surface">{p.currency || "BDT"} (৳)</p>
               </div>
             </div>
           </div>
@@ -414,10 +414,10 @@ const AccountPage = () => {
           <h3 className="font-headline font-extrabold text-sm uppercase tracking-[0.15em] text-primary-container">Financial Overview</h3>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "Balance", value: `³${(p.balance || 0).toLocaleString()}`, color: "text-primary-container", icon: "account_balance_wallet" },
-              { label: "Total Deposits", value: `³${(p.totalDeposits || 0).toLocaleString()}`, color: "text-on-surface", icon: "south_west" },
-              { label: "Total Withdrawals", value: `³${(p.totalWithdrawals || 0).toLocaleString()}`, color: "text-secondary-container", icon: "north_east" },
-              { label: "Total Winnings", value: `³${(p.totalWinnings || 0).toLocaleString()}`, color: "text-tertiary-fixed-dim", icon: "emoji_events" },
+              { label: "Balance", value: `৳${(p.balance || 0).toLocaleString()}`, color: "text-primary-container", icon: "account_balance_wallet" },
+              { label: "Total Deposits", value: `৳${(p.totalDeposits || 0).toLocaleString()}`, color: "text-on-surface", icon: "south_west" },
+              { label: "Total Withdrawals", value: `৳${(p.totalWithdrawals || 0).toLocaleString()}`, color: "text-secondary-container", icon: "north_east" },
+              { label: "Total Winnings", value: `৳${(p.totalWinnings || 0).toLocaleString()}`, color: "text-tertiary-fixed-dim", icon: "emoji_events" },
             ].map((s, i) => (
               <div key={i} className="glass-card rounded-lg p-4">
                 <div className="flex items-center gap-1.5 mb-2">
@@ -437,7 +437,7 @@ const AccountPage = () => {
               { label: "Total Losses", value: p.totalLosses || 0, color: "text-error" },
               { label: "Win Rate", value: (p.totalWins || 0) + (p.totalLosses || 0) > 0 ? (((p.totalWins || 0) / ((p.totalWins || 0) + (p.totalLosses || 0))) * 100).toFixed(1) + "%" : "0.0%", color: "text-tertiary-fixed-dim" },
               { label: "Total Referrals", value: p.totalReferrals || 0, color: "text-on-surface" },
-              { label: "Referral Earnings", value: `³${(p.referralEarnings || 0).toLocaleString()}`, color: "text-tertiary-fixed-dim" },
+              { label: "Referral Earnings", value: `৳${(p.referralEarnings || 0).toLocaleString()}`, color: "text-tertiary-fixed-dim" },
             ].map((item, i) => (
               <div key={i} className="px-4 py-3 flex justify-between items-center">
                 <span className="text-[11px] text-on-surface-variant">{item.label}</span>
@@ -453,7 +453,7 @@ const AccountPage = () => {
               const net = (p.totalWinnings || 0) - ((p.totalDeposits || 0) - (p.totalWithdrawals || 0));
               return (
                 <p className={`text-2xl font-headline font-black ${net >= 0 ? "text-primary-container" : "text-error"}`}>
-                  {net >= 0 ? "+" : ""}³{net.toLocaleString()}
+                  {net >= 0 ? "+" : ""}৳{net.toLocaleString()}
                 </p>
               );
             })()}
@@ -488,7 +488,7 @@ const AccountPage = () => {
                     <div className="flex justify-between items-center">
                       <p className="text-xs font-bold capitalize">{t.type}</p>
                       <p className={`text-sm font-headline font-bold ${t.type === "withdraw" ? "text-secondary-container" : "text-primary-container"}`}>
-                        {t.type === "withdraw" ? "-" : "+"}³{(t.amount || 0).toLocaleString()}
+                        {t.type === "withdraw" ? "-" : "+"}৳{(t.amount || 0).toLocaleString()}
                       </p>
                     </div>
                     <div className="flex justify-between items-center mt-1">

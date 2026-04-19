@@ -28,7 +28,7 @@ const SportsPage = () => {
   const [activeSport, setActiveSport] = useState("Football");
 
   return (
-    <main className="pt-16 pb-32">
+    <main className="pt-24 pb-32">
       {/* Live Score Ticker */}
       <div className="w-full bg-surface-container-lowest overflow-x-auto hide-scrollbar py-2 border-b border-outline-variant/10">
         <div className="flex items-center gap-6 px-4 whitespace-nowrap">

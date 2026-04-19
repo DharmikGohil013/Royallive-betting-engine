@@ -105,7 +105,7 @@ const ResponsibleGamingPage = () => {
   const yesCount = Object.values(answers).filter(Boolean).length;
 
   return (
-    <main className="pt-20 pb-28 px-4 max-w-md mx-auto space-y-6">
+    <main className="pt-24 pb-28 px-4 max-w-md mx-auto space-y-6">
       {/* Hero */}
       <section className="relative group">
         <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-container to-tertiary-fixed-dim rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-1000" />

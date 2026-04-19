@@ -16,7 +16,7 @@ const PrivacyPolicyPage = () => {
   const colors = ["primary-container", "tertiary-fixed-dim"];
 
   return (
-    <main className="pt-20 pb-32 px-4 max-w-4xl mx-auto">
+    <main className="pt-24 pb-32 px-4 max-w-4xl mx-auto">
       {/* Intro Banner */}
       <header className="relative mb-8 p-6 glass-card border border-outline-variant/20 rounded-xl overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary-container/5 rounded-full blur-[80px] -mr-32 -mt-32" />

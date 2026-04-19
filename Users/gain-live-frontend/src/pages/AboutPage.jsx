@@ -43,7 +43,7 @@ const AboutPage = () => {
     path?.startsWith("/") ? `${API_BASE}${path}` : path;
 
   return (
-    <main className="pt-20 pb-32 px-4">
+    <main className="pt-24 pb-32 px-4">
       {/* Banner */}
       {bannerUrl && (
         <div className="rounded-xl overflow-hidden mb-6 -mx-1">

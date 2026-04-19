@@ -30,7 +30,7 @@ const GamesPage = () => {
   }, []);
 
   return (
-    <main className="pt-20 pb-24 px-4">
+    <main className="pt-24 pb-24 px-4">
       {/* Filter Bar */}
       <section className="mb-6 -mx-4">
         <div className="flex overflow-x-auto hide-scrollbar px-4 gap-2 py-2">

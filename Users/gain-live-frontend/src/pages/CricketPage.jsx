@@ -44,7 +44,7 @@ const CricketPage = () => {
   const [activeTab, setActiveTab] = useState("Live");
 
   return (
-    <main className="pt-16 pb-32">
+    <main className="pt-24 pb-32">
       {/* Header Badge */}
       <div className="px-4 py-4 flex items-center justify-between">
         <div>

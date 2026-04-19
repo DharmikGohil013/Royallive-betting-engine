@@ -43,7 +43,7 @@ const HelpCenterPage = () => {
   };
 
   return (
-    <main className="pt-20 pb-32 px-4">
+    <main className="pt-24 pb-32 px-4">
       {toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-primary-container text-on-primary-container px-4 py-2 rounded-lg text-xs font-bold shadow-lg">
           {toast}
