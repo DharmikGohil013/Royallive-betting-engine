@@ -10,6 +10,7 @@ const menuSections = [
       { icon: "sports_soccer", label: "Sports", path: "/sports" },
       { icon: "sports_cricket", label: "Cricket", path: "/cricket" },
       { icon: "casino", label: "Live Casino", path: "/live-casino" },
+      { icon: "workspace_premium", label: "VIP Club", path: "/vip", filled: true },
     ],
   },
   {

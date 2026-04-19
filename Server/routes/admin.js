@@ -11,6 +11,7 @@ const Game = require("../models/Game");
 const Notification = require("../models/Notification");
 const PaymentMethod = require("../models/PaymentMethod");
 const Setting = require("../models/Setting");
+const Banner = require("../models/Banner");
 
 // --------------- Multer Upload Config ---------------
 const uploadsDir = path.join(__dirname, "..", "uploads");
@@ -1353,6 +1354,46 @@ router.get("/chat-unread-count", authToken, adminOnly, async (req, res) => {
   try {
     const count = await ChatMessage.countDocuments({ sender: "user", read: false });
     return res.json({ success: true, count });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== BANNERS ====================
+router.get("/banners", authToken, adminOnly, async (req, res) => {
+  try {
+    const banners = await Banner.find().sort({ order: 1, createdAt: -1 });
+    return res.json({ success: true, banners });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/banners", authToken, adminOnly, async (req, res) => {
+  try {
+    const { title, imageUrl, link, isActive, order } = req.body;
+    if (!title || !imageUrl) return res.status(400).json({ error: "Title and image URL are required" });
+    const banner = await Banner.create({ title, imageUrl, link, isActive, order });
+    return res.json({ success: true, banner });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/banners/:id", authToken, adminOnly, async (req, res) => {
+  try {
+    const banner = await Banner.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!banner) return res.status(404).json({ error: "Banner not found" });
+    return res.json({ success: true, banner });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/banners/:id", authToken, adminOnly, async (req, res) => {
+  try {
+    await Banner.findByIdAndDelete(req.params.id);
+    return res.json({ success: true });
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }

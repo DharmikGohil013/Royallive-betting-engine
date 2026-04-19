@@ -188,6 +188,7 @@ export const sidebarNav = [
   { icon: "emoji_events", label: "Hall of Glory", path: "/hall-of-glory" },
   { icon: "featured_play_list", label: "Winner Marquee", path: "/marquee" },
   { icon: "campaign", label: "Promotions", path: "/promotions" },
+  { icon: "view_carousel", label: "Banners", path: "/banners" },
   // System
   { type: "section", label: "System" },
   { icon: "chat", label: "Live Chat", path: "/live-chat" },

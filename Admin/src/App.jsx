@@ -25,6 +25,7 @@ import HallOfGloryPage from "./pages/hall-of-glory/HallOfGloryPage";
 import ReferralsPage from "./pages/referrals/ReferralsPage";
 import NewsManagementPage from "./pages/news/NewsManagementPage";
 import LiveChatPage from "./pages/live-chat/LiveChatPage";
+import BannerManagementPage from "./pages/banners/BannerManagementPage";
 import { adminLogout } from "./services/api";
 
 export default function App() {
@@ -93,6 +94,7 @@ export default function App() {
           <Route path="/marquee" element={<MarqueeManagementPage />} />
           <Route path="/help-requests" element={<HelpRequestsPage />} />
           <Route path="/live-chat" element={<LiveChatPage />} />
+          <Route path="/banners" element={<BannerManagementPage />} />
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/promotions" element={<PromotionsPage />} />
           <Route path="/hall-of-glory" element={<HallOfGloryPage />} />

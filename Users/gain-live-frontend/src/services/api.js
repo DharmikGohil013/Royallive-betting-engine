@@ -228,6 +228,12 @@ export async function getNews() {
   return res.json();
 }
 
+// ==================== BANNERS ====================
+export async function getBanners() {
+  const res = await fetch(`${API_BASE}/api/user/banners`);
+  return res.json();
+}
+
 // ==================== LIVE CHAT ====================
 export async function getChatMessages() {
   return api("/chat");

@@ -1,6 +1,6 @@
 const quickLinks = [
   { label: "Promotions", href: "/promotions" },
-  { label: "VIP Club", href: "/games" },
+  { label: "VIP Club", href: "/vip" },
   { label: "Refer a Friend", href: "/refer" },
   { label: "About Us", href: "/about" },
 ];
@@ -146,6 +146,84 @@ const HomeFooter = () => {
         </div>
 
         <div className="pt-8 border-t border-[#00F5FF]/5 space-y-6">
+          {/* Payment Methods */}
+          <div className="space-y-3">
+            <h3 className="text-primary-container font-headline font-bold text-xs uppercase tracking-[0.15em] text-center">
+              Payment Methods
+            </h3>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { name: "bKash", icon: "account_balance_wallet" },
+                { name: "Nagad", icon: "payments" },
+                { name: "Rocket", icon: "rocket_launch" },
+                { name: "USDT", icon: "currency_bitcoin" },
+                { name: "Bank", icon: "account_balance" },
+              ].map((pm) => (
+                <div
+                  key={pm.name}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container border border-[#00F5FF]/10 text-on-surface-variant/70"
+                >
+                  <span className="material-symbols-outlined text-sm">{pm.icon}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">{pm.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Responsible Gaming */}
+          <div className="space-y-3">
+            <h3 className="text-primary-container font-headline font-bold text-xs uppercase tracking-[0.15em] text-center">
+              Responsible Gaming
+            </h3>
+            <div className="flex justify-center gap-4 items-center">
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-container border border-[#00F5FF]/10">
+                <span className="text-lg font-black text-[#FF4444]">18+</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-container border border-[#00F5FF]/10 text-on-surface-variant/70">
+                <span className="material-symbols-outlined text-base">shield</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider">Play Safe</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-container border border-[#00F5FF]/10 text-on-surface-variant/70">
+                <span className="material-symbols-outlined text-base">verified_user</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider">Verified</span>
+              </div>
+            </div>
+            <p className="text-[10px] text-on-surface-variant/50 text-center leading-relaxed max-w-sm mx-auto">
+              Gambling can be addictive. Please play responsibly and only bet what you can afford to lose. If you need help, reach out to our support team.
+            </p>
+          </div>
+
+          {/* Community Websites */}
+          <div className="space-y-3">
+            <h3 className="text-primary-container font-headline font-bold text-xs uppercase tracking-[0.15em] text-center">
+              Community
+            </h3>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { name: "Telegram", icon: "send" },
+                { name: "Discord", icon: "forum" },
+                { name: "YouTube", icon: "play_circle" },
+                { name: "Blog", icon: "article" },
+              ].map((c) => (
+                <a
+                  key={c.name}
+                  href="#"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container border border-[#00F5FF]/10 text-on-surface-variant/70 hover:text-primary-container hover:border-primary-container/30 transition-all"
+                >
+                  <span className="material-symbols-outlined text-sm">{c.icon}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">{c.name}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Betting Description */}
+          <div className="space-y-2 pt-4 border-t border-[#00F5FF]/5">
+            <p className="text-[10px] text-on-surface-variant/40 leading-relaxed text-justify">
+              Royal Live is a premier online betting and gaming platform offering a wide range of sports betting, live casino, cricket betting, and interactive gaming experiences. Our platform provides competitive odds across major sporting events including cricket, football, tennis, basketball, and more. With secure payment methods including bKash, Nagad, Rocket, and cryptocurrency options, we ensure fast and reliable transactions for all our users. Our live casino features real-time dealer games, slots, and table games powered by industry-leading providers. We are committed to providing a safe, fair, and entertaining gaming environment with 24/7 customer support, responsible gaming tools, and transparent operations. Whether you&apos;re a casual player or a VIP member, Royal Live delivers an unmatched betting experience with exclusive promotions, loyalty rewards, and a thriving community of gaming enthusiasts.
+            </p>
+          </div>
+
           <div className="flex items-center justify-between gap-4 opacity-85">
             <div className="flex items-center gap-2 px-2 py-1 border border-on-surface/20 rounded">
               <span className="text-xs font-bold font-headline">18+</span>

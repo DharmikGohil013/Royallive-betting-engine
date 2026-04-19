@@ -1,7 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getAnalyticsOverview, getWeeklyTransactions, getTopUsers } from "../../services/api";
 
-const timeframeOptions = ["Today", "This Week", "This Month", "Yearly"];
+const timeframeOptions = [
+  { label: "Today", value: "today" },
+  { label: "This Week", value: "week" },
+  { label: "This Month", value: "month" },
+  { label: "Yearly", value: "year" },
+];
 
 function fmtBDT(n) { return n != null ? `৳${Number(n).toLocaleString()}` : "৳0"; }
 
@@ -9,13 +14,47 @@ export default function AnalyticsPage() {
   const [overview, setOverview] = useState(null);
   const [weeklyData, setWeeklyData] = useState([]);
   const [topDepositors, setTopDepositors] = useState([]);
-  const [timeframe, setTimeframe] = useState("This Week");
+  const [timeframe, setTimeframe] = useState("week");
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
+  const [showCustom, setShowCustom] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = useCallback(async (tf, start, end) => {
+    setLoading(true);
+    try {
+      const params = { timeframe: tf };
+      if (tf === "custom" && start) params.startDate = start;
+      if (tf === "custom" && end) params.endDate = end;
+      const d = await getAnalyticsOverview(params);
+      setOverview(d);
+    } catch {}
+    try {
+      const d = await getWeeklyTransactions();
+      setWeeklyData(d.days || d.deposits || []);
+    } catch {}
+    try {
+      const d = await getTopUsers("totalDeposits", 5);
+      setTopDepositors(d.users || []);
+    } catch {}
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    getAnalyticsOverview().then((d) => setOverview(d)).catch(() => {});
-    getWeeklyTransactions().then((d) => setWeeklyData(d.days || [])).catch(() => {});
-    getTopUsers("totalDeposits", 5).then((d) => setTopDepositors(d.users || [])).catch(() => {});
-  }, []);
+    fetchData(timeframe, customStart, customEnd);
+  }, [timeframe, fetchData]);
+
+  const handleTimeframeClick = (val) => {
+    setShowCustom(false);
+    setTimeframe(val);
+  };
+
+  const handleCustomApply = () => {
+    if (customStart) {
+      setTimeframe("custom");
+      fetchData("custom", customStart, customEnd);
+    }
+  };
 
   const summaryCards = overview ? [
     { id: "total-deposit", icon: "account_balance_wallet", iconClass: "bg-secondary/10 text-secondary", trend: overview.depositTrend ? `+${overview.depositTrend}%` : null, trendClass: "text-secondary", title: "Total Deposit", value: fmtBDT(overview.totalDeposits) },
@@ -38,6 +77,16 @@ export default function AnalyticsPage() {
     { day: "Sat", pct: 45 }, { day: "Sun", pct: 60 }, { day: "Mon", pct: 52 },
     { day: "Tue", pct: 85 }, { day: "Wed", pct: 68 }, { day: "Thu", pct: 92 }, { day: "Fri", pct: 75 },
   ];
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredDepositors = searchTerm
+    ? topDepositors.filter(u =>
+        (u.username || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (u.mobile || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (u._id || "").toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : topDepositors;
+
   return (
     <div className="font-body">
       <div className="mb-8 sm:mb-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -54,8 +103,10 @@ export default function AnalyticsPage() {
           </span>
           <input
             className="bg-surface-container-low border border-outline-variant/20 rounded-lg pl-10 pr-4 py-2.5 w-full text-sm focus:ring-1 focus:ring-amber-500 transition-all outline-none text-on-surface"
-            placeholder="Search transaction ID..."
+            placeholder="Search user by name, mobile, or ID..."
             type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
@@ -64,22 +115,52 @@ export default function AnalyticsPage() {
         <div className="flex flex-wrap bg-surface-container-low p-1.5 rounded-xl shadow-inner gap-1 overflow-x-auto max-w-full">
           {timeframeOptions.map((option) => (
             <button
-              key={option}
+              key={option.value}
+              onClick={() => handleTimeframeClick(option.value)}
               className={
-                option === "This Week"
+                option.value === timeframe && !showCustom
                   ? "px-5 sm:px-6 py-2 rounded-lg text-sm font-semibold transition-all bg-amber-500 text-on-primary shadow-lg shadow-amber-500/20"
                   : "px-5 sm:px-6 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-100"
               }
             >
-              {option}
+              {option.label}
             </button>
           ))}
 
-          <button className="px-5 sm:px-6 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-100 flex items-center gap-2 border-l border-white/5 ml-0 sm:ml-1 pl-4">
+          <button
+            onClick={() => setShowCustom(!showCustom)}
+            className={`px-5 sm:px-6 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 border-l border-white/5 ml-0 sm:ml-1 pl-4 ${
+              showCustom || timeframe === "custom" ? "text-amber-500" : "text-slate-400 hover:text-slate-100"
+            }`}
+          >
             <span className="material-symbols-outlined text-lg">calendar_today</span>
             Custom Date
           </button>
         </div>
+
+        {showCustom && (
+          <div className="flex flex-wrap items-center gap-3 mt-3 bg-surface-container-low p-3 rounded-xl">
+            <input
+              type="date"
+              value={customStart}
+              onChange={(e) => setCustomStart(e.target.value)}
+              className="bg-surface-container border border-outline-variant/20 rounded-lg px-3 py-2 text-sm text-on-surface outline-none focus:ring-1 focus:ring-amber-500"
+            />
+            <span className="text-slate-500 text-sm">to</span>
+            <input
+              type="date"
+              value={customEnd}
+              onChange={(e) => setCustomEnd(e.target.value)}
+              className="bg-surface-container border border-outline-variant/20 rounded-lg px-3 py-2 text-sm text-on-surface outline-none focus:ring-1 focus:ring-amber-500"
+            />
+            <button
+              onClick={handleCustomApply}
+              className="px-5 py-2 rounded-lg text-sm font-semibold bg-amber-500 text-on-primary shadow-lg shadow-amber-500/20"
+            >
+              Apply
+            </button>
+          </div>
+        )}
 
         <button className="flex items-center gap-2 bg-surface-container-high px-5 py-2.5 rounded-xl font-bold text-sm text-secondary hover:bg-secondary hover:text-on-secondary transition-all">
           <span className="material-symbols-outlined">download</span>
@@ -228,7 +309,7 @@ export default function AnalyticsPage() {
             </thead>
 
             <tbody className="divide-y divide-white/5">
-              {topDepositors.map((user) => (
+              {filteredDepositors.map((user) => (
                 <tr key={user._id || idx} className="hover:bg-white/5 transition-colors cursor-pointer group">
                   <td className="px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center gap-3">

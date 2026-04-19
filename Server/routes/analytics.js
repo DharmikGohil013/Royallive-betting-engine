@@ -26,8 +26,34 @@ function monthsAgo(n) {
 }
 
 // ==================== 1. OVERVIEW ANALYTICS ====================
-router.get("/overview", authToken, adminOnly, async (_req, res) => {
+router.get("/overview", authToken, adminOnly, async (req, res) => {
   try {
+    // Support timeframe: today, week, month, year, custom (startDate/endDate)
+    const { timeframe, startDate, endDate } = req.query;
+    let dateFrom;
+    const now = new Date();
+
+    switch (timeframe) {
+      case "today":
+        dateFrom = daysAgo(0);
+        break;
+      case "week":
+        dateFrom = daysAgo(7);
+        break;
+      case "month":
+        dateFrom = daysAgo(30);
+        break;
+      case "year":
+        dateFrom = daysAgo(365);
+        break;
+      case "custom":
+        dateFrom = startDate ? new Date(startDate) : daysAgo(7);
+        break;
+      default:
+        dateFrom = null; // all time
+    }
+
+    const dateFilter = dateFrom ? { createdAt: { $gte: dateFrom, ...(endDate ? { $lte: new Date(endDate) } : {}) } } : {};
     const today = daysAgo(0);
     const weekAgo = daysAgo(7);
     const monthAgo = daysAgo(30);
@@ -38,21 +64,21 @@ router.get("/overview", authToken, adminOnly, async (_req, res) => {
       monthNewUsers,
       totalDeposits,
       totalWithdrawals,
-      weekDeposits,
-      weekWithdrawals,
+      filteredDeposits,
+      filteredWithdrawals,
       totalBetsCount,
-      weekBetsCount,
+      filteredBetsCount,
       activeBets,
     ] = await Promise.all([
       User.countDocuments({ role: "user" }),
       User.countDocuments({ role: "user", createdAt: { $gte: weekAgo } }),
       User.countDocuments({ role: "user", createdAt: { $gte: monthAgo } }),
-      Transaction.aggregate([{ $match: { type: "deposit", status: "success" } }, { $group: { _id: null, total: { $sum: "$amount" } } }]),
-      Transaction.aggregate([{ $match: { type: "withdraw", status: "success" } }, { $group: { _id: null, total: { $sum: "$amount" } } }]),
+      Transaction.aggregate([{ $match: { type: "deposit", status: "success", ...dateFilter } }, { $group: { _id: null, total: { $sum: "$amount" } } }]),
+      Transaction.aggregate([{ $match: { type: "withdraw", status: "success", ...dateFilter } }, { $group: { _id: null, total: { $sum: "$amount" } } }]),
       Transaction.aggregate([{ $match: { type: "deposit", status: "success", createdAt: { $gte: weekAgo } } }, { $group: { _id: null, total: { $sum: "$amount" } } }]),
       Transaction.aggregate([{ $match: { type: "withdraw", status: "success", createdAt: { $gte: weekAgo } } }, { $group: { _id: null, total: { $sum: "$amount" } } }]),
-      Bet.countDocuments(),
-      Bet.countDocuments({ createdAt: { $gte: weekAgo } }),
+      Bet.countDocuments(dateFilter),
+      Bet.countDocuments({ ...dateFilter, createdAt: { $gte: weekAgo } }),
       Bet.countDocuments({ result: "pending" }),
     ]);
 
@@ -65,14 +91,16 @@ router.get("/overview", authToken, adminOnly, async (_req, res) => {
         totalUsers,
         weekNewUsers,
         monthNewUsers,
+        totalDeposits: allDep,
+        totalWithdrawals: allWith,
         totalRevenue: allDep,
         totalPayouts: allWith,
         netProfit: allDep - allWith,
-        weekDeposits: weekDeposits[0]?.total || 0,
-        weekWithdrawals: weekWithdrawals[0]?.total || 0,
-        weekProfit: (weekDeposits[0]?.total || 0) - (weekWithdrawals[0]?.total || 0),
+        weekDeposits: filteredDeposits[0]?.total || 0,
+        weekWithdrawals: filteredWithdrawals[0]?.total || 0,
+        weekProfit: (filteredDeposits[0]?.total || 0) - (filteredWithdrawals[0]?.total || 0),
         totalBets: totalBetsCount,
-        weekBets: weekBetsCount,
+        weekBets: filteredBetsCount,
         activeBets,
       },
     });

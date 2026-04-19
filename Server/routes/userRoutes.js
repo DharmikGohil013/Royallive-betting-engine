@@ -17,6 +17,7 @@ const Referral = require("../models/Referral");
 const Marquee = require("../models/Marquee");
 const HallOfGlory = require("../models/HallOfGlory");
 const ChatMessage = require("../models/ChatMessage");
+const Banner = require("../models/Banner");
 const { authToken, activeUser } = require("../middleware/auth");
 
 const router = express.Router();
@@ -816,7 +817,7 @@ router.get("/news", async (_req, res) => {
 // Get my chat messages
 router.get("/chat", authToken, async (req, res) => {
   try {
-    const userId = req.user.id || req.user._id;
+    const userId = req.user.sub;
     const messages = await ChatMessage.find({ userId })
       .sort({ createdAt: 1 })
       .limit(200)
@@ -837,7 +838,7 @@ router.get("/chat", authToken, async (req, res) => {
 // User sends a message
 router.post("/chat", authToken, async (req, res) => {
   try {
-    const userId = req.user.id || req.user._id;
+    const userId = req.user.sub;
     const { message } = req.body;
 
     if (!message || !message.trim()) {
@@ -863,9 +864,19 @@ router.post("/chat", authToken, async (req, res) => {
 // Get unread count for user
 router.get("/chat/unread", authToken, async (req, res) => {
   try {
-    const userId = req.user.id || req.user._id;
+    const userId = req.user.sub;
     const count = await ChatMessage.countDocuments({ userId, sender: "admin", read: false });
     return res.json({ success: true, count });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== BANNERS (PUBLIC) ====================
+router.get("/banners", async (_req, res) => {
+  try {
+    const banners = await Banner.find({ isActive: true }).sort({ order: 1, createdAt: -1 });
+    return res.json({ success: true, banners });
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }

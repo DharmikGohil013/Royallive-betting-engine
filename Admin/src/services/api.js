@@ -244,8 +244,8 @@ export async function deleteApiLogs(olderThanDays = 30) {
 }
 
 // ==================== ANALYTICS ====================
-export async function getAnalyticsOverview() {
-  return api("/analytics/overview");
+export async function getAnalyticsOverview(params = {}) {
+  return api("/analytics/overview", { params });
 }
 
 export async function getUserGrowth() {
@@ -417,4 +417,21 @@ export async function sendChatMessage(userId, message) {
 
 export async function getChatUnreadCount() {
   return api("/admin/chat-unread-count");
+}
+
+// ==================== BANNERS ====================
+export async function getBanners() {
+  return api("/admin/banners");
+}
+
+export async function createBanner(data) {
+  return api("/admin/banners", { method: "POST", body: data });
+}
+
+export async function updateBanner(id, data) {
+  return api(`/admin/banners/${id}`, { method: "PUT", body: data });
+}
+
+export async function deleteBanner(id) {
+  return api(`/admin/banners/${id}`, { method: "DELETE" });
 }
