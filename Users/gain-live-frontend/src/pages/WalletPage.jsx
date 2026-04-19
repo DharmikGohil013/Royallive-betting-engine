@@ -86,19 +86,17 @@ const WalletPage = () => {
       });
       setTxns(data.transactions || []);
       // Update auth context balance
-      if (user) {
-        const stored = JSON.parse(localStorage.getItem("gain-live-user") || "{}");
-        stored.balance = data.balance || 0;
-        localStorage.setItem("gain-live-user", JSON.stringify(stored));
-        setUser({ ...user, balance: data.balance || 0 });
-      }
+      const stored = JSON.parse(localStorage.getItem("gain-live-user") || "{}");
+      stored.balance = data.balance || 0;
+      localStorage.setItem("gain-live-user", JSON.stringify(stored));
+      setUser((prev) => prev ? { ...prev, balance: data.balance || 0 } : prev);
     } catch {
       if (!silent) setMsg({ type: "error", text: "Failed to load wallet data" });
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [user, setUser]);
+  }, [setUser]);
 
   // Fetch payment methods
   const loadPaymentMethods = useCallback(async () => {

@@ -94,8 +94,8 @@ const LoginPage = () => {
                 type="text"
                 value={form.accessId}
                 onChange={onChange}
-                className="w-full border-0 bg-transparent px-1 py-1 font-headline text-sm uppercase tracking-wider text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-0"
-                placeholder="MOBILE OR EMAIL"
+                className="w-full border-0 bg-transparent px-1 py-1 font-headline text-sm tracking-wider text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-0"
+                placeholder="Mobile or Email"
                 autoComplete="username"
                 required
               />
