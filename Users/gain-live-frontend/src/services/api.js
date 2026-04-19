@@ -216,6 +216,12 @@ export async function getPolicies() {
   return res.json();
 }
 
+// ==================== COOKIE POLICY ====================
+export async function getCookiePolicy() {
+  const res = await fetch(`${API_BASE}/api/user/cookie-policy`);
+  return res.json();
+}
+
 // ==================== ABOUT ====================
 export async function getAboutInfo() {
   const res = await fetch(`${API_BASE}/api/user/about`);

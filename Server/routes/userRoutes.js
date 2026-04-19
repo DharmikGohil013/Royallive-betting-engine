@@ -786,6 +786,21 @@ router.get("/policies", async (_req, res) => {
   }
 });
 
+// ==================== PUBLIC COOKIE POLICY ====================
+router.get("/cookie-policy", async (_req, res) => {
+  try {
+    const Setting = require("../models/Setting");
+    const setting = await Setting.findOne({ key: "cookie_policy_sections", category: "policy" }).lean();
+    let sections = [];
+    if (setting && setting.value) {
+      sections = JSON.parse(setting.value);
+    }
+    return res.json({ success: true, sections, updatedAt: setting?.updatedAt || null });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // ==================== PUBLIC ABOUT ====================
 router.get("/about", async (_req, res) => {
   try {

@@ -28,6 +28,7 @@ import LiveChatPage from "./pages/live-chat/LiveChatPage";
 import BannerManagementPage from "./pages/banners/BannerManagementPage";
 import SponsorsPage from "./pages/sponsors/SponsorsPage";
 import AmbassadorsPage from "./pages/ambassadors/AmbassadorsPage";
+import CookiePolicyPage from "./pages/cookie-policy/CookiePolicyPage";
 import { adminLogout } from "./services/api";
 
 export default function App() {
@@ -99,6 +100,7 @@ export default function App() {
           <Route path="/banners" element={<BannerManagementPage />} />
           <Route path="/sponsors" element={<SponsorsPage />} />
           <Route path="/ambassadors" element={<AmbassadorsPage />} />
+          <Route path="/cookie-policy" element={<CookiePolicyPage />} />
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/promotions" element={<PromotionsPage />} />
           <Route path="/hall-of-glory" element={<HallOfGloryPage />} />

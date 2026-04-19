@@ -200,6 +200,7 @@ export const sidebarNav = [
   { icon: "newspaper", label: "News", path: "/news" },
   { icon: "info", label: "About", path: "/about" },
   { icon: "policy", label: "Policy", path: "/policy" },
+  { icon: "cookie", label: "Cookie Policy", path: "/cookie-policy" },
   { icon: "account_balance_wallet", label: "Payment Methods", path: "/payment-methods" },
   { icon: "notifications", label: "Notifications", path: "/notifications" },
   { icon: "api", label: "API Logs", path: "/api-logs" },

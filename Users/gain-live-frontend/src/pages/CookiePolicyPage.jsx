@@ -1,4 +1,7 @@
-﻿const cookieSections = [
+﻿import { useState, useEffect } from "react";
+import { getCookiePolicy } from "../services/api";
+
+const DEFAULT_SECTIONS = [
   {
     icon: "cookie",
     title: "What Are Cookies?",
@@ -44,6 +47,25 @@
 ];
 
 const CookiePolicyPage = () => {
+  const [cookieSections, setCookieSections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  useEffect(() => {
+    getCookiePolicy()
+      .then((data) => {
+        if (data.sections && data.sections.length > 0) {
+          setCookieSections(data.sections);
+        } else {
+          setCookieSections(DEFAULT_SECTIONS);
+        }
+        if (data.updatedAt) setLastUpdated(data.updatedAt);
+      })
+      .catch(() => {
+        setCookieSections(DEFAULT_SECTIONS);
+      })
+      .finally(() => setLoading(false));
+  }, []);
   return (
     <main className="pt-[120px] pb-32 px-4 max-w-4xl mx-auto">
       {/* Header */}
@@ -71,27 +93,35 @@ const CookiePolicyPage = () => {
         </p>
       </div>
 
-      {/* Sections */}
-      <div className="space-y-4">
-        {cookieSections.map((s, i) => (
-          <section key={i} className="glass-card border border-outline-variant/10 rounded-xl p-5">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center border border-primary-container/20">
-                <span className="material-symbols-outlined text-lg text-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>{s.icon}</span>
-              </div>
-              <h3 className="font-headline font-black text-sm text-on-background uppercase tracking-tight">{s.title}</h3>
-            </div>
-            <p className="text-xs text-on-surface-variant leading-relaxed pl-[52px]">{s.content}</p>
-          </section>
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="animate-spin w-8 h-8 border-2 border-tertiary-fixed-dim border-t-transparent rounded-full" />
+        </div>
+      ) : (
+        <>
+          {/* Sections */}
+          <div className="space-y-4">
+            {cookieSections.map((s, i) => (
+              <section key={i} className="glass-card border border-outline-variant/10 rounded-xl p-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center border border-primary-container/20">
+                    <span className="material-symbols-outlined text-lg text-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>{s.icon}</span>
+                  </div>
+                  <h3 className="font-headline font-black text-sm text-on-background uppercase tracking-tight">{s.title}</h3>
+                </div>
+                <p className="text-xs text-on-surface-variant leading-relaxed pl-[52px]">{s.content}</p>
+              </section>
+            ))}
+          </div>
 
-      {/* Last Updated */}
-      <div className="mt-8 text-center">
-        <p className="text-[10px] text-on-surface-variant/50 uppercase tracking-widest">
-          Last updated: January 2025
-        </p>
-      </div>
+          {/* Last Updated */}
+          <div className="mt-8 text-center">
+            <p className="text-[10px] text-on-surface-variant/50 uppercase tracking-widest">
+              Last updated: {lastUpdated ? new Date(lastUpdated).toLocaleDateString("en-US", { month: "long", year: "numeric" }) : "January 2025"}
+            </p>
+          </div>
+        </>
+      )}
     </main>
   );
 };
