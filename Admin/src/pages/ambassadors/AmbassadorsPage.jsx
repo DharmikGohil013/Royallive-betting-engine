@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { getBanners, createBanner, updateBanner, deleteBanner, uploadBannerImage } from "../../services/api";
+import { getAmbassadors, createAmbassador, updateAmbassador, deleteAmbassador, uploadAmbassadorImage } from "../../services/api";
 
-const emptyForm = { title: "", imageUrl: "", link: "", isActive: true, order: 0 };
+const emptyForm = { name: "", role: "", imageUrl: "", isActive: true, order: 0 };
 
-export default function BannerManagementPage() {
-  const [banners, setBanners] = useState([]);
+export default function AmbassadorsPage() {
+  const [ambassadors, setAmbassadors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -16,8 +16,8 @@ export default function BannerManagementPage() {
   const load = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await getBanners();
-      setBanners(data.banners || []);
+      const data = await getAmbassadors();
+      setAmbassadors(data.ambassadors || []);
     } catch (e) { console.error(e); }
     setLoading(false);
   }, []);
@@ -25,25 +25,10 @@ export default function BannerManagementPage() {
   useEffect(() => { load(); }, [load]);
 
   const openCreate = () => { setEditing(null); setForm(emptyForm); setShowModal(true); };
-  const openEdit = (b) => {
-    setEditing(b._id);
-    setForm({ title: b.title, imageUrl: b.imageUrl, link: b.link || "", isActive: b.isActive, order: b.order || 0 });
+  const openEdit = (a) => {
+    setEditing(a._id);
+    setForm({ name: a.name, role: a.role, imageUrl: a.imageUrl || "", isActive: a.isActive, order: a.order || 0 });
     setShowModal(true);
-  };
-
-  const handleSave = async () => {
-    if (!form.title.trim() || !form.imageUrl) return;
-    try {
-      setSaving(true);
-      if (editing) {
-        await updateBanner(editing, form);
-      } else {
-        await createBanner(form);
-      }
-      setShowModal(false);
-      load();
-    } catch (e) { console.error(e); }
-    setSaving(false);
   };
 
   const handleImageUpload = async (e) => {
@@ -51,23 +36,38 @@ export default function BannerManagementPage() {
     if (!file) return;
     try {
       setUploading(true);
-      const data = await uploadBannerImage(file);
+      const data = await uploadAmbassadorImage(file);
       setForm({ ...form, imageUrl: data.url });
     } catch (err) { console.error(err); }
     setUploading(false);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this banner?")) return;
+  const handleSave = async () => {
+    if (!form.name.trim() || !form.role.trim()) return;
     try {
-      await deleteBanner(id);
+      setSaving(true);
+      if (editing) {
+        await updateAmbassador(editing, form);
+      } else {
+        await createAmbassador(form);
+      }
+      setShowModal(false);
+      load();
+    } catch (e) { console.error(e); }
+    setSaving(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this ambassador?")) return;
+    try {
+      await deleteAmbassador(id);
       load();
     } catch (e) { console.error(e); }
   };
 
-  const toggleActive = async (b) => {
+  const toggleActive = async (a) => {
     try {
-      await updateBanner(b._id, { isActive: !b.isActive });
+      await updateAmbassador(a._id, { isActive: !a.isActive });
       load();
     } catch (e) { console.error(e); }
   };
@@ -77,20 +77,20 @@ export default function BannerManagementPage() {
       <div className="max-w-7xl mx-auto">
         <section className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="text-3xl font-black text-on-surface mb-2 tracking-tight">Banner Management</h1>
-            <p className="text-slate-400 text-sm">Manage homepage banner carousel images.</p>
+            <h1 className="text-3xl font-black text-on-surface mb-2 tracking-tight">Brand Ambassadors</h1>
+            <p className="text-slate-400 text-sm">Manage brand ambassadors displayed on the homepage.</p>
           </div>
           <button onClick={openCreate} className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-3 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-bold text-sm self-start">
             <span className="material-symbols-outlined">add</span>
-            Add Banner
+            Add Ambassador
           </button>
         </section>
 
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {[
-            { label: "Total", value: banners.length, icon: "image", color: "text-primary", bg: "bg-primary/10" },
-            { label: "Active", value: banners.filter(b => b.isActive).length, icon: "check_circle", color: "text-emerald-400", bg: "bg-emerald-400/10" },
-            { label: "Inactive", value: banners.filter(b => !b.isActive).length, icon: "cancel", color: "text-slate-400", bg: "bg-slate-400/10" },
+            { label: "Total", value: ambassadors.length, icon: "star", color: "text-primary", bg: "bg-primary/10" },
+            { label: "Active", value: ambassadors.filter(a => a.isActive).length, icon: "check_circle", color: "text-emerald-400", bg: "bg-emerald-400/10" },
+            { label: "Inactive", value: ambassadors.filter(a => !a.isActive).length, icon: "cancel", color: "text-slate-400", bg: "bg-slate-400/10" },
           ].map((s) => (
             <div key={s.label} className="bg-surface-container rounded-2xl p-5 relative overflow-hidden">
               <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center mb-3`}>
@@ -106,34 +106,35 @@ export default function BannerManagementPage() {
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : banners.length === 0 ? (
+        ) : ambassadors.length === 0 ? (
           <div className="text-center py-20 text-slate-500">
-            <span className="material-symbols-outlined text-5xl mb-3 block opacity-30">image</span>
-            <p className="font-bold">No banners yet</p>
-            <p className="text-sm mt-1">Click "Add Banner" to create one.</p>
+            <span className="material-symbols-outlined text-5xl mb-3 block opacity-30">star</span>
+            <p className="font-bold">No ambassadors yet</p>
+            <p className="text-sm mt-1">Click "Add Ambassador" to create one.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {banners.map((b) => (
-              <div key={b._id} className="bg-surface-container rounded-2xl overflow-hidden group">
-                <div className="aspect-[16/9] bg-surface-container-high relative">
-                  <img src={b.imageUrl} alt={b.title} className="w-full h-full object-cover" />
-                  <div className="absolute top-3 right-3 flex gap-2">
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded ${b.isActive ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-500/20 text-slate-400"}`}>
-                      {b.isActive ? "Active" : "Inactive"}
-                    </span>
-                  </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {ambassadors.map((a) => (
+              <div key={a._id} className="bg-surface-container rounded-2xl p-5 flex items-start gap-4 group">
+                <div className="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden shrink-0 border-2 border-primary/20">
+                  {a.imageUrl ? (
+                    <img src={a.imageUrl} alt={a.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="material-symbols-outlined text-2xl text-slate-500">person</span>
+                  )}
                 </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-on-surface text-sm mb-1">{b.title}</h3>
-                  {b.link && <p className="text-xs text-slate-500 truncate">{b.link}</p>}
-                  <p className="text-xs text-slate-600 mt-1">Order: {b.order}</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-on-surface text-sm truncate">{a.name}</h3>
+                  <p className="text-xs text-primary font-medium mt-0.5">{a.role}</p>
+                  <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded mt-2 ${a.isActive ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-500/20 text-slate-400"}`}>
+                    {a.isActive ? "Active" : "Inactive"}
+                  </span>
                   <div className="flex gap-2 mt-3">
-                    <button onClick={() => openEdit(b)} className="flex-1 text-xs font-bold py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition">Edit</button>
-                    <button onClick={() => toggleActive(b)} className="flex-1 text-xs font-bold py-2 rounded-lg bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition">
-                      {b.isActive ? "Disable" : "Enable"}
+                    <button onClick={() => openEdit(a)} className="flex-1 text-xs font-bold py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition">Edit</button>
+                    <button onClick={() => toggleActive(a)} className="flex-1 text-xs font-bold py-2 rounded-lg bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition">
+                      {a.isActive ? "Disable" : "Enable"}
                     </button>
-                    <button onClick={() => handleDelete(b._id)} className="text-xs font-bold py-2 px-3 rounded-lg bg-error/10 text-error hover:bg-error/20 transition">
+                    <button onClick={() => handleDelete(a._id)} className="text-xs font-bold py-2 px-3 rounded-lg bg-error/10 text-error hover:bg-error/20 transition">
                       <span className="material-symbols-outlined text-sm">delete</span>
                     </button>
                   </div>
@@ -149,39 +150,38 @@ export default function BannerManagementPage() {
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={() => setShowModal(false)}>
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
           <div className="relative w-full max-w-lg bg-surface-container rounded-t-2xl sm:rounded-2xl p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-xl font-black text-on-surface mb-6">{editing ? "Edit Banner" : "Add Banner"}</h2>
+            <h2 className="text-xl font-black text-on-surface mb-6">{editing ? "Edit Ambassador" : "Add Ambassador"}</h2>
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 block">Title</label>
-                <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full bg-surface-container-low text-on-surface text-sm px-4 py-3 rounded-xl ring-1 ring-white/5 focus:ring-primary/50 outline-none" placeholder="Banner title" />
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 block">Name</label>
+                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-surface-container-low text-on-surface text-sm px-4 py-3 rounded-xl ring-1 ring-white/5 focus:ring-primary/50 outline-none" placeholder="Ambassador name" />
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 block">Banner Image</label>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 block">Role</label>
+                <input value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className="w-full bg-surface-container-low text-on-surface text-sm px-4 py-3 rounded-xl ring-1 ring-white/5 focus:ring-primary/50 outline-none" placeholder="e.g. Pro Poker Champion" />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 block">Photo (optional)</label>
                 <input type="file" ref={fileRef} accept="image/*" onChange={handleImageUpload} className="hidden" />
                 {form.imageUrl ? (
-                  <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-surface-container-high">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden bg-surface-container-high mx-auto">
                     <img src={form.imageUrl} alt="Preview" className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => { setForm({ ...form, imageUrl: "" }); if (fileRef.current) fileRef.current.value = ""; }} className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition">
-                      <span className="material-symbols-outlined text-sm">close</span>
+                    <button type="button" onClick={() => { setForm({ ...form, imageUrl: "" }); if (fileRef.current) fileRef.current.value = ""; }} className="absolute top-0 right-0 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition">
+                      <span className="material-symbols-outlined text-xs">close</span>
                     </button>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="w-full aspect-[16/9] rounded-xl border-2 border-dashed border-white/10 hover:border-primary/40 bg-surface-container-low flex flex-col items-center justify-center gap-2 transition cursor-pointer disabled:opacity-50">
+                  <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="w-full py-6 rounded-xl border-2 border-dashed border-white/10 hover:border-primary/40 bg-surface-container-low flex flex-col items-center justify-center gap-2 transition cursor-pointer disabled:opacity-50">
                     {uploading ? (
                       <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <>
                         <span className="material-symbols-outlined text-3xl text-slate-500">cloud_upload</span>
-                        <span className="text-xs text-slate-400 font-medium">Click to upload image</span>
-                        <span className="text-[10px] text-slate-600">PNG, JPG, WebP up to 5MB</span>
+                        <span className="text-xs text-slate-400 font-medium">Click to upload photo</span>
                       </>
                     )}
                   </button>
                 )}
-              </div>
-              <div>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 block">Link (optional)</label>
-                <input value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} className="w-full bg-surface-container-low text-on-surface text-sm px-4 py-3 rounded-xl ring-1 ring-white/5 focus:ring-primary/50 outline-none" placeholder="/promotions" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>

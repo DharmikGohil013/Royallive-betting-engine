@@ -234,6 +234,18 @@ export async function getBanners() {
   return res.json();
 }
 
+// ==================== SPONSORS ====================
+export async function getSponsors() {
+  const res = await fetch(`${API_BASE}/api/user/sponsors`);
+  return res.json();
+}
+
+// ==================== BRAND AMBASSADORS ====================
+export async function getAmbassadors() {
+  const res = await fetch(`${API_BASE}/api/user/ambassadors`);
+  return res.json();
+}
+
 // ==================== LIVE CHAT ====================
 export async function getChatMessages() {
   return api("/chat");

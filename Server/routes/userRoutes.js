@@ -882,4 +882,26 @@ router.get("/banners", async (_req, res) => {
   }
 });
 
+// ==================== SPONSORS (PUBLIC) ====================
+router.get("/sponsors", async (_req, res) => {
+  try {
+    const Sponsor = require("../models/Sponsor");
+    const sponsors = await Sponsor.find({ isActive: true }).sort({ order: 1, createdAt: -1 });
+    return res.json({ success: true, sponsors });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== BRAND AMBASSADORS (PUBLIC) ====================
+router.get("/ambassadors", async (_req, res) => {
+  try {
+    const Ambassador = require("../models/Ambassador");
+    const ambassadors = await Ambassador.find({ isActive: true }).sort({ order: 1, createdAt: -1 });
+    return res.json({ success: true, ambassadors });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = { router, signupHandler };

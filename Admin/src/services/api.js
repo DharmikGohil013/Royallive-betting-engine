@@ -435,3 +435,82 @@ export async function updateBanner(id, data) {
 export async function deleteBanner(id) {
   return api(`/admin/banners/${id}`, { method: "DELETE" });
 }
+
+export async function uploadBannerImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/api/admin/banners/upload-image`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (res.status === 401) { clearAuth(); window.location.href = "/login"; throw new Error("Session expired"); }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Upload failed");
+  return data;
+}
+
+// ==================== SPONSORS ====================
+export async function getSponsors() {
+  return api("/admin/sponsors");
+}
+
+export async function createSponsor(data) {
+  return api("/admin/sponsors", { method: "POST", body: data });
+}
+
+export async function updateSponsor(id, data) {
+  return api(`/admin/sponsors/${id}`, { method: "PUT", body: data });
+}
+
+export async function deleteSponsor(id) {
+  return api(`/admin/sponsors/${id}`, { method: "DELETE" });
+}
+
+export async function uploadSponsorImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/api/admin/sponsors/upload-image`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (res.status === 401) { clearAuth(); window.location.href = "/login"; throw new Error("Session expired"); }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Upload failed");
+  return data;
+}
+
+// ==================== BRAND AMBASSADORS ====================
+export async function getAmbassadors() {
+  return api("/admin/ambassadors");
+}
+
+export async function createAmbassador(data) {
+  return api("/admin/ambassadors", { method: "POST", body: data });
+}
+
+export async function updateAmbassador(id, data) {
+  return api(`/admin/ambassadors/${id}`, { method: "PUT", body: data });
+}
+
+export async function deleteAmbassador(id) {
+  return api(`/admin/ambassadors/${id}`, { method: "DELETE" });
+}
+
+export async function uploadAmbassadorImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/api/admin/ambassadors/upload-image`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (res.status === 401) { clearAuth(); window.location.href = "/login"; throw new Error("Session expired"); }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Upload failed");
+  return data;
+}

@@ -12,6 +12,8 @@ const Notification = require("../models/Notification");
 const PaymentMethod = require("../models/PaymentMethod");
 const Setting = require("../models/Setting");
 const Banner = require("../models/Banner");
+const Sponsor = require("../models/Sponsor");
+const Ambassador = require("../models/Ambassador");
 
 // --------------- Multer Upload Config ---------------
 const uploadsDir = path.join(__dirname, "..", "uploads");
@@ -1369,6 +1371,15 @@ router.get("/banners", authToken, adminOnly, async (req, res) => {
   }
 });
 
+// Banner image upload
+router.post("/banners/upload-image", authToken, adminOnly, (req, res) => {
+  upload.single("file")(req, res, async (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    return res.json({ success: true, url: `/uploads/${req.file.filename}` });
+  });
+});
+
 router.post("/banners", authToken, adminOnly, async (req, res) => {
   try {
     const { title, imageUrl, link, isActive, order } = req.body;
@@ -1393,6 +1404,102 @@ router.put("/banners/:id", authToken, adminOnly, async (req, res) => {
 router.delete("/banners/:id", authToken, adminOnly, async (req, res) => {
   try {
     await Banner.findByIdAndDelete(req.params.id);
+    return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== SPONSORS ====================
+router.get("/sponsors", authToken, adminOnly, async (req, res) => {
+  try {
+    const sponsors = await Sponsor.find().sort({ order: 1, createdAt: -1 });
+    return res.json({ success: true, sponsors });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/sponsors/upload-image", authToken, adminOnly, (req, res) => {
+  upload.single("file")(req, res, async (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    return res.json({ success: true, url: `/uploads/${req.file.filename}` });
+  });
+});
+
+router.post("/sponsors", authToken, adminOnly, async (req, res) => {
+  try {
+    const { name, logoUrl, isActive, order } = req.body;
+    if (!name || !logoUrl) return res.status(400).json({ error: "Name and logo are required" });
+    const sponsor = await Sponsor.create({ name, logoUrl, isActive, order });
+    return res.json({ success: true, sponsor });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/sponsors/:id", authToken, adminOnly, async (req, res) => {
+  try {
+    const sponsor = await Sponsor.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!sponsor) return res.status(404).json({ error: "Sponsor not found" });
+    return res.json({ success: true, sponsor });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/sponsors/:id", authToken, adminOnly, async (req, res) => {
+  try {
+    await Sponsor.findByIdAndDelete(req.params.id);
+    return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== BRAND AMBASSADORS ====================
+router.get("/ambassadors", authToken, adminOnly, async (req, res) => {
+  try {
+    const ambassadors = await Ambassador.find().sort({ order: 1, createdAt: -1 });
+    return res.json({ success: true, ambassadors });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/ambassadors/upload-image", authToken, adminOnly, (req, res) => {
+  upload.single("file")(req, res, async (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    return res.json({ success: true, url: `/uploads/${req.file.filename}` });
+  });
+});
+
+router.post("/ambassadors", authToken, adminOnly, async (req, res) => {
+  try {
+    const { name, role, imageUrl, isActive, order } = req.body;
+    if (!name || !role) return res.status(400).json({ error: "Name and role are required" });
+    const ambassador = await Ambassador.create({ name, role, imageUrl, isActive, order });
+    return res.json({ success: true, ambassador });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/ambassadors/:id", authToken, adminOnly, async (req, res) => {
+  try {
+    const ambassador = await Ambassador.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!ambassador) return res.status(404).json({ error: "Ambassador not found" });
+    return res.json({ success: true, ambassador });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/ambassadors/:id", authToken, adminOnly, async (req, res) => {
+  try {
+    await Ambassador.findByIdAndDelete(req.params.id);
     return res.json({ success: true });
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
