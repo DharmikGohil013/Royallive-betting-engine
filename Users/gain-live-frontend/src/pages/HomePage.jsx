@@ -1,4 +1,4 @@
-import HeroSection from "../components/home/HeroSection";
+﻿import HeroSection from "../components/home/HeroSection";
 import LiveMarquee from "../components/home/LiveMarquee";
 import PromotionsStrip from "../components/home/PromotionsStrip";
 import FeaturedGames from "../components/home/FeaturedGames";
@@ -9,7 +9,7 @@ import HomeFooter from "../components/home/HomeFooter";
 
 const HomePage = () => {
   return (
-    <main className="pt-24 overflow-x-hidden">
+    <main className="pt-[120px] overflow-x-hidden">
       <HeroSection />
       <LiveMarquee />
 

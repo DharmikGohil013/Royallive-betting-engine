@@ -19,6 +19,10 @@ import ReferFriendPage from "./pages/ReferFriendPage";
 import PromotionsPage from "./pages/PromotionsPage";
 import AboutPage from "./pages/AboutPage";
 import ResponsibleGamingPage from "./pages/ResponsibleGamingPage";
+import ContactUsPage from "./pages/ContactUsPage";
+import CookiePolicyPage from "./pages/CookiePolicyPage";
+import SupportHubPage from "./pages/SupportHubPage";
+import LiveChatPage from "./pages/LiveChatPage";
 import AuthLayout from "./components/layout/AuthLayout";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -83,6 +87,10 @@ function AppContent() {
             <Route path="/promotions" element={<PrivateRoute><PromotionsPage /></PrivateRoute>} />
             <Route path="/about" element={<PrivateRoute><AboutPage /></PrivateRoute>} />
             <Route path="/responsible-gaming" element={<PrivateRoute><ResponsibleGamingPage /></PrivateRoute>} />
+            <Route path="/contact" element={<PrivateRoute><ContactUsPage /></PrivateRoute>} />
+            <Route path="/cookie-policy" element={<PrivateRoute><CookiePolicyPage /></PrivateRoute>} />
+            <Route path="/support" element={<PrivateRoute><SupportHubPage /></PrivateRoute>} />
+            <Route path="/live-chat" element={<PrivateRoute><LiveChatPage /></PrivateRoute>} />
 
             {/* Catch all */}
             <Route path="*" element={<Navigate to="/" replace />} />

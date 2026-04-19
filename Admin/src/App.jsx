@@ -23,6 +23,7 @@ import ReportsPage from "./pages/reports/ReportsPage";
 import PromotionsPage from "./pages/promotions/PromotionsPage";
 import HallOfGloryPage from "./pages/hall-of-glory/HallOfGloryPage";
 import ReferralsPage from "./pages/referrals/ReferralsPage";
+import NewsManagementPage from "./pages/news/NewsManagementPage";
 import { adminLogout } from "./services/api";
 
 export default function App() {
@@ -79,7 +80,7 @@ export default function App() {
           <Route path="/cricket" element={<CricketUpdatesPage />} />
           <Route path="/games" element={<GameManagementPage />} />
           <Route path="/game-logic" element={<GameLogicPage />} />
-          <Route path="/news" element={<PlaceholderPage title="News" icon="newspaper" />} />
+          <Route path="/news" element={<NewsManagementPage />} />
           <Route path="/about" element={<AboutManagementPage />} />
           <Route path="/policy" element={<PolicyPage />} />
           <Route path="/payment-methods" element={<PaymentMethodsPage />} />

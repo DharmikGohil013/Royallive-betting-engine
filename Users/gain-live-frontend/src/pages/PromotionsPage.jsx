@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { getPromotions } from "../services/api";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
@@ -17,14 +17,14 @@ const PromotionsPage = () => {
 
   if (loading) {
     return (
-      <main className="pt-24 pb-32 px-4 flex items-center justify-center">
+      <main className="pt-[120px] pb-32 px-4 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-primary-container border-t-transparent rounded-full" />
       </main>
     );
   }
 
   return (
-    <main className="pt-24 pb-32 px-4">
+    <main className="pt-[120px] pb-32 px-4">
       <header className="mb-6">
         <h1 className="font-headline font-black text-2xl uppercase tracking-tight">
           <span className="text-primary-container">Promotions</span> & Offers

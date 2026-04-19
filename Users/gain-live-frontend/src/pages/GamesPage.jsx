@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { getFeaturedGames } from "../services/api";
 import { featuredGames as staticGames } from "../data/homeData";
 
@@ -30,7 +30,7 @@ const GamesPage = () => {
   }, []);
 
   return (
-    <main className="pt-24 pb-24 px-4">
+    <main className="pt-[120px] pb-24 px-4">
       {/* Filter Bar */}
       <section className="mb-6 -mx-4">
         <div className="flex overflow-x-auto hide-scrollbar px-4 gap-2 py-2">

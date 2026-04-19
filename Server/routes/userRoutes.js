@@ -799,4 +799,15 @@ router.get("/about", async (_req, res) => {
   }
 });
 
+// ==================== PUBLIC NEWS ====================
+router.get("/news", async (_req, res) => {
+  try {
+    const News = require("../models/News");
+    const news = await News.find({ isActive: true }).sort({ isPinned: -1, createdAt: -1 }).limit(50).lean();
+    return res.json({ success: true, news });
+  } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = { router, signupHandler };

@@ -28,6 +28,15 @@ const menuSections = [
       { icon: "info", label: "About", path: "/about" },
     ],
   },
+  {
+    title: "SUPPORT",
+    items: [
+      { icon: "contact_support", label: "Contact Us", path: "/contact" },
+      { icon: "support_agent", label: "Support Hub", path: "/support" },
+      { icon: "chat", label: "Live Chat", path: "/live-chat", filled: true },
+      { icon: "cookie", label: "Cookie Policy", path: "/cookie-policy" },
+    ],
+  },
 ];
 
 const NavigationDrawer = ({ isOpen, onClose }) => {

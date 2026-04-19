@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { getAboutInfo } from "../services/api";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
@@ -43,7 +43,7 @@ const AboutPage = () => {
     path?.startsWith("/") ? `${API_BASE}${path}` : path;
 
   return (
-    <main className="pt-24 pb-32 px-4">
+    <main className="pt-[120px] pb-32 px-4">
       {/* Banner */}
       {bannerUrl && (
         <div className="rounded-xl overflow-hidden mb-6 -mx-1">

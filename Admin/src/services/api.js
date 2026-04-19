@@ -384,3 +384,20 @@ export async function createHallOfGloryEntry(data) {
 export async function getReferrals(params = {}) {
   return api("/admin/referrals", { params });
 }
+
+// ==================== NEWS ====================
+export async function getNews(params = {}) {
+  return api("/admin/news", { params });
+}
+
+export async function createNews(data) {
+  return api("/admin/news", { method: "POST", body: data });
+}
+
+export async function updateNews(id, data) {
+  return api(`/admin/news/${id}`, { method: "PUT", body: data });
+}
+
+export async function deleteNews(id) {
+  return api(`/admin/news/${id}`, { method: "DELETE" });
+}

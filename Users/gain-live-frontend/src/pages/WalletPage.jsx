@@ -215,7 +215,7 @@ const WalletPage = () => {
   ];
 
   return (
-    <main className="pt-24 pb-28 px-4 max-w-md mx-auto space-y-6">
+    <main className="pt-[120px] pb-28 px-4 max-w-md mx-auto space-y-6">
       {/* Message Toast */}
       {msg && (
         <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-[80] max-w-[360px] w-[90%] px-4 py-3 rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg border ${msg.type === "success" ? "bg-primary-container/20 border-primary-container/30 text-primary-container" : "bg-error/20 border-error/30 text-error"}`}>

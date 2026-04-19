@@ -115,7 +115,7 @@ const AccountPage = () => {
 
   if (!isAuthenticated) {
     return (
-      <main className="pt-24 pb-28 px-4 max-w-md mx-auto text-center space-y-4">
+      <main className="pt-[120px] pb-28 px-4 max-w-md mx-auto text-center space-y-4">
         <span className="material-symbols-outlined text-on-surface-variant/30 text-6xl block">lock</span>
         <p className="text-on-surface-variant text-sm">Please login to view your account</p>
       </main>
@@ -123,7 +123,7 @@ const AccountPage = () => {
   }
 
   return (
-    <main className="pt-24 pb-28 px-4 max-w-md mx-auto space-y-5">
+    <main className="pt-[120px] pb-28 px-4 max-w-md mx-auto space-y-5">
       {/* Message Toast */}
       {msg && (
         <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-[80] max-w-[360px] w-[90%] px-4 py-3 rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg border ${msg.type === "success" ? "bg-primary-container/20 border-primary-container/30 text-primary-container" : "bg-error/20 border-error/30 text-error"}`}>

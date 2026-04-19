@@ -42,6 +42,7 @@ const HelpRequest = require("../models/HelpRequest");
 const Promotion = require("../models/Promotion");
 const Referral = require("../models/Referral");
 const HallOfGlory = require("../models/HallOfGlory");
+const News = require("../models/News");
 const { authToken, adminOnly, logActivity } = require("../middleware/auth");
 
 const ApiLog = require("../models/ApiLog");
@@ -1192,6 +1193,57 @@ router.get("/referrals", authToken, adminOnly, async (req, res) => {
       Referral.countDocuments(),
     ]);
     return res.json({ success: true, referrals, total, page, totalPages: Math.ceil(total / limit) });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== NEWS MANAGEMENT ====================
+
+router.get("/news", authToken, adminOnly, async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const filter = {};
+    if (req.query.category) filter.category = req.query.category;
+    if (req.query.isActive !== undefined) filter.isActive = req.query.isActive === "true";
+    const [news, total] = await Promise.all([
+      News.find(filter).sort({ isPinned: -1, createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+      News.countDocuments(filter),
+    ]);
+    return res.json({ success: true, news, total, page, totalPages: Math.ceil(total / limit) });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/news", authToken, adminOnly, logActivity("create_news", "admin"), async (req, res) => {
+  try {
+    const { title, content, category, isActive, isPinned } = req.body;
+    if (!title || !content) return res.status(400).json({ error: "Title and content are required" });
+    const item = await News.create({ title, content, category, isActive, isPinned });
+    return res.status(201).json({ success: true, item });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/news/:id", authToken, adminOnly, logActivity("update_news", "admin"), async (req, res) => {
+  try {
+    const { title, content, category, isActive, isPinned } = req.body;
+    const item = await News.findByIdAndUpdate(req.params.id, { title, content, category, isActive, isPinned }, { new: true });
+    if (!item) return res.status(404).json({ error: "News item not found" });
+    return res.json({ success: true, item });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/news/:id", authToken, adminOnly, logActivity("delete_news", "admin"), async (req, res) => {
+  try {
+    const item = await News.findByIdAndDelete(req.params.id);
+    if (!item) return res.status(404).json({ error: "News item not found" });
+    return res.json({ success: true });
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }

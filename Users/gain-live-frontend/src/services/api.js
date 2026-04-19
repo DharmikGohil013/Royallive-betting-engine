@@ -221,3 +221,9 @@ export async function getAboutInfo() {
   const res = await fetch(`${API_BASE}/api/user/about`);
   return res.json();
 }
+
+// ==================== NEWS ====================
+export async function getNews() {
+  const res = await fetch(`${API_BASE}/api/user/news`);
+  return res.json();
+}
