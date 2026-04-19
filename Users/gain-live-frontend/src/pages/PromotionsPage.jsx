@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getPromotions } from "../services/api";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
@@ -11,7 +11,7 @@ const PromotionsPage = () => {
   useEffect(() => {
     getPromotions()
       .then((d) => setPromos(d.promotions || []))
-      .catch(() => {})
+      .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 

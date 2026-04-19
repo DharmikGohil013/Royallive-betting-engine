@@ -8,7 +8,7 @@ const AmbassadorsSection = () => {
   useEffect(() => {
     getAmbassadors()
       .then((data) => setAmbassadors(data.ambassadors || []))
-      .catch(() => {})
+      .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 

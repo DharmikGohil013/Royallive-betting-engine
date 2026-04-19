@@ -28,12 +28,13 @@ export default function SettingsPage() {
           systemNotifications: map.systemNotifications ?? false,
           smsAlerts: map.smsAlerts ?? false,
         });
-      } catch {}
+      } catch (err) { console.error(err); }
       setLoading(false);
     })();
   }, []);
 
   const handleSave = async () => {
+    if (!settings.platformName?.trim()) return alert("Platform name is required");
     setSaving(true);
     try {
       await Promise.all([

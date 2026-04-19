@@ -27,6 +27,12 @@ export default function CookiePolicyPage() {
   const [showModal, setShowModal] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') { setShowModal(false); setShowPreview(false); } };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [showModal, showPreview]);
+
   const showToast = useCallback((msg, type = "success") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);

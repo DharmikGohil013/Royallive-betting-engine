@@ -21,7 +21,7 @@ const BettingCard = ({ card }) => {
             </span>
           </div>
         </div>
-        <div className={`grid grid-cols-${card.gridCols} gap-2`}>
+        <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${card.gridCols || 3}, minmax(0, 1fr))` }}>
           {card.odds.map((odd, index) => (
             <div
               key={index}
@@ -64,7 +64,7 @@ const BettingCard = ({ card }) => {
           </div>
         </div>
       </div>
-      <div className={`grid grid-cols-${card.gridCols} gap-2`}>
+      <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${card.gridCols || 3}, minmax(0, 1fr))` }}>
         {card.odds.map((odd, index) => (
           <div
             key={index}

@@ -8,7 +8,7 @@ const SponsorsSection = () => {
   useEffect(() => {
     getSponsors()
       .then((data) => setSponsors(data.sponsors || []))
-      .catch(() => {})
+      .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 

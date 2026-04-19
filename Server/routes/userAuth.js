@@ -4,7 +4,11 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-change-me";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error("FATAL: JWT_SECRET environment variable is not set!");
+  process.exit(1);
+}
 const SALT_ROUNDS = 12;
 
 function normalizeMobile(value) {
@@ -60,7 +64,8 @@ async function authUser(req, res, next) {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     return next();
-  } catch {
+  } catch (err) {
+    console.error("Token verification failed:", err.message);
     return res.status(401).json({ error: "Invalid or expired token" });
   }
 }

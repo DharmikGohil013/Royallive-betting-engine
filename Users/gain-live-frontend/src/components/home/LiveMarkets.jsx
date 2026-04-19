@@ -17,7 +17,7 @@ const LiveMarkets = () => {
           options: g.odds || bettingCards[0]?.options || [],
         })));
       }
-    }).catch(() => {});
+    }).catch((err) => console.error(err));
   }, []);
   return (
     <section className="mb-10">

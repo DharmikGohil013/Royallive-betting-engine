@@ -25,6 +25,10 @@ const RegisterPage = () => {
     event.preventDefault();
     setError("");
 
+    if (!form.username.trim()) return setError("Username is required");
+    if (!form.mobile.trim()) return setError("Mobile number is required");
+    if (form.password.length < 6) return setError("Password must be at least 6 characters");
+
     try {
       setSubmitting(true);
       await authRegister(form);

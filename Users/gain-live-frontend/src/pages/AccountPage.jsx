@@ -47,7 +47,7 @@ const AccountPage = () => {
       setTxnLoading(true);
       const data = await getTransactions({ limit: 10 });
       setRecentTxns(data.transactions || []);
-    } catch {} finally {
+    } catch (err) { console.error("Failed to load transactions:", err); } finally {
       setTxnLoading(false);
     }
   }, []);
@@ -65,7 +65,8 @@ const AccountPage = () => {
       setMsg(null);
       const data = await updateProfile(editForm);
       setProfile(data.user);
-      const stored = JSON.parse(localStorage.getItem("gain-live-user") || "{}");
+      let stored = {};
+      try { stored = JSON.parse(localStorage.getItem("gain-live-user") || "{}"); } catch { stored = {}; }
       const updated = { ...stored, ...data.user };
       localStorage.setItem("gain-live-user", JSON.stringify(updated));
       setUser(updated);
@@ -103,8 +104,8 @@ const AccountPage = () => {
   };
 
   const p = profile || user || {};
-  const memberSince = p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "â€”";
-  const lastLogin = p.lastLogin ? new Date(p.lastLogin).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "â€”";
+const memberSince = p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—";
+  const lastLogin = p.lastLogin ? new Date(p.lastLogin).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
 
   const tabs = [
     { key: "profile", label: "Profile", icon: "person" },
@@ -151,7 +152,7 @@ const AccountPage = () => {
               <h2 className="font-headline font-extrabold text-xl text-primary-container tracking-tight truncate">
                 {(p.username || "USER").toUpperCase()}
               </h2>
-              <p className="text-[11px] text-on-surface-variant truncate">{p.mobile || "â€”"}</p>
+              <p className="text-[11px] text-on-surface-variant truncate">{p.mobile || "—"}</p>
               <p className="text-[10px] text-on-surface-variant/60 truncate">{p.email || "No email set"}</p>
               <div className="flex items-center gap-1.5 mt-1">
                 <span className="material-symbols-outlined text-tertiary-fixed-dim text-[12px]" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
@@ -230,7 +231,7 @@ const AccountPage = () => {
                 <span className="material-symbols-outlined text-primary-container/60 text-lg">person</span>
                 <div>
                   <p className="text-[9px] font-label uppercase tracking-widest text-on-surface-variant/60">Username</p>
-                  <p className="text-sm font-headline font-bold text-on-surface">{p.username || "â€”"}</p>
+                  <p className="text-sm font-headline font-bold text-on-surface">{p.username || "—"}</p>
                 </div>
               </div>
               <span className="material-symbols-outlined text-on-surface-variant/20 text-sm">lock</span>
@@ -242,7 +243,7 @@ const AccountPage = () => {
                 <span className="material-symbols-outlined text-primary-container/60 text-lg">phone</span>
                 <div>
                   <p className="text-[9px] font-label uppercase tracking-widest text-on-surface-variant/60">Mobile</p>
-                  <p className="text-sm font-headline font-bold text-on-surface">{p.mobile || "â€”"}</p>
+                  <p className="text-sm font-headline font-bold text-on-surface">{p.mobile || "—"}</p>
                 </div>
               </div>
               <span className="material-symbols-outlined text-on-surface-variant/20 text-sm">lock</span>
@@ -331,7 +332,7 @@ const AccountPage = () => {
                 <span className="material-symbols-outlined text-primary-container/60 text-lg">share</span>
                 <div>
                   <p className="text-[9px] font-label uppercase tracking-widest text-on-surface-variant/60">My Referral Code</p>
-                  <p className="text-sm font-headline font-bold text-tertiary-fixed-dim">{p.myReferralCode || "â€”"}</p>
+                  <p className="text-sm font-headline font-bold text-tertiary-fixed-dim">{p.myReferralCode || "—"}</p>
                 </div>
               </div>
               <button onClick={() => { navigator.clipboard.writeText(p.myReferralCode || ""); setMsg({ type: "success", text: "Copied!" }); setTimeout(() => setMsg(null), 1500); }} className="p-1.5 hover:bg-primary-container/10 rounded transition-colors">

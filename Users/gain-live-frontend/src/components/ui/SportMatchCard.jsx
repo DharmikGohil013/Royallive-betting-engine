@@ -37,7 +37,7 @@ const SportMatchCard = ({ match }) => {
           ))}
         </div>
       </div>
-      <div className={`grid grid-cols-${match.gridCols} gap-2`}>
+      <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${match.gridCols || 3}, minmax(0, 1fr))` }}>
         {match.odds.map((odd, index) => (
           <button
             key={index}

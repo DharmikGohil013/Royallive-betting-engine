@@ -31,7 +31,7 @@ export default function DashboardPage() {
           ]);
         }
       })
-      .catch(() => {});
+      .catch((err) => console.error(err));
   }, []);
   return (
     <>

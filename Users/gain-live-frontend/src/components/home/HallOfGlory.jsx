@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { hallOfGloryWinners } from "../../data/homeData";
-
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
+import { getHallOfGlory } from "../../services/api";
 
 const HallOfGlory = () => {
   const [winners, setWinners] = useState(hallOfGloryWinners);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/user/hall-of-glory`)
-      .then(r => r.json())
+    getHallOfGlory()
       .then(data => {
         const entries = data.entries || [];
         if (entries.length) {
@@ -21,7 +19,7 @@ const HallOfGlory = () => {
           })));
         }
       })
-      .catch(() => {});
+      .catch((err) => console.error(err));
   }, []);
   return (
     <section className="px-4 mb-20">

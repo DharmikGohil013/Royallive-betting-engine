@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getReferralInfo, isLoggedIn } from "../services/api";
 
 const ReferFriendPage = () => {
@@ -10,7 +10,7 @@ const ReferFriendPage = () => {
     if (loggedIn) {
       getReferralInfo()
         .then((d) => setData(d))
-        .catch(() => {});
+        .catch((err) => console.error(err));
     }
   }, [loggedIn]);
 
@@ -42,7 +42,7 @@ const ReferFriendPage = () => {
           Refer a <span className="text-primary-container">Friend</span>
         </h1>
         <p className="text-on-surface-variant text-xs mt-2">
-          Share your code and earn ৳50 for every friend who joins!
+          Share your code and earn ?50 for every friend who joins!
         </p>
       </header>
 
@@ -54,7 +54,7 @@ const ReferFriendPage = () => {
             <div className="flex items-center gap-3">
               <div className="flex-1 bg-surface-container-high rounded-lg px-4 py-3 text-center">
                 <span className="font-headline font-black text-xl text-primary-container tracking-[0.3em]">
-                  {data.referralCode || "—"}
+                  {data.referralCode || "�"}
                 </span>
               </div>
               <button
@@ -76,12 +76,12 @@ const ReferFriendPage = () => {
             </div>
             <div className="bg-surface-container border border-outline-variant/10 rounded-lg p-4 text-center">
               <p className="font-headline font-black text-xl text-primary-container">
-                ৳{data.totalEarnings || 0}
+                ?{data.totalEarnings || 0}
               </p>
               <p className="text-[9px] uppercase tracking-widest text-on-surface-variant mt-1">Earned</p>
             </div>
             <div className="bg-surface-container border border-outline-variant/10 rounded-lg p-4 text-center">
-              <p className="font-headline font-black text-xl text-tertiary-fixed-dim">৳50</p>
+              <p className="font-headline font-black text-xl text-tertiary-fixed-dim">?50</p>
               <p className="text-[9px] uppercase tracking-widest text-on-surface-variant mt-1">Per Refer</p>
             </div>
           </div>
@@ -95,7 +95,7 @@ const ReferFriendPage = () => {
               {[
                 { icon: "share", text: "Share your referral code with friends" },
                 { icon: "person_add", text: "Your friend signs up using your code" },
-                { icon: "payments", text: "You both get ৳50 bonus credited" },
+                { icon: "payments", text: "You both get ?50 bonus credited" },
               ].map((step, i) => (
                 <div key={i} className="flex items-center gap-3 bg-surface-container-high rounded-lg p-3">
                   <div className="w-8 h-8 bg-primary-container/10 rounded-full flex items-center justify-center shrink-0">
@@ -123,7 +123,7 @@ const ReferFriendPage = () => {
                       </p>
                     </div>
                     <span className={`text-xs font-bold ${r.rewardClaimed ? "text-green-400" : "text-yellow-400"}`}>
-                      {r.rewardClaimed ? "৳50 Earned" : "Pending"}
+                      {r.rewardClaimed ? "?50 Earned" : "Pending"}
                     </span>
                   </div>
                 ))}

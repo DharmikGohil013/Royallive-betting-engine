@@ -30,7 +30,7 @@ export default function ApiLogsPage() {
       setLogs(res.logs || []);
       setTotal(res.total || 0);
       setTotalPages(res.totalPages || 1);
-    } catch {}
+    } catch (err) { console.error(err); }
     setLoading(false);
   }, [page, filters]);
 

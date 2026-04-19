@@ -12,7 +12,7 @@ const FloatingChat = () => {
       fetch(`${API_BASE}/api/user/support/faq`)
         .then((r) => r.json())
         .then((d) => setFaqs(d.faqs || []))
-        .catch(() => {});
+        .catch((err) => console.error(err));
     }
   }, [open, faqs.length]);
 

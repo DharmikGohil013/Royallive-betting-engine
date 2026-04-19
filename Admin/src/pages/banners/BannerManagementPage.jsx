@@ -23,6 +23,8 @@ export default function BannerManagementPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { const handler = (e) => { if (e.key === 'Escape') setShowModal(false); }; window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler); }, [showModal]);
+
 
   const openCreate = () => { setEditing(null); setForm(emptyForm); setShowModal(true); };
   const openEdit = (b) => {
@@ -32,7 +34,8 @@ export default function BannerManagementPage() {
   };
 
   const handleSave = async () => {
-    if (!form.title.trim() || !form.imageUrl) return;
+    if (!form.title.trim()) return alert("Banner title is required");
+    if (!form.imageUrl) return alert("Please upload a banner image");
     try {
       setSaving(true);
       if (editing) {
@@ -42,7 +45,7 @@ export default function BannerManagementPage() {
       }
       setShowModal(false);
       load();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); alert("Failed to save banner"); }
     setSaving(false);
   };
 

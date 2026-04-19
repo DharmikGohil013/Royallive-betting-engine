@@ -20,7 +20,7 @@ const LiveMarquee = () => {
           );
         }
       })
-      .catch(() => {});
+      .catch((err) => console.error(err));
   }, []);
 
   return (

@@ -28,13 +28,14 @@ export default function CricketUpdatesPage() {
         { icon: "payments", iconClass: "bg-amber-500/10 text-amber-500", label: "Live Matches", value: String(list.filter(m => m.status === "live").length) },
         { icon: "warning", iconClass: "bg-error/10 text-error", label: "Upcoming", value: String(list.filter(m => m.status === "upcoming").length) },
       ]);
-    } catch {}
+    } catch (err) { console.error(err); }
   };
 
   useEffect(() => { loadMatches(); }, []);
 
   const handleSaveMatch = async () => {
     if (!form.teamA || !form.teamB) return alert("Enter both team names");
+    if (!form.startTime) return alert("Start time is required");
     try {
       const payload = mapToApi(form);
       if (form._id) { await updateCricketMatch(form._id, payload); }
@@ -46,7 +47,7 @@ export default function CricketUpdatesPage() {
 
   const handleDeleteMatch = async (id) => {
     if (!confirm("Delete this match?")) return;
-    try { await deleteCricketMatch(id); loadMatches(); } catch {}
+    try { await deleteCricketMatch(id); loadMatches(); } catch (err) { console.error(err); }
   };
 
   const handleEditMatch = (match) => {

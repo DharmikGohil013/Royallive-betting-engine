@@ -16,7 +16,7 @@ export default function AlertsPanel() {
         desc: a.description || a.details || "",
         time: a.createdAt ? new Date(a.createdAt).toLocaleString() : "Just now",
       })));
-    }).catch(() => {});
+    }).catch((err) => console.error(err));
   }, []);
   return (
     <div

@@ -18,7 +18,7 @@ const FeaturedGames = () => {
           alt: g.description || g.name,
         })));
       }
-    }).catch(() => {});
+    }).catch((err) => console.error(err));
   }, []);
   return (
     <section className="px-4 mb-10">

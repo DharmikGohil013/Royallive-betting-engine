@@ -19,6 +19,8 @@ export default function HelpRequestsPage() {
   const [replyStatus, setReplyStatus] = useState("resolved");
 
   useEffect(() => { loadRequests(); }, [filter, page]);
+  useEffect(() => { const handler = (e) => { if (e.key === 'Escape') setReplyModal(false); }; window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler); }, [replyModal]);
+
 
   async function loadRequests() {
     try {
@@ -28,23 +30,24 @@ export default function HelpRequestsPage() {
       const data = await getHelpRequests(params);
       setRequests(data.requests || []);
       setTotalPages(data.totalPages || 1);
-    } catch { /* ignore */ } finally { setLoading(false); }
+    } catch (err) { console.error("Failed to load requests:", err); } finally { setLoading(false); }
   }
 
   async function handleReply(e) {
     e.preventDefault();
     if (!replyModal) return;
+    if (!replyText.trim()) return alert("Reply text cannot be empty");
     try {
-      await replyHelpRequest(replyModal._id, { adminReply: replyText, status: replyStatus });
+      await replyHelpRequest(replyModal._id, { adminReply: replyText.trim(), status: replyStatus });
       setReplyModal(null);
       setReplyText("");
       loadRequests();
-    } catch { /* ignore */ }
+    } catch (err) { console.error(err); alert("Failed to send reply"); }
   }
 
   async function handleDelete(id) {
     if (!window.confirm("Delete this help request?")) return;
-    try { await deleteHelpRequest(id); loadRequests(); } catch { /* ignore */ }
+    try { await deleteHelpRequest(id); loadRequests(); } catch (err) { console.error("Failed to delete:", err); }
   }
 
   return (

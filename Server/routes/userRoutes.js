@@ -234,7 +234,8 @@ router.get("/verify", authToken, async (req, res) => {
     const user = await User.findById(req.user.sub).select("-password");
     if (!user) return res.status(404).json({ valid: false, error: "User not found" });
     return res.json({ valid: true, user: formatUserResponse(user) });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ valid: false, error: "Internal server error" });
   }
 });
@@ -245,7 +246,8 @@ router.get("/profile", authToken, activeUser, async (req, res) => {
     const user = await User.findById(req.user.sub).select("-password");
     if (!user) return res.status(404).json({ error: "User not found" });
     return res.json({ success: true, user: formatUserResponse(user) });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -268,7 +270,8 @@ router.put("/profile", authToken, activeUser, async (req, res) => {
     const user = await User.findByIdAndUpdate(req.user.sub, updates, { new: true }).select("-password");
     if (!user) return res.status(404).json({ error: "User not found" });
     return res.json({ success: true, user: formatUserResponse(user) });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -290,7 +293,8 @@ router.put("/change-password", authToken, activeUser, async (req, res) => {
     await user.save();
 
     return res.json({ success: true, message: "Password changed successfully" });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -321,7 +325,8 @@ router.get("/wallet", authToken, activeUser, async (req, res) => {
       pendingCount,
       transactions: recentTxns,
     });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -332,6 +337,7 @@ router.post("/deposit", authToken, activeUser, async (req, res) => {
     const { amount, paymentMethod, reference } = req.body;
     const numAmount = Number(amount);
     if (!numAmount || numAmount < 100) return res.status(400).json({ error: "Minimum deposit is 100" });
+    if (numAmount > 500000) return res.status(400).json({ error: "Maximum deposit is 500,000" });
     if (numAmount > 500000) return res.status(400).json({ error: "Maximum deposit is 500,000" });
 
     const txn = await Transaction.create({
@@ -344,7 +350,8 @@ router.post("/deposit", authToken, activeUser, async (req, res) => {
     });
 
     return res.status(201).json({ success: true, transaction: txn });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -355,6 +362,8 @@ router.post("/withdraw", authToken, activeUser, async (req, res) => {
     const { amount, paymentMethod, reference } = req.body;
     const numAmount = Number(amount);
     if (!numAmount || numAmount < 100) return res.status(400).json({ error: "Minimum withdrawal is 100" });
+    if (numAmount > 500000) return res.status(400).json({ error: "Maximum withdrawal is 500,000" });
+    if (!paymentMethod) return res.status(400).json({ error: "Payment method is required" });
 
     const user = await User.findById(req.user.sub);
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -370,7 +379,8 @@ router.post("/withdraw", authToken, activeUser, async (req, res) => {
     });
 
     return res.status(201).json({ success: true, transaction: txn });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -391,7 +401,8 @@ router.get("/transactions", authToken, activeUser, async (req, res) => {
     ]);
 
     return res.json({ success: true, transactions, total, page, totalPages: Math.ceil(total / limit) });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -404,7 +415,8 @@ router.post("/bets", authToken, activeUser, async (req, res) => {
     const numOdds = Number(odds);
 
     if (!numStake || numStake <= 0) return res.status(400).json({ error: "Valid stake required" });
-    if (!numOdds || numOdds <= 0) return res.status(400).json({ error: "Valid odds required" });
+    if (!numOdds || numOdds <= 0 || numOdds > 1000) return res.status(400).json({ error: "Valid odds required (max 1000)" });
+    if (!selection) return res.status(400).json({ error: "Selection is required" });
 
     const user = await User.findById(req.user.sub);
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -428,7 +440,8 @@ router.post("/bets", authToken, activeUser, async (req, res) => {
     });
 
     return res.status(201).json({ success: true, bet, newBalance: user.balance });
-  } catch {
+  } catch (err) {
+    console.error("Bet placement error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -449,7 +462,8 @@ router.get("/bets", authToken, activeUser, async (req, res) => {
     ]);
 
     return res.json({ success: true, bets, total, page, totalPages: Math.ceil(total / limit) });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -467,7 +481,8 @@ router.get("/games", async (req, res) => {
       .lean();
 
     return res.json({ success: true, games });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -481,7 +496,8 @@ router.get("/games/featured", async (_req, res) => {
       .limit(6)
       .lean();
     return res.json({ success: true, games });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -495,7 +511,8 @@ router.get("/games/leaderboard", async (_req, res) => {
       .limit(10)
       .lean();
     return res.json({ success: true, users });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -507,7 +524,8 @@ router.get("/cricket/live", async (_req, res) => {
       .sort({ matchDate: 1 })
       .lean();
     return res.json({ success: true, matches });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -520,7 +538,8 @@ router.get("/payment-methods", async (_req, res) => {
       .sort({ sortOrder: 1 })
       .lean();
     return res.json({ success: true, methods });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -531,7 +550,8 @@ router.get("/settings/:key", async (req, res) => {
     const setting = await Setting.findOne({ key: req.params.key }).lean();
     if (!setting) return res.status(404).json({ error: "Setting not found" });
     return res.json({ success: true, key: setting.key, value: setting.value });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -555,7 +575,8 @@ router.get("/notifications", authToken, activeUser, async (req, res) => {
     ]);
 
     return res.json({ success: true, notifications, total, page, totalPages: Math.ceil(total / limit) });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -565,7 +586,8 @@ router.get("/marquee", async (_req, res) => {
   try {
     const items = await Marquee.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).lean();
     return res.json({ success: true, items });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -588,7 +610,8 @@ router.post("/block", authToken, activeUser, async (req, res) => {
     await User.findByIdAndUpdate(req.user.sub, { $addToSet: { blockedUsers: userId } });
 
     return res.json({ success: true, message: "User blocked" });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -602,7 +625,8 @@ router.post("/unblock", authToken, activeUser, async (req, res) => {
     await User.findByIdAndUpdate(req.user.sub, { $pull: { blockedUsers: userId } });
 
     return res.json({ success: true, message: "User unblocked" });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -620,7 +644,8 @@ router.post("/report", authToken, activeUser, async (req, res) => {
     await User.findByIdAndUpdate(userId, { $inc: { reportCount: 1 } });
 
     return res.json({ success: true, message: "User reported successfully" });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -629,7 +654,8 @@ router.get("/blocked-users", authToken, activeUser, async (req, res) => {
   try {
     const user = await User.findById(req.user.sub).populate("blockedUsers", "username mobile").lean();
     return res.json({ success: true, blockedUsers: user?.blockedUsers || [] });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -647,7 +673,8 @@ router.post("/help", authToken, activeUser, async (req, res) => {
       category: category || "other",
     });
     return res.status(201).json({ success: true, request: helpReq });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -656,7 +683,8 @@ router.get("/help", authToken, activeUser, async (req, res) => {
   try {
     const requests = await HelpRequest.find({ user: req.user.sub }).sort({ createdAt: -1 }).limit(20).lean();
     return res.json({ success: true, requests });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -690,7 +718,8 @@ router.get("/promotions", async (_req, res) => {
       ],
     }).sort({ sortOrder: 1, createdAt: -1 }).lean();
     return res.json({ success: true, promotions });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -711,7 +740,8 @@ router.post("/promotions/request", async (req, res) => {
       type: "promotion",
     });
     return res.status(201).json({ success: true, promotion: promo, message: "Promotion request submitted for review" });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -731,7 +761,8 @@ router.get("/referral", authToken, activeUser, async (req, res) => {
       referralEarnings: user?.referralEarnings || 0,
       referrals,
     });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -766,7 +797,8 @@ router.get("/hall-of-glory", async (_req, res) => {
     }
 
     return res.json({ success: true, entries });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -781,7 +813,8 @@ router.get("/policies", async (_req, res) => {
       policies[s.key] = { content: s.value, updatedAt: s.updatedAt, description: s.description };
     }
     return res.json({ success: true, policies });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -796,7 +829,8 @@ router.get("/cookie-policy", async (_req, res) => {
       sections = JSON.parse(setting.value);
     }
     return res.json({ success: true, sections, updatedAt: setting?.updatedAt || null });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -811,7 +845,8 @@ router.get("/about", async (_req, res) => {
       about[s.key] = { content: s.value, updatedAt: s.updatedAt, description: s.description };
     }
     return res.json({ success: true, about });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -822,7 +857,8 @@ router.get("/news", async (_req, res) => {
     const News = require("../models/News");
     const news = await News.find({ isActive: true }).sort({ isPinned: -1, createdAt: -1 }).limit(50).lean();
     return res.json({ success: true, news });
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });

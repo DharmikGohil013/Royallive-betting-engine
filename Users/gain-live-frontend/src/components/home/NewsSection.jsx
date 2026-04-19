@@ -24,7 +24,7 @@ const NewsSection = () => {
   useEffect(() => {
     getNews()
       .then((data) => setNews((data.news || data || []).slice(0, 6)))
-      .catch(() => {});
+      .catch((err) => console.error(err));
   }, []);
 
   if (news.length === 0) return null;

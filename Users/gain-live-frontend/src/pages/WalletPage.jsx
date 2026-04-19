@@ -86,7 +86,8 @@ const WalletPage = () => {
       });
       setTxns(data.transactions || []);
       // Update auth context balance
-      const stored = JSON.parse(localStorage.getItem("gain-live-user") || "{}");
+      let stored = {};
+      try { stored = JSON.parse(localStorage.getItem("gain-live-user") || "{}"); } catch { stored = {}; }
       stored.balance = data.balance || 0;
       localStorage.setItem("gain-live-user", JSON.stringify(stored));
       setUser((prev) => prev ? { ...prev, balance: data.balance || 0 } : prev);
@@ -125,7 +126,7 @@ const WalletPage = () => {
       setTxnTotal(data.total || 0);
       setTxnPages(data.totalPages || 1);
       setTxnPage(data.page || 1);
-    } catch {} finally {
+    } catch (err) { console.error("Failed to load history:", err); } finally {
       setHistoryLoading(false);
     }
   }, []);
@@ -134,6 +135,18 @@ const WalletPage = () => {
     loadWallet();
     loadPaymentMethods();
   }, [loadWallet, loadPaymentMethods]);
+
+  // Escape key to close modals
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === "Escape") {
+        if (showDeposit && !depositLoading) setShowDeposit(false);
+        else if (showWithdraw && !withdrawLoading) setShowWithdraw(false);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [showDeposit, showWithdraw, depositLoading, withdrawLoading]);
 
   useEffect(() => {
     if (activeTab === "history") loadHistory(1, txnFilter);
@@ -324,7 +337,7 @@ const WalletPage = () => {
           <section className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="font-headline font-extrabold text-sm uppercase tracking-[0.15em] text-primary-container">Recent Transactions</h3>
-              <button onClick={() => setActiveTab("history")} className="text-[10px] font-label font-medium text-primary-container">VIEW ALL â†’</button>
+              <button onClick={() => setActiveTab("history")} className="text-[10px] font-label font-medium text-primary-container">VIEW ALL →</button>
             </div>
             {txns.length === 0 ? (
               <div className="glass-card rounded-lg p-8 text-center">
@@ -419,7 +432,7 @@ const WalletPage = () => {
                         <p className={`text-sm font-headline font-bold ${t.type === "withdraw" ? "text-secondary-container" : "text-primary-container"}`}>{t.type === "withdraw" ? "-" : "+"}৳{(t.amount || 0).toLocaleString()}</p>
                       </div>
                       <div className="flex justify-between items-center mt-1">
-                        <p className="text-[10px] text-on-surface-variant truncate mr-2">{(t.paymentMethod || "").toUpperCase()}{t.reference ? ` â€¢ ${t.reference}` : ""}</p>
+                        <p className="text-[10px] text-on-surface-variant truncate mr-2">{(t.paymentMethod || "").toUpperCase()}{t.reference ? ` • ${t.reference}` : ""}</p>
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase shrink-0 ${t.status === "approved" || t.status === "completed" ? "text-primary-container bg-primary-container/5" : t.status === "pending" ? "text-secondary-fixed-dim bg-secondary-container/10" : "text-error bg-error-container/10"}`}>{t.status}</span>
                       </div>
                       <p className="text-[9px] text-on-surface-variant/60 mt-1">{new Date(t.createdAt).toLocaleString()}</p>
@@ -492,7 +505,7 @@ const WalletPage = () => {
                 { label: "Total Losses", value: walletData.totalLosses, color: "text-error" },
                 { label: "Current Balance", value: `৳${walletData.balance.toLocaleString()}`, color: "text-primary-container" },
                 { label: "Pending Transactions", value: walletData.pendingCount, color: walletData.pendingCount > 0 ? "text-tertiary-fixed-dim" : "text-on-surface" },
-                { label: "Member Since", value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "â€”", color: "text-on-surface-variant" },
+                { label: "Member Since", value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—", color: "text-on-surface-variant" },
               ].map((item, i) => (
                 <div key={i} className="flex justify-between items-center py-2 border-b border-outline-variant/10 last:border-0">
                   <span className="text-[11px] text-on-surface-variant">{item.label}</span>
@@ -508,7 +521,7 @@ const WalletPage = () => {
       {showDeposit && (
         <div className="fixed inset-0 z-[70] flex items-end justify-center" onClick={() => !depositLoading && !depositSuccess && setShowDeposit(false)}>
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-          <div className="relative w-full max-w-[460px] bg-[#0A0A0F] rounded-t-2xl p-5 pb-8 space-y-5 border-t border-primary-container/20 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="relative w-full sm:max-w-[460px] bg-[#0A0A0F] rounded-t-2xl p-4 sm:p-5 pb-8 space-y-5 border-t border-primary-container/20 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {depositSuccess ? (
               <div className="text-center py-8 space-y-4">
                 <div className="w-16 h-16 mx-auto rounded-full bg-primary-container/20 flex items-center justify-center">
@@ -568,7 +581,7 @@ const WalletPage = () => {
       {showWithdraw && (
         <div className="fixed inset-0 z-[70] flex items-end justify-center" onClick={() => !withdrawLoading && !withdrawSuccess && setShowWithdraw(false)}>
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-          <div className="relative w-full max-w-[460px] bg-[#0A0A0F] rounded-t-2xl p-5 pb-8 space-y-5 border-t border-primary-container/20 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="relative w-full sm:max-w-[460px] bg-[#0A0A0F] rounded-t-2xl p-4 sm:p-5 pb-8 space-y-5 border-t border-primary-container/20 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {withdrawSuccess ? (
               <div className="text-center py-8 space-y-4">
                 <div className="w-16 h-16 mx-auto rounded-full bg-primary-container/20 flex items-center justify-center">

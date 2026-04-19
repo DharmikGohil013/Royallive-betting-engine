@@ -70,7 +70,7 @@ const LiveChatPage = () => {
   }
 
   return (
-    <main className="pt-[120px] pb-32 px-4 max-w-4xl mx-auto flex flex-col h-[100dvh] max-h-[100dvh] overflow-hidden" style={{ height: "calc(100dvh - 120px - 5rem)" }}>
+    <main className="fixed inset-0 pt-[120px] pb-32 px-4 max-w-4xl mx-auto flex flex-col overflow-hidden">
       {/* Header */}
       <header className="relative mb-4 p-4 glass-card border border-outline-variant/20 rounded-xl overflow-hidden flex-shrink-0">
         <div className="flex items-center gap-3">

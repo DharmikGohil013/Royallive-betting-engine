@@ -28,7 +28,7 @@ export default function GameManagementPage() {
         { label: "Total Revenue", value: fmtBDT(totalRevenue), border: "border-primary" },
         { label: "System Load", value: `${Math.min(100, Math.round(active.length * 5))}%`, border: "border-tertiary" },
       ]);
-    } catch { /* keep fallback */ }
+    } catch (err) { console.error("Failed to load games:", err); }
   }
 
   useEffect(() => { loadGames(); }, []);
@@ -37,7 +37,7 @@ export default function GameManagementPage() {
     try {
       await updateGame(game._id, { isActive: !game.isActive });
       loadGames();
-    } catch { /* silent */ }
+    } catch (err) { console.error("Failed to toggle game:", err); }
   }
 
   async function handleDelete(game) {
@@ -45,7 +45,7 @@ export default function GameManagementPage() {
     try {
       await deleteGame(game._id);
       loadGames();
-    } catch { /* silent */ }
+    } catch (err) { console.error("Failed to delete game:", err); }
   }
 
   async function handleAddGame() {

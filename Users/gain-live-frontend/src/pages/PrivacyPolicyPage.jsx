@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getPolicies } from "../services/api";
 
 const PrivacyPolicyPage = () => {
@@ -8,12 +8,15 @@ const PrivacyPolicyPage = () => {
   useEffect(() => {
     getPolicies()
       .then((d) => setPolicies(d.policies || {}))
-      .catch(() => {})
+      .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
   const entries = Object.entries(policies);
-  const colors = ["primary-container", "tertiary-fixed-dim"];
+  const colorStyles = [
+    { borderLeft: "border-l-primary-container", text: "text-primary-container", bg: "bg-primary-container" },
+    { borderLeft: "border-l-tertiary-fixed-dim", text: "text-tertiary-fixed-dim", bg: "bg-tertiary-fixed-dim" },
+  ];
 
   return (
     <main className="pt-[120px] pb-32 px-4 max-w-4xl mx-auto">
@@ -66,16 +69,16 @@ const PrivacyPolicyPage = () => {
           <div className="space-y-4">
             {entries.map(([key, val], i) => {
               const num = String(i + 1).padStart(2, "0");
-              const color = colors[i % 2];
+              const style = colorStyles[i % 2];
               return (
                 <section
                   key={key}
-                  className={`glass-card border-l-4 border-l-${color} border-y border-r border-outline-variant/10 p-6 rounded-r-xl relative`}
+                  className={`glass-card border-l-4 ${style.borderLeft} border-y border-r border-outline-variant/10 p-6 rounded-r-xl relative`}
                 >
-                  <span className={`absolute top-3 right-4 font-headline font-black text-4xl opacity-5 text-${color} select-none`}>{num}</span>
+                  <span className={`absolute top-3 right-4 font-headline font-black text-4xl opacity-5 ${style.text} select-none`}>{num}</span>
                   <div className="flex items-start gap-3 mb-4">
-                    <div className={`mt-1 w-2 h-6 bg-${color}`} />
-                    <h3 className={`font-headline font-bold text-lg text-${color} uppercase tracking-widest`}>
+                    <div className={`mt-1 w-2 h-6 ${style.bg}`} />
+                    <h3 className={`font-headline font-bold text-lg ${style.text} uppercase tracking-widest`}>
                       {key.replace(/_/g, " ")}
                     </h3>
                   </div>

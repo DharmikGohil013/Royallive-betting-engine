@@ -70,7 +70,7 @@ const HomeFooter = () => {
   useEffect(() => {
     getPaymentMethods()
       .then((data) => setPaymentMethods(data.methods || []))
-      .catch(() => {});
+      .catch((err) => console.error(err));
   }, []);
 
   return (

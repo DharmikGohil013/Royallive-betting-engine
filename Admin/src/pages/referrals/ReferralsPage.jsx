@@ -17,7 +17,7 @@ export default function ReferralsPage() {
       setReferrals(data.referrals || []);
       setTotalPages(data.totalPages || 1);
       setTotal(data.total || 0);
-    } catch { } finally { setLoading(false); }
+    } catch (err) { console.error(err); } finally { setLoading(false); }
   }
 
   return (
@@ -52,7 +52,8 @@ export default function ReferralsPage() {
         ) : referrals.length === 0 ? (
           <div className="p-12 text-center text-slate-500">No referrals yet.</div>
         ) : (
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px]">
             <thead><tr className="border-b border-white/5 text-xs text-slate-500 uppercase tracking-wider">
               <th className="text-left p-4">Referrer</th>
               <th className="text-left p-4">Referred</th>
@@ -78,6 +79,7 @@ export default function ReferralsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

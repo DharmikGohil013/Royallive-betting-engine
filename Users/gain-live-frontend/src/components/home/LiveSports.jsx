@@ -19,7 +19,7 @@ const LiveSports = () => {
           time: m.startTime ? new Date(m.startTime).toLocaleString() : "",
         })));
       }
-    }).catch(() => {});
+    }).catch((err) => console.error(err));
   }, []);
   return (
     <section className="mb-10">

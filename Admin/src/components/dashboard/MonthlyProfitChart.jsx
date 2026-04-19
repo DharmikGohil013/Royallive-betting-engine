@@ -33,7 +33,7 @@ export default function MonthlyProfitChart() {
           };
         }));
       }
-    }).catch(() => {});
+    }).catch((err) => console.error(err));
   }, []);
   const getBarClasses = (type) => {
     switch (type) {

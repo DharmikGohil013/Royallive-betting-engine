@@ -1,6 +1,17 @@
 ﻿import { useState } from "react";
 import { submitHelpRequest } from "../services/api";
 
+const CONTACT_BG = {
+  "primary-container": "bg-primary-container/10",
+  "secondary": "bg-secondary/10",
+  "tertiary-fixed-dim": "bg-tertiary-fixed-dim/10",
+};
+const CONTACT_TEXT = {
+  "primary-container": "text-primary-container",
+  "secondary": "text-secondary",
+  "tertiary-fixed-dim": "text-tertiary-fixed-dim",
+};
+
 const contactMethods = [
   { icon: "mail", label: "Email Us", value: "support@gainlive.com", desc: "Get a response within 24 hours", color: "primary-container" },
   { icon: "chat", label: "Live Chat", value: "Available 24/7", desc: "Instant support from our team", color: "secondary" },
@@ -20,7 +31,8 @@ const ContactUsPage = () => {
       await submitHelpRequest(form.subject, form.message, form.category);
       setToast("Message sent successfully! We'll get back to you soon.");
       setForm({ subject: "", message: "", category: "general" });
-    } catch {
+    } catch (err) {
+      console.error("Failed to submit help request:", err);
       setToast("Failed to send message. Please try again.");
     } finally {
       setSubmitting(false);
@@ -59,8 +71,8 @@ const ContactUsPage = () => {
       <section className="grid grid-cols-1 gap-3 mb-8">
         {contactMethods.map((m) => (
           <div key={m.label} className="glass-card border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-lg bg-${m.color}/10 flex items-center justify-center flex-shrink-0`}>
-              <span className={`material-symbols-outlined text-xl text-${m.color}`} style={{ fontVariationSettings: "'FILL' 1" }}>{m.icon}</span>
+            <div className={`w-12 h-12 rounded-lg ${CONTACT_BG[m.color] || "bg-primary-container/10"} flex items-center justify-center flex-shrink-0`}>
+              <span className={`material-symbols-outlined text-xl ${CONTACT_TEXT[m.color] || "text-primary-container"}`} style={{ fontVariationSettings: "'FILL' 1" }}>{m.icon}</span>
             </div>
             <div className="min-w-0">
               <p className="text-xs text-on-surface-variant font-bold uppercase tracking-widest">{m.label}</p>

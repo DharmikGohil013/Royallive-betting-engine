@@ -9,7 +9,7 @@ const BannerCarousel = () => {
   useEffect(() => {
     getBanners()
       .then((data) => setBanners(data.banners || []))
-      .catch(() => {});
+      .catch((err) => console.error(err));
   }, []);
 
   const startAutoSlide = useCallback(() => {

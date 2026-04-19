@@ -37,11 +37,15 @@ export default function GameLogicPage() {
 
   async function handleSave() {
     if (!mainGame) return;
+    if (form.houseEdge < 0 || form.houseEdge > 100) return alert("House Edge must be between 0% and 100%");
+    if (form.winProbability < 0 || form.winProbability > 100) return alert("Win Probability must be between 0% and 100%");
+    if (form.minBet < 1) return alert("Minimum Bet must be at least 1");
+    if (form.maxBet < form.minBet) return alert("Maximum Bet must be greater than or equal to Minimum Bet");
     setSaving(true);
     try {
       await updateGame(mainGame._id, { houseEdge: form.houseEdge, winProbability: form.winProbability, minBet: form.minBet, maxBet: form.maxBet, autoPayout: form.autoPayout });
       await loadData();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); alert("Failed to save changes"); }
     setSaving(false);
   }
   return (
@@ -110,8 +114,10 @@ export default function GameLogicPage() {
                     className="w-full bg-surface-container-low border-none rounded-xl py-4 px-5 text-2xl font-bold text-primary focus:ring-1 focus:ring-primary/50"
                     type="number"
                     step="0.1"
+                    min="0"
+                    max="100"
                     value={form.houseEdge}
-                    onChange={e => setForm({...form, houseEdge: parseFloat(e.target.value) || 0})}
+                    onChange={e => { const v = parseFloat(e.target.value); setForm({...form, houseEdge: isNaN(v) ? 0 : Math.min(100, Math.max(0, v))}); }}
                   />
                   <span className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">%</span>
                 </div>
@@ -143,8 +149,9 @@ export default function GameLogicPage() {
                   <input
                     className="w-full bg-surface-container-low border-none rounded-xl py-4 px-4 text-lg font-bold text-on-surface focus:ring-1 focus:ring-primary/50"
                     type="number"
+                    min="1"
                     value={form.minBet}
-                    onChange={e => setForm({...form, minBet: parseInt(e.target.value) || 0})}
+                    onChange={e => { const v = parseInt(e.target.value); setForm({...form, minBet: isNaN(v) ? 0 : Math.max(0, v)}); }}
                   />
                 </div>
                 <div>
@@ -152,8 +159,9 @@ export default function GameLogicPage() {
                   <input
                     className="w-full bg-surface-container-low border-none rounded-xl py-4 px-4 text-lg font-bold text-on-surface focus:ring-1 focus:ring-primary/50"
                     type="number"
+                    min="1"
                     value={form.maxBet}
-                    onChange={e => setForm({...form, maxBet: parseInt(e.target.value) || 0})}
+                    onChange={e => { const v = parseInt(e.target.value); setForm({...form, maxBet: isNaN(v) ? 0 : Math.max(0, v)}); }}
                   />
                 </div>
               </div>
@@ -264,8 +272,8 @@ export default function GameLogicPage() {
           Logic Change Audit Trail
         </h3>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px]">
+        <div className="overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+          <table className="w-full min-w-[700px]">
             <thead>
               <tr className="text-left text-slate-500 text-xs uppercase tracking-widest border-b border-outline-variant/10">
                 <th className="pb-4 font-black">Operator</th>

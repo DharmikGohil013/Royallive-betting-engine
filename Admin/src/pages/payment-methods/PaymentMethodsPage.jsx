@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getPaymentMethods, createPaymentMethod, updatePaymentMethod, deletePaymentMethod } from "../../services/api";
 
 const ALL_PAYMENT_METHODS = [
@@ -96,10 +96,12 @@ export default function PaymentMethodsPage() {
       setLoading(true);
       const res = await getPaymentMethods();
       setMethods(res.methods || []);
-    } catch {} finally { setLoading(false); }
+    } catch (err) { console.error(err); } finally { setLoading(false); }
   };
 
   useEffect(() => { loadMethods(); }, []);
+  useEffect(() => { const handler = (e) => { if (e.key === 'Escape') setShowModal(false); }; window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler); }, [showModal]);
+
 
   const isAdded = (name) => methods.some(m => m.name.toLowerCase() === name.toLowerCase());
 
@@ -118,7 +120,7 @@ export default function PaymentMethodsPage() {
     try {
       await updatePaymentMethod(method._id, { isActive: !method.isActive });
       await loadMethods();
-    } catch {} finally { setSaving(null); }
+    } catch (err) { console.error(err); } finally { setSaving(null); }
   };
 
   const handleDelete = async (method) => {
@@ -127,7 +129,7 @@ export default function PaymentMethodsPage() {
     try {
       await deletePaymentMethod(method._id);
       await loadMethods();
-    } catch {} finally { setSaving(null); }
+    } catch (err) { console.error(err); } finally { setSaving(null); }
   };
 
   const activeCount = methods.filter(m => m.isActive).length;

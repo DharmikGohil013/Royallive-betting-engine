@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getAboutInfo } from "../services/api";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
@@ -28,7 +28,7 @@ const AboutPage = () => {
   useEffect(() => {
     getAboutInfo()
       .then((d) => setAbout(d.about || {}))
-      .catch(() => {})
+      .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 

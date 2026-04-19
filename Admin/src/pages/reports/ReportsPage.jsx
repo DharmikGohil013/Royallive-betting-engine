@@ -19,6 +19,12 @@ export default function ReportsPage() {
   const [actionStatus, setActionStatus] = useState("reviewed");
   const [adminNote, setAdminNote] = useState("");
 
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') setActionModal(null); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [actionModal]);
+
   useEffect(() => { loadReports(); }, [filter, typeFilter, page]);
 
   async function loadReports() {
@@ -30,7 +36,7 @@ export default function ReportsPage() {
       const data = await getReports(params);
       setReports(data.reports || []);
       setTotalPages(data.totalPages || 1);
-    } catch { /* ignore */ } finally { setLoading(false); }
+    } catch (err) { console.error("Failed to load reports:", err); } finally { setLoading(false); }
   }
 
   async function handleAction(e) {
@@ -41,7 +47,7 @@ export default function ReportsPage() {
       setActionModal(null);
       setAdminNote("");
       loadReports();
-    } catch { /* ignore */ }
+    } catch (err) { console.error("Failed to update report:", err); alert("Failed to update report"); }
   }
 
   return (

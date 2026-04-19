@@ -23,6 +23,13 @@ export default function AboutManagementPage() {
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') setShowPreview(false); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [showPreview]);
+
   const [logoUrl, setLogoUrl] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
   const [uploading, setUploading] = useState({ logo: false, banner: false });

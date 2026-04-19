@@ -20,7 +20,7 @@ export default function TransactionsTable() {
         statusBg: tx.status === "completed" ? "bg-secondary/20" : tx.status === "pending" ? "bg-amber-500/20" : "bg-error/20",
         statusColor: tx.status === "completed" ? "text-secondary" : tx.status === "pending" ? "text-amber-500" : "text-error",
       })));
-    }).catch(() => {});
+    }).catch((err) => console.error(err));
   }, []);
   return (
     <div

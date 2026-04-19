@@ -37,6 +37,8 @@ export default function NewsManagementPage() {
   }, [page, filterCat]);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { const handler = (e) => { if (e.key === 'Escape') setShowModal(false); }; window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler); }, [showModal]);
+
 
   const openCreate = () => { setEditing(null); setForm(emptyForm); setShowModal(true); };
   const openEdit = (item) => {

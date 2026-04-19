@@ -9,13 +9,15 @@ export default function MarqueeManagementPage() {
   const [form, setForm] = useState({ label: "WINNER:", username: "", amount: "", highlighted: false });
 
   useEffect(() => { loadItems(); }, []);
+  useEffect(() => { const handler = (e) => { if (e.key === 'Escape') setShowForm(false); }; window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler); }, [showForm]);
+
 
   async function loadItems() {
     try {
       setLoading(true);
       const data = await getMarqueeItems();
       setItems(data.items || []);
-    } catch { /* ignore */ } finally { setLoading(false); }
+    } catch (err) { console.error("Failed to load marquee items:", err); } finally { setLoading(false); }
   }
 
   function openForm(item = null) {
@@ -31,6 +33,8 @@ export default function MarqueeManagementPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!form.username.trim()) return alert("Username is required");
+    if (!form.amount || isNaN(Number(form.amount)) || Number(form.amount) <= 0) return alert("Valid amount is required");
     try {
       if (editingItem) {
         await updateMarqueeItem(editingItem._id, form);
@@ -39,16 +43,16 @@ export default function MarqueeManagementPage() {
       }
       setShowForm(false);
       loadItems();
-    } catch { /* ignore */ }
+    } catch (err) { console.error(err); alert("Failed to save marquee item"); }
   }
 
   async function handleDelete(id) {
     if (!window.confirm("Delete this marquee item?")) return;
-    try { await deleteMarqueeItem(id); loadItems(); } catch { /* ignore */ }
+    try { await deleteMarqueeItem(id); loadItems(); } catch (err) { console.error("Failed to delete:", err); }
   }
 
   async function toggleActive(item) {
-    try { await updateMarqueeItem(item._id, { isActive: !item.isActive }); loadItems(); } catch { /* ignore */ }
+    try { await updateMarqueeItem(item._id, { isActive: !item.isActive }); loadItems(); } catch (err) { console.error("Failed to toggle:", err); }
   }
 
   return (

@@ -28,15 +28,15 @@ export default function AnalyticsPage() {
       if (tf === "custom" && end) params.endDate = end;
       const d = await getAnalyticsOverview(params);
       setOverview(d);
-    } catch {}
+    } catch (err) { console.error(err); }
     try {
       const d = await getWeeklyTransactions();
       setWeeklyData(d.days || d.deposits || []);
-    } catch {}
+    } catch (err) { console.error(err); }
     try {
       const d = await getTopUsers("totalDeposits", 5);
       setTopDepositors(d.users || []);
-    } catch {}
+    } catch (err) { console.error(err); }
     setLoading(false);
   }, []);
 

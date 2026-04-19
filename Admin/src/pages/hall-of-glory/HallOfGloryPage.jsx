@@ -12,24 +12,28 @@ export default function HallOfGloryPage() {
   const [form, setForm] = useState({ username: "", totalPayout: "", rank: 1 });
 
   useEffect(() => { load(); }, [date]);
+  useEffect(() => { const handler = (e) => { if (e.key === 'Escape') setShowForm(false); }; window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler); }, [showForm]);
+
 
   async function load() {
-    try { setLoading(true); const data = await getHallOfGlory(date); setEntries(data.entries || []); } catch { } finally { setLoading(false); }
+    try { setLoading(true); const data = await getHallOfGlory(date); setEntries(data.entries || []); } catch (err) { console.error(err); } finally { setLoading(false); }
   }
 
   async function handleGenerate() {
     if (!window.confirm("This will auto-generate today's Hall of Glory from top winning users. Continue?")) return;
-    try { setGenerating(true); await generateHallOfGlory(); load(); } catch { } finally { setGenerating(false); }
+    try { setGenerating(true); await generateHallOfGlory(); load(); } catch (err) { console.error(err); } finally { setGenerating(false); }
   }
 
   async function handleManualAdd(e) {
     e.preventDefault();
+    if (!form.username.trim()) return alert("Username is required");
+    if (!form.totalPayout || isNaN(Number(form.totalPayout)) || Number(form.totalPayout) <= 0) return alert("Valid payout amount is required");
     try {
-      await createHallOfGloryEntry({ ...form, date });
+      await createHallOfGloryEntry({ ...form, totalPayout: Number(form.totalPayout), date });
       setShowForm(false);
       setForm({ username: "", totalPayout: "", rank: 1 });
       load();
-    } catch { }
+    } catch (err) { console.error(err); alert("Failed to add entry"); }
   }
 
   return (
@@ -93,7 +97,7 @@ export default function HallOfGloryPage() {
               </div>
               <div>
                 <label className="text-xs text-slate-500 font-bold">Rank *</label>
-                <select value={form.rank} onChange={e => setForm({...form, rank: parseInt(e.target.value)})}
+                <select value={form.rank} onChange={e => setForm({...form, rank: parseInt(e.target.value) || 1})}
                   className="w-full bg-surface-dim border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-100 mt-1">
                   <option value={1}>1st Place</option>
                   <option value={2}>2nd Place</option>

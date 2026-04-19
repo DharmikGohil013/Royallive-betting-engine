@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getFAQ, submitHelpRequest, getMyHelpRequests, isLoggedIn } from "../services/api";
 
 const HelpCenterPage = () => {
@@ -12,9 +12,9 @@ const HelpCenterPage = () => {
   const loggedIn = isLoggedIn();
 
   useEffect(() => {
-    getFAQ().then((d) => setFaqs(d.faqs || [])).catch(() => {});
+    getFAQ().then((d) => setFaqs(d.faqs || [])).catch((err) => console.error(err));
     if (loggedIn) {
-      getMyHelpRequests().then((d) => setTickets(d.requests || [])).catch(() => {});
+      getMyHelpRequests().then((d) => setTickets(d.requests || [])).catch((err) => console.error(err));
     }
   }, [loggedIn]);
 

@@ -23,6 +23,8 @@ export default function SponsorsPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { const handler = (e) => { if (e.key === 'Escape') setShowModal(false); }; window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler); }, [showModal]);
+
 
   const openCreate = () => { setEditing(null); setForm(emptyForm); setShowModal(true); };
   const openEdit = (s) => {
@@ -43,7 +45,8 @@ export default function SponsorsPage() {
   };
 
   const handleSave = async () => {
-    if (!form.name.trim() || !form.logoUrl) return;
+    if (!form.name.trim()) return alert("Sponsor name is required");
+    if (!form.logoUrl) return alert("Please upload a logo image");
     try {
       setSaving(true);
       if (editing) {

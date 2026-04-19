@@ -24,7 +24,7 @@ export default function RevenueChart() {
           color: colors[i % colors.length],
         })));
       }
-    }).catch(() => {});
+    }).catch((err) => console.error(err));
   }, []);
   return (
     <div

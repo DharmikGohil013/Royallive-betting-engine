@@ -40,6 +40,12 @@ function StatusBadge({ status }) {
 
 /* ───── Modal Shell ───── */
 function Modal({ open, onClose, children, size = "md" }) {
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [open, onClose]);
   if (!open) return null;
   const w = size === "lg" ? "max-w-2xl" : "max-w-md";
   return (
@@ -111,7 +117,7 @@ export default function UserManagementPage() {
       setUsers(data.users || []);
       setTotal(data.total || 0);
       if (data.stats) setStats(data.stats);
-    } catch { /* silent */ }
+    } catch (err) { console.error("Failed to load users:", err); }
     setLoading(false);
   }, [page, statusFilter, debouncedSearch]);
 
@@ -133,7 +139,7 @@ export default function UserManagementPage() {
       await updateUserStatus(user._id, newStatus);
       if (selectedUser?._id === user._id) setSelectedUser({ ...selectedUser, status: newStatus });
       loadUsers();
-    } catch { /* silent */ }
+    } catch (err) { console.error("Failed to toggle block:", err); }
   }
 
   /* ─── balance adjustment ─── */
@@ -147,6 +153,7 @@ export default function UserManagementPage() {
   async function handleBalanceSubmit(e) {
     e.preventDefault();
     if (!selectedUser || !balanceAmount) return;
+    if (Number(balanceAmount) <= 0) return alert("Amount must be positive");
     setBalanceLoading(true);
     try {
       await updateUserBalance(selectedUser._id, Number(balanceAmount), balanceType, balanceNote || `Manual ${balanceType} by admin`);
@@ -173,6 +180,11 @@ export default function UserManagementPage() {
 
   async function handleSaveUser(e) {
     e.preventDefault();
+    if (!formData.username?.trim()) return alert("Username is required");
+    if (!formData.mobile?.trim()) return alert("Mobile number is required");
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return alert("Invalid email format");
+    if (!editMode && (!formData.password || formData.password.length < 6)) return alert("Password must be at least 6 characters");
+    if (Number(formData.balance) < 0) return alert("Balance cannot be negative");
     setFormLoading(true);
     try {
       if (editMode) {

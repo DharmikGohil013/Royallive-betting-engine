@@ -8,11 +8,14 @@ const BottomNav = () => {
     <nav className="bg-[#131318]/90 backdrop-blur-lg fixed bottom-0 left-0 w-full z-50 rounded-t-lg border-t-2 border-t-[#00F5FF]/20 shadow-[0_-10px_30px_-10px_rgba(0,245,255,0.15)] md:left-1/2 md:-translate-x-1/2 md:max-w-[460px]">
       <div className="flex justify-around items-center h-20 pb-safe w-full">
         {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const currentPath = location.pathname.replace(/\/+$/, "") || "/";
+          const itemPath = item.path.replace(/\/+$/, "") || "/";
+          const isActive = currentPath === itemPath;
           return (
             <Link
               key={item.path}
               to={item.path}
+              aria-current={isActive ? "page" : undefined}
               className={
                 isActive
                   ? "flex flex-col items-center justify-center text-[#00F5FF] border-t-2 border-[#00F5FF] -mt-[2px] pt-2 active:scale-90 transition-all duration-100"

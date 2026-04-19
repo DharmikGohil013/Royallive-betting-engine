@@ -52,9 +52,18 @@ const { authToken, adminOnly, logActivity } = require("../middleware/auth");
 const ApiLog = require("../models/ApiLog");
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-change-me";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error("FATAL: JWT_SECRET environment variable is not set!");
+  process.exit(1);
+}
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
+
+// Escape regex special characters to prevent NoSQL injection
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 // ==================== AUTH ====================
 
@@ -165,9 +174,9 @@ router.get("/users", authToken, adminOnly, async (req, res) => {
     const filter = { role: "user" };
     if (search) {
       filter.$or = [
-        { username: { $regex: search, $options: "i" } },
-        { mobile: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
+        { username: { $regex: escapeRegex(search), $options: "i" } },
+        { mobile: { $regex: escapeRegex(search), $options: "i" } },
+        { email: { $regex: escapeRegex(search), $options: "i" } },
       ];
     }
     if (status) filter.status = status;
@@ -843,7 +852,7 @@ router.get("/api-logs", authToken, adminOnly, async (req, res) => {
     if (method) filter.method = method;
     if (status === "success") filter.statusCode = { $lt: 400 };
     if (status === "error") filter.statusCode = { $gte: 400 };
-    if (search) filter.path = { $regex: search, $options: "i" };
+    if (search) filter.path = { $regex: escapeRegex(search), $options: "i" };
 
     const [logs, total] = await Promise.all([
       ApiLog.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
@@ -868,7 +877,7 @@ router.get("/api-logs/export", authToken, adminOnly, async (req, res) => {
     if (method) filter.method = method;
     if (status === "success") filter.statusCode = { $lt: 400 };
     if (status === "error") filter.statusCode = { $gte: 400 };
-    if (search) filter.path = { $regex: search, $options: "i" };
+    if (search) filter.path = { $regex: escapeRegex(search), $options: "i" };
 
     const logs = await ApiLog.find(filter).sort({ createdAt: -1 }).limit(5000).lean();
 

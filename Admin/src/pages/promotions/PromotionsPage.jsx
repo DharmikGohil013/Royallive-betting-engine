@@ -16,9 +16,11 @@ export default function PromotionsPage() {
   const fileInputRef = useRef(null);
 
   useEffect(() => { load(); }, []);
+  useEffect(() => { const handler = (e) => { if (e.key === 'Escape') setShowForm(false); }; window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler); }, [showForm]);
+
 
   async function load() {
-    try { setLoading(true); const data = await getPromotions(); setPromotions(data.promotions || []); } catch { } finally { setLoading(false); }
+    try { setLoading(true); const data = await getPromotions(); setPromotions(data.promotions || []); } catch (err) { console.error(err); } finally { setLoading(false); }
   }
 
   function openForm(item = null) {
@@ -38,19 +40,23 @@ export default function PromotionsPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!form.title?.trim()) return alert("Title is required");
+    if (form.startDate && form.endDate && new Date(form.endDate) <= new Date(form.startDate)) {
+      return alert("End date must be after start date");
+    }
     try {
       if (editing) { await updatePromotion(editing._id, form); } else { await createPromotion(form); }
       setShowForm(false); load();
-    } catch { }
+    } catch (err) { console.error(err); alert("Failed to save promotion"); }
   }
 
   async function handleDelete(id) {
     if (!window.confirm("Delete this promotion?")) return;
-    try { await deletePromotion(id); load(); } catch { }
+    try { await deletePromotion(id); load(); } catch (err) { console.error(err); }
   }
 
   async function toggleActive(item) {
-    try { await updatePromotion(item._id, { isActive: !item.isActive }); load(); } catch { }
+    try { await updatePromotion(item._id, { isActive: !item.isActive }); load(); } catch (err) { console.error(err); }
   }
 
   async function handleImageUpload(e) {
@@ -60,7 +66,7 @@ export default function PromotionsPage() {
     try {
       const data = await uploadPromotionImage(file);
       setForm((prev) => ({ ...prev, image: data.url }));
-    } catch { }
+    } catch (err) { console.error(err); }
     finally { setUploading(false); e.target.value = ""; }
   }
 

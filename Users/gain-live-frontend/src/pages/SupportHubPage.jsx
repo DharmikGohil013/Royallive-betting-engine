@@ -1,5 +1,11 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getFAQ, getMyHelpRequests, isLoggedIn } from "../services/api";
+
+const SUPPORT_COLORS = {
+  "primary-container": "text-primary-container",
+  "secondary": "text-secondary",
+  "tertiary-fixed-dim": "text-tertiary-fixed-dim",
+};
 
 const quickLinks = [
   { icon: "account_circle", label: "Account Issues", desc: "Login, verification, profile", color: "primary-container" },
@@ -18,9 +24,9 @@ const SupportHubPage = () => {
   const loggedIn = isLoggedIn();
 
   useEffect(() => {
-    getFAQ().then((d) => setFaqs(d.faqs || [])).catch(() => {});
+    getFAQ().then((d) => setFaqs(d.faqs || [])).catch((err) => console.error(err));
     if (loggedIn) {
-      getMyHelpRequests().then((d) => setTickets(d.requests || [])).catch(() => {});
+      getMyHelpRequests().then((d) => setTickets(d.requests || [])).catch((err) => console.error(err));
     }
   }, [loggedIn]);
 
@@ -75,7 +81,7 @@ const SupportHubPage = () => {
         <div className="grid grid-cols-2 gap-3">
           {quickLinks.map((q) => (
             <div key={q.label} className="glass-card border border-outline-variant/10 rounded-xl p-4 hover:border-primary-container/30 transition-colors cursor-pointer">
-              <span className={`material-symbols-outlined text-xl text-${q.color} mb-2 block`} style={{ fontVariationSettings: "'FILL' 1" }}>{q.icon}</span>
+              <span className={`material-symbols-outlined text-xl ${SUPPORT_COLORS[q.color] || "text-primary-container"} mb-2 block`} style={{ fontVariationSettings: "'FILL' 1" }}>{q.icon}</span>
               <p className="text-xs font-bold text-on-surface">{q.label}</p>
               <p className="text-[10px] text-on-surface-variant mt-0.5">{q.desc}</p>
             </div>

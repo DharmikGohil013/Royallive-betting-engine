@@ -34,7 +34,7 @@ export default function WeeklyChart() {
           };
         }));
       }
-    }).catch(() => {});
+    }).catch((err) => console.error(err));
   }, []);
   return (
     <div

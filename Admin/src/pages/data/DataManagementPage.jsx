@@ -113,7 +113,7 @@ export default function DataManagementPage() {
     setRefreshing(false);
   };
 
-  const totalPages = Math.ceil(totalLogs / 10) || 1;
+  const totalPages = Math.max(1, Math.ceil(totalLogs / 10));
   const usedPct = Math.round((storage.used / storage.total) * 100);
   return (
     <div className="font-body">

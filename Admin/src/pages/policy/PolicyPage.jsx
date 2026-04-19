@@ -24,6 +24,12 @@ export default function PolicyPage() {
   const [toast, setToast] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') setShowPreview(false); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [showPreview]);
+
   const showToast = useCallback((msg, type = "success") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);

@@ -30,7 +30,7 @@ export default function NotificationsPage() {
         { label: "Failed", value: total > 0 ? ((failed / total) * 100).toFixed(1) + "%" : "0%", icon: "error_outline", iconClass: "bg-error/10 text-error" },
       ]);
       setBanners(list.filter(n => n.type === "banner" || n.type === "popup").slice(0, 3));
-    } catch { /* keep fallback */ }
+    } catch (err) { console.error("Failed to load notifications:", err); }
   };
 
   useEffect(() => { loadNotifications(); }, []);
@@ -49,7 +49,7 @@ export default function NotificationsPage() {
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this notification?")) return;
-    try { await deleteNotification(id); loadNotifications(); } catch {}
+    try { await deleteNotification(id); loadNotifications(); } catch (err) { console.error(err); }
   };
 
   const historyRows = notifications.map(n => ({
@@ -57,7 +57,7 @@ export default function NotificationsPage() {
     date: new Date(n.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
     time: new Date(n.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
     title: n.title,
-    message: (n.message || "").slice(0, 40) + "...",
+    message: (n.message || "").length > 40 ? (n.message || "").slice(0, 40) + "..." : (n.message || ""),
     audience: n.target || "All Users",
     status: n.status === "sent" ? "Sent" : n.status === "failed" ? "Failed" : "Pending",
     failed: n.status === "failed",

@@ -2,7 +2,12 @@
 export default {
   darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,jsx}"],
-  safelist: ["grid-cols-2", "grid-cols-3"],
+  safelist: [
+    "grid-cols-1", "grid-cols-2", "grid-cols-3", "grid-cols-4", "grid-cols-5",
+    "border-l-primary-container", "border-l-tertiary-fixed-dim",
+    "text-primary-container", "text-tertiary-fixed-dim",
+    "bg-primary-container", "bg-tertiary-fixed-dim",
+  ],
   theme: {
     extend: {
       colors: {

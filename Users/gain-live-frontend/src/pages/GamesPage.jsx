@@ -7,6 +7,7 @@ const categories = ["All Games", "Slots", "Live Casino", "Sports", "Crash Games"
 const GamesPage = () => {
   const [activeCategory, setActiveCategory] = useState("All Games");
   const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getFeaturedGames()
@@ -26,7 +27,8 @@ const GamesPage = () => {
           setGames(fallbackGames);
         }
       })
-      .catch(() => setGames(fallbackGames));
+      .catch(() => setGames(fallbackGames))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -54,6 +56,11 @@ const GamesPage = () => {
       </section>
 
       {/* Game Grid */}
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="animate-spin w-8 h-8 border-2 border-[#00F5FF] border-t-transparent rounded-full" />
+        </div>
+      ) : (
       <section className="grid grid-cols-2 gap-4">
         {games.map((game, index) => (
           <div key={index} className="group relative rounded-lg overflow-hidden glass-card border-l-2 border-l-[#00F5FF]/40">
@@ -89,6 +96,7 @@ const GamesPage = () => {
           </div>
         ))}
       </section>
+      )}
     </main>
   );
 };
