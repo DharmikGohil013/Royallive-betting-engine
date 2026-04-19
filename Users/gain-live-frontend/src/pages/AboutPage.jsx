@@ -109,7 +109,11 @@ const AboutPage = () => {
       )}
 
       {/* Footer */}
-      <div className="mt-8 text-center">
+      <div className="mt-8 text-center space-y-2">
+        <a href="mailto:gainlive@royallive.live" className="inline-flex items-center gap-1.5 text-xs text-primary-container hover:underline transition-colors">
+          <span className="material-symbols-outlined text-sm">mail</span>
+          gainlive@royallive.live
+        </a>
         <p className="text-[10px] text-on-surface-variant uppercase tracking-widest">
           &copy; 2026 Gain Live Systems. All Rights Reserved.
         </p>

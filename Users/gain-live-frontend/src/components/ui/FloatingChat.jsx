@@ -59,12 +59,19 @@ const FloatingChat = () => {
             ))}
           </div>
 
-          <div className="border-t border-outline-variant/10 p-3">
+          <div className="border-t border-outline-variant/10 p-3 space-y-2">
             <a
               href="/help"
               className="block text-center bg-primary-container text-on-primary-container text-xs font-bold uppercase tracking-widest py-2 rounded-lg"
             >
               Open Help Center
+            </a>
+            <a
+              href="mailto:gainlive@royallive.live"
+              className="flex items-center justify-center gap-1.5 text-[10px] text-primary-container hover:underline"
+            >
+              <span className="material-symbols-outlined text-xs">mail</span>
+              gainlive@royallive.live
             </a>
           </div>
         </div>

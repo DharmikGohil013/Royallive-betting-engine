@@ -15,6 +15,7 @@ const categoryLinks = [
 const supportLinks = [
   { label: "Help Center", href: "/help" },
   { label: "Live Support", href: "/help" },
+  { label: "Email Us", href: "mailto:gainlive@royallive.live" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Use", href: "/privacy" },
 ];
@@ -161,6 +162,10 @@ const HomeFooter = () => {
               Gain Live is operated under Interstellar License No. 8048/JAZ. All betting activities are
               monitored for procedural integrity. Play responsibly.
             </p>
+            <a href="mailto:gainlive@royallive.live" className="inline-flex items-center gap-1.5 text-[10px] text-primary-container/60 hover:text-primary-container transition-colors font-label uppercase tracking-widest">
+              <span className="material-symbols-outlined text-xs">mail</span>
+              gainlive@royallive.live
+            </a>
             <p className="text-[10px] text-[#00F5FF]/40 font-label">
               © 2026 GAIN LIVE SYSTEMS. ALL RIGHTS RESERVED.
             </p>

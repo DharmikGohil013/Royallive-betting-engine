@@ -78,14 +78,17 @@ const AccountPage = () => {
           <div className="rounded-lg border-t border-primary-container/10">
             <div className="flex flex-col divide-y divide-outline-variant/20">
               {[
-                { icon: "forum", label: "Live Chat" },
-                { icon: "mail", label: "Email Support" },
-                { icon: "call", label: "Priority Line" },
+                { icon: "forum", label: "Live Chat", href: "/help" },
+                { icon: "mail", label: "Email Support", href: "mailto:gainlive@royallive.live" },
+                { icon: "call", label: "Priority Line", href: "/help" },
               ].map((c) => (
-                <button key={c.label} className="py-5 flex items-center justify-center gap-3 hover:bg-primary-container/5 transition-colors group">
+                <a key={c.label} href={c.href} className="py-5 flex items-center justify-center gap-3 hover:bg-primary-container/5 transition-colors group">
                   <span className="material-symbols-outlined text-primary-container group-hover:scale-110 transition-transform">{c.icon}</span>
                   <span className="text-xs font-bold uppercase tracking-widest">{c.label}</span>
-                </button>
+                  {c.href.startsWith("mailto:") && (
+                    <span className="text-[10px] text-on-surface-variant">gainlive@royallive.live</span>
+                  )}
+                </a>
               ))}
             </div>
           </div>

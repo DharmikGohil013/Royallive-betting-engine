@@ -327,6 +327,10 @@ const ResponsibleGamingPage = () => {
         <p className="text-[9px] uppercase tracking-[0.2em] text-on-surface-variant/40 leading-relaxed max-w-xs mx-auto">
           Gambling can be addictive. Please play responsibly. If you need help, contact our support team 24/7.
         </p>
+        <a href="mailto:gainlive@royallive.live" className="inline-flex items-center gap-1.5 text-[10px] text-primary-container/60 hover:text-primary-container transition-colors">
+          <span className="material-symbols-outlined text-xs">mail</span>
+          gainlive@royallive.live
+        </a>
       </section>
     </main>
   );

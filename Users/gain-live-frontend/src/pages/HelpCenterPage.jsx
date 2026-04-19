@@ -55,6 +55,10 @@ const HelpCenterPage = () => {
           Help <span className="text-primary-container">Center</span>
         </h1>
         <p className="text-on-surface-variant text-xs mt-1">Find answers or submit a support ticket</p>
+        <a href="mailto:gainlive@royallive.live" className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-primary-container/10 border border-primary-container/20 rounded-lg hover:bg-primary-container/20 transition-colors">
+          <span className="material-symbols-outlined text-primary-container text-sm">mail</span>
+          <span className="text-xs font-bold text-primary-container">gainlive@royallive.live</span>
+        </a>
       </header>
 
       {/* Tabs */}
