@@ -16,6 +16,7 @@ const Promotion = require("../models/Promotion");
 const Referral = require("../models/Referral");
 const Marquee = require("../models/Marquee");
 const HallOfGlory = require("../models/HallOfGlory");
+const ChatMessage = require("../models/ChatMessage");
 const { authToken, activeUser } = require("../middleware/auth");
 
 const router = express.Router();
@@ -806,6 +807,66 @@ router.get("/news", async (_req, res) => {
     const news = await News.find({ isActive: true }).sort({ isPinned: -1, createdAt: -1 }).limit(50).lean();
     return res.json({ success: true, news });
   } catch {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== LIVE CHAT ====================
+
+// Get my chat messages
+router.get("/chat", authToken, async (req, res) => {
+  try {
+    const userId = req.user.id || req.user._id;
+    const messages = await ChatMessage.find({ userId })
+      .sort({ createdAt: 1 })
+      .limit(200)
+      .lean();
+
+    // Mark admin messages as read
+    await ChatMessage.updateMany(
+      { userId, sender: "admin", read: false },
+      { $set: { read: true } }
+    );
+
+    return res.json({ success: true, messages });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// User sends a message
+router.post("/chat", authToken, async (req, res) => {
+  try {
+    const userId = req.user.id || req.user._id;
+    const { message } = req.body;
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+    if (message.length > 2000) {
+      return res.status(400).json({ error: "Message too long" });
+    }
+
+    const msg = await ChatMessage.create({
+      userId,
+      sender: "user",
+      message: message.trim(),
+      read: false,
+    });
+
+    return res.json({ success: true, message: msg });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Get unread count for user
+router.get("/chat/unread", authToken, async (req, res) => {
+  try {
+    const userId = req.user.id || req.user._id;
+    const count = await ChatMessage.countDocuments({ userId, sender: "admin", read: false });
+    return res.json({ success: true, count });
+  } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -227,3 +227,16 @@ export async function getNews() {
   const res = await fetch(`${API_BASE}/api/user/news`);
   return res.json();
 }
+
+// ==================== LIVE CHAT ====================
+export async function getChatMessages() {
+  return api("/chat");
+}
+
+export async function sendChatMessage(message) {
+  return api("/chat", { method: "POST", body: { message } });
+}
+
+export async function getChatUnread() {
+  return api("/chat/unread");
+}

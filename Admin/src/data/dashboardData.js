@@ -190,6 +190,7 @@ export const sidebarNav = [
   { icon: "campaign", label: "Promotions", path: "/promotions" },
   // System
   { type: "section", label: "System" },
+  { icon: "chat", label: "Live Chat", path: "/live-chat" },
   { icon: "support_agent", label: "Help Requests", path: "/help-requests" },
   { icon: "flag", label: "Reports", path: "/reports" },
   { icon: "people", label: "Referrals", path: "/referrals" },

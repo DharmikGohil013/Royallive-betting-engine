@@ -1,5 +1,5 @@
-﻿import { useState, useRef, useEffect } from "react";
-import { isLoggedIn } from "../services/api";
+﻿import { useState, useRef, useEffect, useCallback } from "react";
+import { isLoggedIn, getChatMessages, sendChatMessage } from "../services/api";
 
 const quickReplies = [
   "I need help with my account",
@@ -9,48 +9,50 @@ const quickReplies = [
   "Bonus not credited",
 ];
 
-const botResponses = {
-  default: "Thanks for reaching out! Our support team is currently reviewing your message. A live agent will be with you shortly. In the meantime, you can check our Support Hub for quick answers.",
-  account: "For account-related issues, please go to Account > Settings. If you're locked out, use the 'Forgot Password' option on the login page. Need more help? A live agent will assist you soon.",
-  payment: "For payment queries, please ensure your payment method is verified. Deposits are usually instant, while withdrawals may take 24-48 hours. If the issue persists, a live agent will help you.",
-  withdraw: "Withdrawals are processed within 24-48 hours. Make sure you've completed KYC verification and met any wagering requirements. Check Wallet > Withdraw for status updates.",
-  game: "If a game isn't loading, try clearing your browser cache and refreshing. Make sure you have a stable internet connection. If the problem continues, our team will look into it.",
-  bonus: "Bonuses are usually credited within a few minutes. Check Promotions > My Bonuses for status. Make sure you've met the minimum deposit requirement. We'll have an agent verify this for you.",
-};
-
-const getBot = (msg) => {
-  const l = msg.toLowerCase();
-  if (l.includes("account") || l.includes("login") || l.includes("password")) return botResponses.account;
-  if (l.includes("payment") || l.includes("deposit")) return botResponses.payment;
-  if (l.includes("withdraw") || l.includes("payout")) return botResponses.withdraw;
-  if (l.includes("game") || l.includes("load") || l.includes("crash")) return botResponses.game;
-  if (l.includes("bonus") || l.includes("promo") || l.includes("offer")) return botResponses.bonus;
-  return botResponses.default;
-};
-
 const LiveChatPage = () => {
-  const [messages, setMessages] = useState([
-    { from: "bot", text: "Hey there! 👋 Welcome to Gain Live Support. How can I help you today?", time: new Date() },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [typing, setTyping] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(true);
   const scrollRef = useRef(null);
+  const pollRef = useRef(null);
   const loggedIn = isLoggedIn();
+
+  const loadMessages = useCallback(async () => {
+    try {
+      const data = await getChatMessages();
+      setMessages(data.messages || []);
+    } catch (err) {
+      console.error("Failed to load messages:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!loggedIn) return;
+    loadMessages();
+    pollRef.current = setInterval(loadMessages, 5000);
+    return () => clearInterval(pollRef.current);
+  }, [loggedIn, loadMessages]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, typing]);
+  }, [messages]);
 
-  const send = (text) => {
-    if (!text.trim()) return;
-    const userMsg = { from: "user", text: text.trim(), time: new Date() };
-    setMessages((m) => [...m, userMsg]);
+  const send = async (text) => {
+    if (!text.trim() || sending) return;
+    const trimmed = text.trim();
     setInput("");
-    setTyping(true);
-    setTimeout(() => {
-      setMessages((m) => [...m, { from: "bot", text: getBot(text), time: new Date() }]);
-      setTyping(false);
-    }, 1200 + Math.random() * 800);
+    setSending(true);
+    try {
+      await sendChatMessage(trimmed);
+      await loadMessages();
+    } catch (err) {
+      console.error("Failed to send:", err);
+    } finally {
+      setSending(false);
+    }
   };
 
   const fmt = (d) => new Date(d).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -68,9 +70,9 @@ const LiveChatPage = () => {
   }
 
   return (
-    <main className="pt-[120px] pb-32 px-4 max-w-4xl mx-auto flex flex-col" style={{ minHeight: "calc(100vh - 6rem)" }}>
+    <main className="pt-[120px] pb-32 px-4 max-w-4xl mx-auto flex flex-col h-[100dvh] max-h-[100dvh] overflow-hidden" style={{ height: "calc(100dvh - 120px - 5rem)" }}>
       {/* Header */}
-      <header className="relative mb-4 p-4 glass-card border border-outline-variant/20 rounded-xl overflow-hidden">
+      <header className="relative mb-4 p-4 glass-card border border-outline-variant/20 rounded-xl overflow-hidden flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-12 h-12 flex items-center justify-center bg-surface-container-high rounded-full border border-primary-container/30">
@@ -86,23 +88,41 @@ const LiveChatPage = () => {
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-1" style={{ maxHeight: "calc(100vh - 20rem)" }}>
-        {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[80%] ${m.from === "user" ? "order-1" : ""}`}>
-              <div className={`px-4 py-3 rounded-2xl text-xs leading-relaxed ${
-                m.from === "user"
-                  ? "bg-gradient-to-r from-primary-container to-primary text-on-primary-container rounded-br-md"
-                  : "glass-card border border-outline-variant/10 text-on-surface rounded-bl-md"
-              }`}>
-                {m.text}
-              </div>
-              <p className={`text-[9px] text-on-surface-variant/40 mt-1 ${m.from === "user" ? "text-right" : ""}`}>{fmt(m.time)}</p>
-            </div>
+      <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-1 min-h-0">
+        {loading ? (
+          <div className="flex items-center justify-center h-32">
+            <div className="w-6 h-6 border-2 border-primary-container/30 border-t-primary-container rounded-full animate-spin" />
           </div>
-        ))}
+        ) : messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-32 gap-2">
+            <span className="material-symbols-outlined text-3xl text-on-surface-variant/20">chat_bubble_outline</span>
+            <p className="text-xs text-on-surface-variant/50">Send a message to start the conversation</p>
+          </div>
+        ) : (
+          messages.map((m) => (
+            <div key={m._id} className={`flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[80%] ${m.sender === "user" ? "order-1" : ""}`}>
+                <div className={`px-4 py-3 rounded-2xl text-xs leading-relaxed ${
+                  m.sender === "user"
+                    ? "bg-gradient-to-r from-primary-container to-primary text-on-primary-container rounded-br-md"
+                    : "glass-card border border-outline-variant/10 text-on-surface rounded-bl-md"
+                }`}>
+                  {m.message}
+                </div>
+                <div className={`flex items-center gap-1 mt-1 ${m.sender === "user" ? "justify-end" : ""}`}>
+                  <p className="text-[9px] text-on-surface-variant/40">{fmt(m.createdAt)}</p>
+                  {m.sender === "user" && (
+                    <span className="material-symbols-outlined text-[10px] text-on-surface-variant/30" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      {m.read ? "done_all" : "done"}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
 
-        {typing && (
+        {sending && (
           <div className="flex justify-start">
             <div className="glass-card border border-outline-variant/10 rounded-2xl rounded-bl-md px-4 py-3">
               <div className="flex gap-1">
@@ -117,8 +137,8 @@ const LiveChatPage = () => {
       </div>
 
       {/* Quick Replies */}
-      {messages.length <= 2 && (
-        <div className="flex flex-wrap gap-2 mb-3">
+      {messages.length === 0 && (
+        <div className="flex flex-wrap gap-2 mb-3 flex-shrink-0">
           {quickReplies.map((q) => (
             <button key={q} onClick={() => send(q)} className="text-[10px] font-bold text-primary-container bg-primary-container/10 px-3 py-1.5 rounded-full border border-primary-container/20 hover:bg-primary-container/20 transition-colors">
               {q}
@@ -128,7 +148,7 @@ const LiveChatPage = () => {
       )}
 
       {/* Input */}
-      <div className="glass-card border border-outline-variant/20 rounded-xl p-2 flex items-center gap-2">
+      <div className="glass-card border border-outline-variant/20 rounded-xl p-2 flex items-center gap-2 flex-shrink-0">
         <input
           type="text"
           value={input}
@@ -136,8 +156,9 @@ const LiveChatPage = () => {
           onKeyDown={(e) => e.key === "Enter" && send(input)}
           placeholder="Type your message..."
           className="flex-1 bg-transparent text-on-surface text-sm px-3 py-2 focus:outline-none placeholder:text-on-surface-variant/40"
+          disabled={sending}
         />
-        <button onClick={() => send(input)} disabled={!input.trim() || typing} className="w-10 h-10 rounded-lg bg-gradient-to-r from-primary-container to-primary flex items-center justify-center text-on-primary-container shadow-[0_0_20px_-5px_rgba(0,245,255,0.3)] disabled:opacity-40 disabled:pointer-events-none transition-all">
+        <button onClick={() => send(input)} disabled={!input.trim() || sending} className="w-10 h-10 rounded-lg bg-gradient-to-r from-primary-container to-primary flex items-center justify-center text-on-primary-container shadow-[0_0_20px_-5px_rgba(0,245,255,0.3)] disabled:opacity-40 disabled:pointer-events-none transition-all">
           <span className="material-symbols-outlined text-lg">send</span>
         </button>
       </div>

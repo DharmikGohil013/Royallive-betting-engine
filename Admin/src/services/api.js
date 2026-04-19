@@ -401,3 +401,20 @@ export async function updateNews(id, data) {
 export async function deleteNews(id) {
   return api(`/admin/news/${id}`, { method: "DELETE" });
 }
+
+// ==================== LIVE CHAT ====================
+export async function getChatConversations() {
+  return api("/admin/chat/conversations");
+}
+
+export async function getChatMessages(userId) {
+  return api(`/admin/chat/${userId}`);
+}
+
+export async function sendChatMessage(userId, message) {
+  return api(`/admin/chat/${userId}`, { method: "POST", body: { message } });
+}
+
+export async function getChatUnreadCount() {
+  return api("/admin/chat-unread-count");
+}

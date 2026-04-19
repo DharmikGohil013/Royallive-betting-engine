@@ -43,6 +43,7 @@ const Promotion = require("../models/Promotion");
 const Referral = require("../models/Referral");
 const HallOfGlory = require("../models/HallOfGlory");
 const News = require("../models/News");
+const ChatMessage = require("../models/ChatMessage");
 const { authToken, adminOnly, logActivity } = require("../middleware/auth");
 
 const ApiLog = require("../models/ApiLog");
@@ -1244,6 +1245,114 @@ router.delete("/news/:id", authToken, adminOnly, logActivity("delete_news", "adm
     const item = await News.findByIdAndDelete(req.params.id);
     if (!item) return res.status(404).json({ error: "News item not found" });
     return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== LIVE CHAT ====================
+
+// Get all conversations (list of users who have chatted)
+router.get("/chat/conversations", authToken, adminOnly, async (req, res) => {
+  try {
+    const conversations = await ChatMessage.aggregate([
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$userId",
+          lastMessage: { $first: "$message" },
+          lastSender: { $first: "$sender" },
+          lastTime: { $first: "$createdAt" },
+          unreadCount: {
+            $sum: { $cond: [{ $and: [{ $eq: ["$sender", "user"] }, { $eq: ["$read", false] }] }, 1, 0] },
+          },
+          totalMessages: { $sum: 1 },
+        },
+      },
+      { $sort: { lastTime: -1 } },
+    ]);
+
+    const userIds = conversations.map((c) => c._id);
+    const User = require("../models/User");
+    const users = await User.find({ _id: { $in: userIds } }).select("username mobile email status").lean();
+    const userMap = {};
+    users.forEach((u) => { userMap[u._id.toString()] = u; });
+
+    const result = conversations.map((c) => ({
+      userId: c._id,
+      user: userMap[c._id.toString()] || { username: "Deleted User" },
+      lastMessage: c.lastMessage,
+      lastSender: c.lastSender,
+      lastTime: c.lastTime,
+      unreadCount: c.unreadCount,
+      totalMessages: c.totalMessages,
+    }));
+
+    return res.json({ success: true, conversations: result });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Get chat messages for a specific user
+router.get("/chat/:userId", authToken, adminOnly, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+
+    const messages = await ChatMessage.find({ userId })
+      .sort({ createdAt: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Mark user messages as read
+    await ChatMessage.updateMany(
+      { userId, sender: "user", read: false },
+      { $set: { read: true } }
+    );
+
+    const User = require("../models/User");
+    const user = await User.findById(userId).select("username mobile email status").lean();
+
+    const total = await ChatMessage.countDocuments({ userId });
+
+    return res.json({ success: true, messages, user, total, page, limit });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Admin sends a message to a user
+router.post("/chat/:userId", authToken, adminOnly, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { message } = req.body;
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
+    const msg = await ChatMessage.create({
+      userId,
+      sender: "admin",
+      message: message.trim(),
+      read: false,
+    });
+
+    return res.json({ success: true, message: msg });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Get total unread chat count
+router.get("/chat-unread-count", authToken, adminOnly, async (req, res) => {
+  try {
+    const count = await ChatMessage.countDocuments({ sender: "user", read: false });
+    return res.json({ success: true, count });
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }
