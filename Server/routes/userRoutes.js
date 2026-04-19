@@ -39,8 +39,24 @@ function formatUserResponse(user) {
     username: user.username,
     role: user.role,
     balance: user.balance,
+    currency: user.currency || "BDT",
     referralCode: user.referralCode,
+    myReferralCode: user.myReferralCode,
     status: user.status,
+    lastLogin: user.lastLogin,
+    loginCount: user.loginCount || 0,
+    totalDeposits: user.totalDeposits || 0,
+    totalWithdrawals: user.totalWithdrawals || 0,
+    totalBets: user.totalBets || 0,
+    totalWinnings: user.totalWinnings || 0,
+    totalWins: user.totalWins || 0,
+    totalLosses: user.totalLosses || 0,
+    totalReferrals: user.totalReferrals || 0,
+    referralEarnings: user.referralEarnings || 0,
+    dateOfBirth: user.dateOfBirth,
+    address: user.address,
+    city: user.city,
+    country: user.country,
     createdAt: user.createdAt,
   };
 }
@@ -234,7 +250,7 @@ router.get("/profile", authToken, activeUser, async (req, res) => {
 
 router.put("/profile", authToken, activeUser, async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, dateOfBirth, address, city, country } = req.body;
     const updates = {};
     if (email !== undefined) {
       const normalized = email ? String(email).trim().toLowerCase() : null;
@@ -243,6 +259,10 @@ router.put("/profile", authToken, activeUser, async (req, res) => {
       }
       updates.email = normalized;
     }
+    if (dateOfBirth !== undefined) updates.dateOfBirth = dateOfBirth ? new Date(dateOfBirth) : null;
+    if (address !== undefined) updates.address = String(address || "").trim().substring(0, 200);
+    if (city !== undefined) updates.city = String(city || "").trim().substring(0, 50);
+    if (country !== undefined) updates.country = String(country || "").trim().substring(0, 50);
     const user = await User.findByIdAndUpdate(req.user.sub, updates, { new: true }).select("-password");
     if (!user) return res.status(404).json({ error: "User not found" });
     return res.json({ success: true, user: formatUserResponse(user) });
@@ -276,7 +296,7 @@ router.put("/change-password", authToken, activeUser, async (req, res) => {
 // ==================== WALLET / BALANCE ====================
 router.get("/wallet", authToken, activeUser, async (req, res) => {
   try {
-    const user = await User.findById(req.user.sub).select("balance totalDeposits totalWithdrawals").lean();
+    const user = await User.findById(req.user.sub).select("balance totalDeposits totalWithdrawals totalBets totalWinnings totalWins totalLosses currency").lean();
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const recentTxns = await Transaction.find({ user: req.user.sub })
@@ -284,7 +304,21 @@ router.get("/wallet", authToken, activeUser, async (req, res) => {
       .limit(20)
       .lean();
 
-    return res.json({ success: true, balance: user.balance, totalDeposits: user.totalDeposits, totalWithdrawals: user.totalWithdrawals, transactions: recentTxns });
+    const pendingCount = await Transaction.countDocuments({ user: req.user.sub, status: "pending" });
+
+    return res.json({
+      success: true,
+      balance: user.balance,
+      currency: user.currency || "BDT",
+      totalDeposits: user.totalDeposits || 0,
+      totalWithdrawals: user.totalWithdrawals || 0,
+      totalBets: user.totalBets || 0,
+      totalWinnings: user.totalWinnings || 0,
+      totalWins: user.totalWins || 0,
+      totalLosses: user.totalLosses || 0,
+      pendingCount,
+      transactions: recentTxns,
+    });
   } catch {
     return res.status(500).json({ error: "Internal server error" });
   }
