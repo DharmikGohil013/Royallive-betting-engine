@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { Search, Plus, Settings, Play, Edit2, Eye, EyeOff, Download, RotateCcw } from 'lucide-react';
 
 // Mock Game Data
 const MOCK_GAMES = [
@@ -356,7 +355,7 @@ export default function GameLogicPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
             {/* Search */}
             <div className="relative lg:col-span-2">
-              <Search className="absolute left-3 top-3 text-slate-400" size={20} />
+              <span className="absolute left-3 top-3 text-slate-400">🔍</span>
               <input
                 type="text"
                 placeholder="Search games..."
@@ -436,14 +435,14 @@ export default function GameLogicPage() {
                 onClick={handleExportConfig}
                 className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm transition flex items-center gap-2"
               >
-                <Download size={16} />
+                ⬇️
                 Export
               </button>
               <button
                 onClick={() => setShowAddGameModal(true)}
                 className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold rounded-lg text-sm transition flex items-center gap-2"
               >
-                <Plus size={18} />
+                ➕
                 Add Game
               </button>
             </div>
@@ -526,21 +525,21 @@ export default function GameLogicPage() {
                     onClick={() => openEditGameModal(game)}
                     className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 rounded-lg text-xs font-semibold transition border border-purple-500/20 hover:border-purple-500/50"
                   >
-                    <Edit2 size={14} />
+                    ✏️
                     Edit Logic
                   </button>
                   <button
                     onClick={() => openPreviewMode(game)}
                     className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 rounded-lg text-xs font-semibold transition border border-emerald-500/20 hover:border-emerald-500/50"
                   >
-                    <Play size={14} />
+                    ▶️
                     Preview
                   </button>
                   <button
                     onClick={() => openSettingsDrawer(game)}
                     className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs font-semibold transition border border-slate-600 hover:border-slate-500"
                   >
-                    <Settings size={14} />
+                    ⚙️
                     Settings
                   </button>
                 </div>
@@ -867,7 +866,7 @@ export default function GameLogicPage() {
                   }}
                   className="px-4 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-lg font-semibold transition flex items-center gap-2"
                 >
-                  <RotateCcw size={16} />
+                  ↻
                   Reset
                 </button>
                 <button
