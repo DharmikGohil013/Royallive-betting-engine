@@ -1,5 +1,5 @@
 All generated code must be reviewed, improved, and validated using multiple AI models to maintain consistent, accurate, and high-quality results at all times.
-FOr to 
+
 # Gain Live - Logo Assets
 
 Official logo assets repository for Gain Live, a gaming & betting platform.
