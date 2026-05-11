@@ -18,6 +18,7 @@ const Marquee = require("../models/Marquee");
 const HallOfGlory = require("../models/HallOfGlory");
 const ChatMessage = require("../models/ChatMessage");
 const Banner = require("../models/Banner");
+const LoginPromo = require("../models/LoginPromo");
 const { authToken, activeUser } = require("../middleware/auth");
 
 const router = express.Router();
@@ -951,6 +952,17 @@ router.get("/ambassadors", async (_req, res) => {
     const ambassadors = await Ambassador.find({ isActive: true }).sort({ order: 1, createdAt: -1 });
     return res.json({ success: true, ambassadors });
   } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== LOGIN PROMO (public) ====================
+router.get("/login-promo", async (_req, res) => {
+  try {
+    const promos = await LoginPromo.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).lean();
+    return res.json({ success: true, promos });
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
