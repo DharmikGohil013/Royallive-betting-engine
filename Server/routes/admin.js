@@ -50,6 +50,7 @@ const ChatMessage = require("../models/ChatMessage");
 const { authToken, adminOnly, logActivity } = require("../middleware/auth");
 
 const ApiLog = require("../models/ApiLog");
+const LoginPromo = require("../models/LoginPromo");
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -1510,6 +1511,63 @@ router.delete("/ambassadors/:id", authToken, adminOnly, async (req, res) => {
   try {
     await Ambassador.findByIdAndDelete(req.params.id);
     return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ==================== LOGIN PROMO (Bonus Section) ====================
+
+router.post("/login-promo/upload-image", authToken, adminOnly, (req, res) => {
+  upload.single("file")(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ error: err.code === "LIMIT_FILE_SIZE" ? "File too large (max 5 MB)" : err.message });
+    }
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    return res.json({ success: true, url: `/uploads/${req.file.filename}` });
+  });
+});
+
+router.get("/login-promo", authToken, adminOnly, async (_req, res) => {
+  try {
+    const promos = await LoginPromo.find().sort({ sortOrder: 1, createdAt: -1 }).lean();
+    return res.json({ success: true, promos });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/login-promo", authToken, adminOnly, logActivity("create_login_promo", "admin"), async (req, res) => {
+  try {
+    const { tagline, headline, ctaText, ctaIcon, image, link } = req.body;
+    if (!tagline || !headline) return res.status(400).json({ error: "Tagline and headline are required" });
+    const promo = await LoginPromo.create({ tagline, headline, ctaText, ctaIcon, image, link });
+    return res.status(201).json({ success: true, promo });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/login-promo/:id", authToken, adminOnly, logActivity("update_login_promo", "admin"), async (req, res) => {
+  try {
+    const allowed = ["tagline", "headline", "ctaText", "ctaIcon", "image", "link", "isActive", "sortOrder"];
+    const updates = {};
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    }
+    const promo = await LoginPromo.findByIdAndUpdate(req.params.id, updates, { new: true });
+    if (!promo) return res.status(404).json({ error: "Login promo not found" });
+    return res.json({ success: true, promo });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/login-promo/:id", authToken, adminOnly, logActivity("delete_login_promo", "admin"), async (req, res) => {
+  try {
+    await LoginPromo.findByIdAndDelete(req.params.id);
+    return res.json({ success: true, message: "Login promo deleted" });
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
   }
