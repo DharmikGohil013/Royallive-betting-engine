@@ -514,3 +514,35 @@ export async function uploadAmbassadorImage(file) {
   if (!res.ok) throw new Error(data.error || "Upload failed");
   return data;
 }
+
+// ==================== LOGIN PROMO ====================
+export async function getLoginPromos() {
+  return api("/admin/login-promo");
+}
+
+export async function createLoginPromo(data) {
+  return api("/admin/login-promo", { method: "POST", body: data });
+}
+
+export async function updateLoginPromo(id, data) {
+  return api(`/admin/login-promo/${id}`, { method: "PUT", body: data });
+}
+
+export async function deleteLoginPromo(id) {
+  return api(`/admin/login-promo/${id}`, { method: "DELETE" });
+}
+
+export async function uploadLoginPromoImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/api/admin/login-promo/upload-image`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (res.status === 401) { clearAuth(); window.location.href = "/login"; throw new Error("Session expired"); }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Upload failed");
+  return data;
+}

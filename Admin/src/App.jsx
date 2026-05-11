@@ -29,6 +29,7 @@ import BannerManagementPage from "./pages/banners/BannerManagementPage";
 import SponsorsPage from "./pages/sponsors/SponsorsPage";
 import AmbassadorsPage from "./pages/ambassadors/AmbassadorsPage";
 import CookiePolicyPage from "./pages/cookie-policy/CookiePolicyPage";
+import LoginPromoPage from "./pages/login-promo/LoginPromoPage";
 import { adminLogout } from "./services/api";
 
 export default function App() {
@@ -105,6 +106,7 @@ export default function App() {
           <Route path="/promotions" element={<PromotionsPage />} />
           <Route path="/hall-of-glory" element={<HallOfGloryPage />} />
           <Route path="/referrals" element={<ReferralsPage />} />
+          <Route path="/login-promo" element={<LoginPromoPage />} />
         </Routes>
       </main>
     </div>

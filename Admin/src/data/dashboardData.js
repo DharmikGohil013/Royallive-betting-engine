@@ -189,6 +189,7 @@ export const sidebarNav = [
   { icon: "featured_play_list", label: "Winner Marquee", path: "/marquee" },
   { icon: "campaign", label: "Promotions", path: "/promotions" },
   { icon: "view_carousel", label: "Banners", path: "/banners" },
+  { icon: "local_offer", label: "Login Promo", path: "/login-promo" },
   { icon: "handshake", label: "Sponsors", path: "/sponsors" },
   { icon: "star", label: "Brand Ambassadors", path: "/ambassadors" },
   // System
